@@ -7,7 +7,7 @@ import argparse
 
 opus = "claude-3-opus-20240229"
 sonnet = "claude-3-5-sonnet-20240620"
-gpt4 = "gpt-4"
+gpt4o = "gpt-4o"
 o1_preview = "o1-preview"  # New OpenAI model
 
 # Configuration
@@ -60,7 +60,7 @@ def main():
     )
     parser.add_argument(
         "--model",
-        choices=["sonnet", "opus", "gpt4", "o1-preview"],  # Added o1-preview option
+        choices=["sonnet", "opus", "gpt4o", "o1-preview"],  # Added o1-preview option
         default="opus",
         help="Choose the model to use (default: opus)",
     )
@@ -74,9 +74,9 @@ def main():
     elif args.model == "opus":
         MODELS = [opus, opus]
         ACTORS = ["Claude 1", "Claude 2"]
-    elif args.model == "gpt4":
-        MODELS = [gpt4, gpt4]
-        ACTORS = ["GPT4 1", "GPT4 2"]
+    elif args.model == "gpt4o":
+        MODELS = [gpt4o, gpt4o]
+        ACTORS = ["GPT4o 1", "GPT4o 2"]
     elif args.model == "o1-preview":
         MODELS = [o1_preview, o1_preview]
         ACTORS = ["O1 1", "O1 2"]
