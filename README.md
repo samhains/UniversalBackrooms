@@ -1,5 +1,5 @@
 # UniversalBackrooms
-A replication of Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.webflow.io/), but runnable with Opus 3, Sonnet 3.5, GPT 4o, and o1-preview 
+The repo replicates Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.webflow.io/), but it is runnable with each of Opus 3, Sonnet 3.5, GPT 4o, and o1-preview.
 
 Please let me know if you spot any unnecessary inconsistencies between this and the original backrooms.
 
