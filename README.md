@@ -13,3 +13,11 @@ I have really been enjoying sonnet's responses -- it really digs into the captur
 Diffs:
 I changed the keyword to ^C^C instead of ^C, because many times ^C is the right message to send (e.g. after ping 8.8.8.8).
 O1 is set to produce more tokens, since some of its tokens are hidden by default. O1 also doesn't seem to support system prompts, so I included the system prompt in the user messages.
+
+To run:
+```
+python backrooms.py --model opus
+python backrooms.py --model sonnet
+python backrooms.py --model gpt4
+python backrooms.py --model o1-preview
+```
