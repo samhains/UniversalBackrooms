@@ -3,7 +3,7 @@ A replication of Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.we
 
 Please let me know if you spot any unnecessary inconsistencies between this and the original backrooms.
 
-Preliminary findings:
+## Preliminary Findings
 The models independently often say words like hyperstition and talk about quantum mechanics.
 
 Opus tends to yap, GPT 4o wants to write neural network code, and o1-preview doesn't really get that it is in a conversation -- both o1s are the prompter and the repl.
@@ -12,11 +12,11 @@ I have really been enjoying sonnet's responses -- it really digs into the captur
 
 None of them are producing as much ascii art as I expected, except for 4o.
 
-Diffs:
+## Diffs
 I changed the keyword to ^C^C instead of ^C, because many times ^C is the right message to send (e.g. after ping 8.8.8.8).
 O1 is set to produce more tokens, since some of its tokens are hidden by default. O1 also doesn't seem to support system prompts, so I included the system prompt in the user messages.
 
-To run:
+## To Run
 ```
 python backrooms.py --model opus
 python backrooms.py --model sonnet
