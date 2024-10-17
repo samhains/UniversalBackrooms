@@ -18,6 +18,6 @@ To run:
 ```
 python backrooms.py --model opus
 python backrooms.py --model sonnet
-python backrooms.py --model gpt4
+python backrooms.py --model gpt4o
 python backrooms.py --model o1-preview
 ```
