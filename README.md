@@ -4,7 +4,7 @@ A replication of Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.we
 Please let me know if you spot any unnecessary inconsistencies between this and the original backrooms.
 
 ## Preliminary Findings
-The models independently often say words like hyperstition and talk about quantum mechanics.
+The models independently often talk about quantum mechanics and the simulation.
 
 Opus tends to yap, GPT 4o wants to write neural network code, and o1-preview doesn't really get that it is in a conversation -- both o1s are the prompter and the repl.
 
