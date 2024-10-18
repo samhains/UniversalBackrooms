@@ -43,6 +43,6 @@ You can mix and match any combination of models for the CLI and explorer roles:
 If you don't specify models, it defaults to using opus for both roles.
 
 ## Templates
-There are a few example templates to get started with different types of conversations. Some are less backroomsy but this interface is fun to explore.
-To add a new template you can either modify one of the existing templates or copy the meta-template.json for a blank slate.
-If no template is specified, backrooms.py will run as normal.
+- There are a few example templates to get started with different types of conversations. Some are less backroomsy but this interface is fun to explore.
+- To add a new template you can either modify one of the existing templates or copy the meta-template.json for a blank slate.
+- If no template is specified, backrooms.py will run as normal.
