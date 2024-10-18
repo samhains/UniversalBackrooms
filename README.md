@@ -17,23 +17,22 @@ I changed the keyword to ^C^C instead of ^C, because many times ^C is the right 
 O1 is set to produce more tokens, since some of its tokens are hidden by default. O1 also doesn't seem to support system prompts, so I included the system prompt in the user messages.
 
 ## Recent Updates
-1. Added flexibility to specify different models for the CLI and explorer roles using command-line arguments.
-2. Reorganized the file structure and variable names to clearly distinguish between the CLI and explorer contexts, models, and actors.
-3. Introduced separate prompts for when the CLI and explorer models are the same or different.
+1. Added flexibility to specify different models for LM1 and LM2 roles using command-line arguments.
+2. Reorganized the file structure and variable names to clearly distinguish between the LM1 and LM2 contexts, models, and actors.
+3. Introduced separate prompts for when the LM1 and LM2 models are the same or different.
 4. Updated the handling of system prompts for different model types (Anthropic, GPT-4, and O1).
 5. Improved logging and error handling, especially for the ^C^C termination sequence.
 6. Updated the filename format to include both model names and a timestamp.
-7. Added o1-mini to the list of models.
-8. Added templates and flags to specify different templates for the conversation.
+7. Implemented logging to folders corresponding to the current LM1 model (e.g., OpusExplorations/, SonnetExplorations/, etc.).
+8. Added support for the o1-mini model.
 
 ## To Run
 ```
-python backrooms.py --cli-model opus --explorer-model sonnet
-python backrooms.py --cli-model gpt4o --explorer-model o1-preview
-python backrooms.py --cli-model sonnet --explorer-model o1-mini --template fugue
+python backrooms.py --lm1 opus --lm2 sonnet
+python backrooms.py --lm1 gpt4o --lm2 o1-preview
 ```
 
-You can mix and match any combination of models for the CLI and explorer roles:
+You can mix and match any combination of models for the LM1 and LM2 roles:
 - opus
 - sonnet
 - gpt4o
@@ -43,6 +42,36 @@ You can mix and match any combination of models for the CLI and explorer roles:
 If you don't specify models, it defaults to using opus for both roles.
 
 ## Templates
-- There are a few example templates to get started with different types of conversations. Some are less backroomsy but this interface is fun to explore.
-- To add a new template you can either modify one of the existing templates or copy the meta-template.json for a blank slate.
-- If no template is specified, backrooms.py will run as normal.
+You can choose from the following conversation templates using the `--template` argument:
+- cli (default)
+- science
+- fugue
+- gallery
+- student
+- ethics
+
+Example:
+```
+python backrooms.py --lm1 sonnet --lm2 gpt4o --template ethics
+```
+
+## Logging
+The script now logs conversations to folders within a main "BackroomsLogs" directory:
+- BackroomsLogs/
+  - OpusExplorations/
+  - SonnetExplorations/
+  - GPT4oExplorations/
+  - O1previewExplorations/
+
+Each log file is named with the format: `{lm1_model}_{lm2_model}_{template}_{timestamp}.txt`
+
+## Model Information
+The script includes a `MODEL_INFO` dictionary that stores information about each supported model, including its API name, display name, and company.
+
+## Temperature
+The conversation temperature is set to 1.0 for both models.
+
+## Token Limits
+- For Claude models (opus and sonnet), the max_tokens is set to 1024.
+- For GPT-4 models, the max_tokens is set to 1024.
+- For O1 models (o1-preview and o1-mini), the max_completion_tokens is set to 8192.
