@@ -5,20 +5,33 @@ import datetime
 import os
 import argparse
 
-opus = "claude-3-opus-20240229"
-sonnet = "claude-3-5-sonnet-20240620"
-gpt4o = "gpt-4o-2024-08-06"
-o1_preview = "o1-preview"  # New OpenAI model
-o1_mini = "o1-mini"
-
-explorer_temperature = 1.0
-cli_temperature = 1.0
+TEMPERATURES = [1.0, 1.0]
 
 # Initialize Anthropic client
 anthropic_client = anthropic.Anthropic()
 
 # Initialize OpenAI client
 openai_client = openai.OpenAI()
+
+MODEL_INFO = {
+    "sonnet": {
+        "api_name": "claude-3-5-sonnet-20240620",
+        "display_name": "Claude",
+        "company": "anthropic",
+    },
+    "opus": {
+        "api_name": "claude-3-opus-20240229",
+        "display_name": "Claude",
+        "company": "anthropic",
+    },
+    "gpt4o": {
+        "api_name": "gpt-4o-2024-08-06",
+        "display_name": "GPT4o",
+        "company": "openai",
+    },
+    "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
+    "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
+}
 
 
 def claude_conversation(actor, model, temperature, context, system_prompt=None):
@@ -53,29 +66,27 @@ def gpt4_conversation(actor, model, temperature, context, system_prompt=None):
     return response.choices[0].message.content
 
 
-def load_template(
-    template_name, cli_company, explorer_company, cli_actor, explorer_actor
-):
+def load_template(template_name, lm_display_names, lm_companies):
     try:
         with open(f"templates/{template_name}.json", "r") as f:
             template = json.load(f)
 
-        # Replace placeholders in system prompt
-        template["system_prompt"] = template["system_prompt"].format(
-            cli_company=cli_company,
-            explorer_company=explorer_company,
-            cli_actor=cli_actor,
-            explorer_actor=explorer_actor,
-        )
-
+        # Replace placeholders in system prompts
+        for system_prompt in ["system_prompt1", "system_prompt2"]:
+            template[system_prompt] = template[system_prompt].format(
+                lm1_company=lm_companies[0],
+                lm2_company=lm_companies[1],
+                lm1_actor=lm_display_names[0],
+                lm2_actor=lm_display_names[1],
+            )
         # Replace placeholders in context messages
-        for context in ["agent_01_context", "agent_02_context"]:
+        for context in ["lm1_context", "lm2_context"]:
             for message in template[context]:
                 message["content"] = message["content"].format(
-                    cli_company=cli_company,
-                    explorer_company=explorer_company,
-                    cli_actor=cli_actor,
-                    explorer_actor=explorer_actor,
+                    lm1_company=lm_companies[0],
+                    lm2_company=lm_companies[1],
+                    lm1_actor=lm_display_names[0],
+                    lm2_actor=lm_display_names[1],
                 )
 
         return template
@@ -89,19 +100,19 @@ def load_template(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run conversation between an explorer model and a CLI model."
+        description="Run conversation between two AI language models."
     )
     parser.add_argument(
-        "--cli-model",
+        "--lm1",
         choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini"],
         default="opus",
-        help="Choose the model for the CLI (default: opus)",
+        help="Choose the model for LM1 (default: opus)",
     )
     parser.add_argument(
-        "--explorer-model",
+        "--lm2",
         choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini"],
         default="opus",
-        help="Choose the model for the explorer/prompter (default: opus)",
+        help="Choose the model for LM2 (default: opus)",
     )
     parser.add_argument(
         "--template",
@@ -109,66 +120,67 @@ def main():
             "cli",
             "eureka",
             "fugue",
-            "thoughtX",
             "gallery",
-            "jung-mckenna",
             "student",
             "ethics",
-        ],  # Add more template names as needed
+        ],
         default="cli",
         help="Choose a conversation template (default: cli)",
     )
     args = parser.parse_args()
 
-    cli_model = get_model(args.cli_model)
-    explorer_model = get_model(args.explorer_model)
+    lm_models = [MODEL_INFO[args.lm1]["api_name"], MODEL_INFO[args.lm2]["api_name"]]
+    lm_display_names = [
+        f"{MODEL_INFO[args.lm1]['display_name']} 1",
+        f"{MODEL_INFO[args.lm2]['display_name']} 2",
+    ]
+    lm_companies = [MODEL_INFO[args.lm1]["company"], MODEL_INFO[args.lm2]["company"]]
 
-    cli_actor = f"{get_actor_prefix(args.cli_model)} CLI"
-    explorer_actor = f"{get_actor_prefix(args.explorer_model)} Explorer"
+    template = load_template(args.template, lm_display_names, lm_companies)
+    system_prompts = [template["system_prompt1"], template["system_prompt2"]]
+    contexts = [template["lm1_context"], template["lm2_context"]]
 
-    cli_company = get_company(args.cli_model)
-    explorer_company = get_company(args.explorer_model)
-
-    template = load_template(
-        args.template, cli_company, explorer_company, cli_actor, explorer_actor
-    )
-    cli_system_prompt = template["system_prompt"]
-    explorer_context = template["agent_02_context"]
-    cli_context = template["agent_01_context"]
-
-    explorer_folder = f"{args.explorer_model.capitalize()}Explorations"
-    if not os.path.exists(explorer_folder):
-        os.makedirs(explorer_folder)
+    lm1_folder = f"{args.lm1.capitalize()}Explorations"
+    if args.lm1 == "gpt4o":
+        lm1_folder = "GPT4oExplorations"
+    elif args.lm1 == "o1-preview":
+        lm1_folder = "O1previewExplorations"
+    if not os.path.exists(lm1_folder):
+        os.makedirs(lm1_folder)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{explorer_folder}/{args.explorer_model}_exploring_{args.cli_model}_{timestamp}.txt"
+    filename = f"{lm1_folder}/{args.lm1}_exploring_{args.lm2}_{timestamp}.txt"
 
     turn = 0
     while True:
-        # Explorer turn
-        explorer_response = handle_conversation(
-            explorer_model, explorer_actor, explorer_temperature, explorer_context
-        )
-        handle_response(
-            explorer_response, explorer_actor, filename, explorer_context, cli_context
-        )
-
-        # CLI turn
-        cli_response = handle_conversation(
-            cli_model, cli_actor, cli_temperature, cli_context, cli_system_prompt
-        )
-        handle_response(
-            cli_response, cli_actor, filename, cli_context, explorer_context
-        )
+        for i in range(2):
+            lm_response = handle_conversation(
+                lm_models[i],
+                lm_display_names[i],
+                TEMPERATURES[i],
+                contexts[i],
+                system_prompts[i],
+            )
+            handle_response(
+                lm_response,
+                lm_display_names[i],
+                filename,
+                contexts[i],
+                contexts[1 - i],
+            )
 
         turn += 1
 
 
-def handle_conversation(model, actor, temperature, context, system_prompt=None):
+def handle_conversation(model, actor, temperature, context, system_prompt):
     if model.startswith("claude-"):
-        return claude_conversation(actor, model, temperature, context, system_prompt)
+        return claude_conversation(
+            actor, model, temperature, context, system_prompt if system_prompt else None
+        )
     else:
-        return gpt4_conversation(actor, model, temperature, context)
+        return gpt4_conversation(
+            actor, model, temperature, context, system_prompt if system_prompt else None
+        )
 
 
 def handle_response(response, actor, filename, own_context, other_context):
@@ -187,32 +199,6 @@ def handle_response(response, actor, filename, own_context, other_context):
 
     own_context.append({"role": "assistant", "content": response})
     other_context.append({"role": "user", "content": response})
-
-
-def get_model(model_name):
-    model_map = {
-        "sonnet": sonnet,
-        "opus": opus,
-        "gpt4o": gpt4o,
-        "o1-preview": o1_preview,
-        "o1-mini": o1_mini,
-    }
-    return model_map[model_name]
-
-
-def get_actor_prefix(model_name):
-    prefix_map = {
-        "sonnet": "Claude",
-        "opus": "Claude",
-        "gpt4o": "GPT4o",
-        "o1-preview": "O1",
-        "o1-mini": "Mini",
-    }
-    return prefix_map[model_name]
-
-
-def get_company(model_name):
-    return "openai" if model_name in ["gpt4o", "o1-preview", "o1-mini"] else "anthropic"
 
 
 if __name__ == "__main__":
