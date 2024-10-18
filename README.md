@@ -1,5 +1,5 @@
 # UniversalBackrooms
-This repo replicates Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.webflow.io/), but it is runnable with each of Opus 3, Sonnet 3.5, GPT 4o, and o1-preview.
+This repo replicates Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.webflow.io/), but it is runnable with each of Opus 3, Sonnet 3.5, GPT 4o, o1-preview, and o1-mini.
 
 Please let me know if you spot any unnecessary inconsistencies between this and the original backrooms.
 
@@ -23,6 +23,7 @@ O1 is set to produce more tokens, since some of its tokens are hidden by default
 4. Updated the handling of system prompts for different model types (Anthropic, GPT-4, and O1).
 5. Improved logging and error handling, especially for the ^C^C termination sequence.
 6. Updated the filename format to include both model names and a timestamp.
+7. Added o1-mini to the list of models.
 
 ## To Run
 ```
@@ -35,5 +36,6 @@ You can mix and match any combination of models for the CLI and explorer roles:
 - sonnet
 - gpt4o
 - o1-preview
+- o1-mini
 
 If you don't specify models, it defaults to using opus for both roles.

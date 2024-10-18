@@ -9,6 +9,7 @@ opus = "claude-3-opus-20240229"
 sonnet = "claude-3-5-sonnet-20240620"
 gpt4o = "gpt-4o-2024-08-06"
 o1_preview = "o1-preview"  # New OpenAI model
+o1_mini = "o1-mini"
 
 explorer_temperature = 1.0
 cli_temperature = 1.0
@@ -43,7 +44,7 @@ def gpt4_conversation(actor, model, temperature, context, system_prompt=None):
         "temperature": temperature,
     }
 
-    if model == "o1-preview":
+    if model == "o1-preview" or model == "o1-mini":
         kwargs["max_completion_tokens"] = 8192
     else:
         kwargs["max_tokens"] = 1024
@@ -58,13 +59,13 @@ def main():
     )
     parser.add_argument(
         "--cli-model",
-        choices=["sonnet", "opus", "gpt4o", "o1-preview"],
+        choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini"],
         default="opus",
         help="Choose the model for the CLI (default: opus)",
     )
     parser.add_argument(
         "--explorer-model",
-        choices=["sonnet", "opus", "gpt4o", "o1-preview"],
+        choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini"],
         default="opus",
         help="Choose the model for the explorer/prompter (default: opus)",
     )
@@ -113,7 +114,7 @@ def main():
         ]
 
     cli_context = []
-    if args.cli_model == "o1-preview":
+    if args.cli_model == "o1-preview" or args.cli_model == "o1-mini":
         cli_context = [
             {"role": "user", "content": f"<SYSTEM>{cli_system_prompt}</SYSTEM>"}
         ]
@@ -179,6 +180,7 @@ def get_model(model_name):
         "opus": opus,
         "gpt4o": gpt4o,
         "o1-preview": o1_preview,
+        "o1-mini": o1_mini,
     }
     return model_map[model_name]
 
@@ -189,12 +191,13 @@ def get_actor_prefix(model_name):
         "opus": "Claude",
         "gpt4o": "GPT4o",
         "o1-preview": "O1",
+        "o1-mini": "Mini",
     }
     return prefix_map[model_name]
 
 
 def get_company(model_name):
-    return "openai" if model_name in ["gpt4o", "o1-preview"] else "anthropic"
+    return "openai" if model_name in ["gpt4o", "o1-preview", "o1-mini"] else "anthropic"
 
 
 if __name__ == "__main__":
