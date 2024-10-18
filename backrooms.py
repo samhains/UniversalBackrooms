@@ -118,7 +118,7 @@ def main():
         "--template",
         choices=[
             "cli",
-            "eureka",
+            "science",
             "fugue",
             "gallery",
             "student",
@@ -140,16 +140,12 @@ def main():
     system_prompts = [template["system_prompt1"], template["system_prompt2"]]
     contexts = [template["lm1_context"], template["lm2_context"]]
 
-    lm1_folder = f"{args.lm1.capitalize()}Explorations"
-    if args.lm1 == "gpt4o":
-        lm1_folder = "GPT4oExplorations"
-    elif args.lm1 == "o1-preview":
-        lm1_folder = "O1previewExplorations"
+    lm1_folder = f"BackroomsLogs/{args.lm1.capitalize()}Explorations"
     if not os.path.exists(lm1_folder):
         os.makedirs(lm1_folder)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{lm1_folder}/{args.lm1}_exploring_{args.lm2}_{timestamp}.txt"
+    filename = f"{lm1_folder}/{args.lm1}_{args.lm2}_{args.template}_{timestamp}.txt"
 
     turn = 0
     while True:
