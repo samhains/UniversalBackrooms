@@ -1,8 +1,6 @@
 # UniversalBackrooms
 This repo replicates Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-mind.webflow.io/), but it is runnable with each of Opus 3, Sonnet 3.5, GPT 4o, o1-preview, and o1-mini.
 
-Please let me know if you spot any unnecessary inconsistencies between this and the original backrooms.
-
 ## Preliminary Findings
 The models independently often talk about quantum mechanics and the simulation.
 
@@ -15,6 +13,7 @@ None of them are producing as much ascii art as I expected, except for 4o.
 ## Diffs
 I changed the keyword to ^C^C instead of ^C, because many times ^C is the right message to send (e.g. after ping 8.8.8.8).
 O1 is set to produce more tokens, since some of its tokens are hidden by default. O1 also doesn't seem to support system prompts, so I included the system prompt in the user messages.
+I removed references to the fact that the user will be guiding the conversation in the cli prompts, because this won't always be the case and I don't want to be dishonest to the models.
 
 ## Recent Updates
 1. Added flexibility to specify different models for LM1 and LM2 roles using command-line arguments.
