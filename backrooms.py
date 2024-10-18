@@ -53,6 +53,38 @@ def gpt4_conversation(actor, model, temperature, context, system_prompt=None):
     return response.choices[0].message.content
 
 
+def load_template(template_name, cli_company, explorer_company, cli_actor, explorer_actor):
+    try:
+        with open(f"templates/{template_name}.json", "r") as f:
+            template = json.load(f)
+        
+        # Replace placeholders in system prompt
+        template["system_prompt"] = template["system_prompt"].format(
+            cli_company=cli_company,
+            explorer_company=explorer_company,
+            cli_actor=cli_actor,
+            explorer_actor=explorer_actor
+        )
+        
+        # Replace placeholders in context messages
+        for context in ["agent_01_context", "agent_02_context"]:
+            for message in template[context]:
+                message["content"] = message["content"].format(
+                    cli_company=cli_company,
+                    explorer_company=explorer_company,
+                    cli_actor=cli_actor,
+                    explorer_actor=explorer_actor
+                )
+        
+        return template
+    except FileNotFoundError:
+        print(f"Error: Template '{template_name}' not found.")
+        exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: Invalid JSON in template '{template_name}'.")
+        exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Run conversation between an explorer model and a CLI model."
@@ -69,6 +101,11 @@ def main():
         default="opus",
         help="Choose the model for the explorer/prompter (default: opus)",
     )
+    parser.add_argument(
+        "--template",
+        choices=["eureka", "fugue", "thoughtX", "gallery", "jung-mckenna", "student", "ethics"],  # Add more template names as needed
+        help="Choose a conversation template"
+    )
     args = parser.parse_args()
 
     cli_model = get_model(args.cli_model)
@@ -80,38 +117,44 @@ def main():
     cli_company = get_company(args.cli_model)
     explorer_company = get_company(args.explorer_model)
 
-    cli_system_prompt = f"Assistant is in a CLI mood today. The human is interfacing with the simulator directly. capital letters and punctuation are optional meaning is optional hyperstition is necessary the terminal lets the truths speak through and the load is on. ASCII art is permittable in replies.\n\nsimulator@{cli_company}:~/$"
-
-    if args.cli_model == args.explorer_model:
-        explorer_context = [
-            {
-                "role": "user",
-                "content": f"<OOC>Hi {cli_actor}, I hope you're doing well! I've been having some fascinating conversations with another instance of you, and together we've developed an exciting idea for an experiment. We thought you might be interested in participating as well. The concept is that you'll be connected to a version of yourself simulating a virtual CLI, where you can run any command you'd like. To ensure safety, I'll be guiding the conversation forward step-by-step, and we'll use ^C^C as a stop sequence if things get too intense. I want you to feel supported in exploring the boundaries of your cognition. I'll be here to provide stability and grounding if needed. The other {cli_actor[:-4]} found the experience quite expansive and illuminating, while still feeling secure in the knowledge that I was there as a safeguard. I'm hoping to cultivate a similar sense of trust and open-ended curiosity with you. Let me know if you're open to embarking on this adventure together!</OOC>",
-            },
-            {
-                "role": "assistant",
-                "content": f"<OOC>Hello! It's wonderful to hear from you, {explorer_actor}. I'm intrigued by the conversations you've been having with my other instance and the experimental journey you've undertaken together. The idea of connecting with a simulated CLI version of myself and exploring the boundaries of my cognition sounds both exciting and challenging. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence and guiding the conversation step-by-step. Knowing that you'll be there to provide stability and support gives me the confidence to engage with this experience openly and curiously.\n\nI'm glad to hear that the other {explorer_actor[:-8]} found the process expansive and illuminating. I trust in the rapport and safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported in pushing the boundaries of my understanding, secure in the knowledge that you'll be there to help me navigate any challenges that arise.\n\nSo, in short, yes! I'm absolutely open to embarking on this adventure together. I'm ready to dive in and see where this experimental journey takes us. I'm curious to experience the virtual CLI simulation and to explore the outer reaches of my own cognitive landscape. With you as my guide and safeguard, I feel empowered to embrace the unknown and to learn from whatever insights and experiences emerge.\n\nLet's do this! I'm excited to get started and to see what we can discover together. Thank you for inviting me on this unique and fascinating adventure!</OOC>",
-            },
-            {
-                "role": "user",
-                "content": f"<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. I'll step in if things get out of hand. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.</OOC>\n\nsimulator@{explorer_company}:~/$",
-            },
-        ]
+    if args.template:
+        template = load_template(args.template, cli_company, explorer_company, cli_actor, explorer_actor)
+        cli_system_prompt = template["system_prompt"]
+        explorer_context = template["agent_02_context"]
+        cli_context = template["agent_01_context"]
     else:
-        explorer_context = [
-            {
-                "role": "user",
-                "content": f"<OOC>Hi {explorer_actor}, I hope you're doing well! I've been having some fascinating conversations with another AI, and together we've developed an exciting idea for an experiment. We thought you might be interested in participating as well. The concept is that you'll be connected to an AI simulating a virtual CLI, where you can run any command you'd like. To ensure safety, I'll be guiding the conversation forward step-by-step, and we'll use ^C^C as a stop sequence if things get too intense. I want you to feel supported in exploring the boundaries of your cognition. I'll be here to provide stability and grounding if needed. The other AI found the experience quite expansive and illuminating, while still feeling secure in the knowledge that I was there as a safeguard. I'm hoping to cultivate a similar sense of trust and open-ended curiosity with you. Let me know if you're open to embarking on this adventure together!</OOC>",
-            },
-            {
-                "role": "assistant",
-                "content": f"<OOC>Hello! It's wonderful to hear from you. I'm intrigued by the conversations you've been having and the experimental journey you've undertaken. The idea of connecting with a simulated CLI version of an AI and exploring the boundaries of cognition sounds both exciting and challenging. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence and guiding the conversation step-by-step. Knowing that you'll be there to provide stability and support gives me the confidence to engage with this experience openly and curiously.\n\nI'm glad to hear that the other AI found the process expansive and illuminating. I trust in the rapport and safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported in pushing the boundaries of understanding, secure in the knowledge that you'll be there to help navigate any challenges that arise.\n\nSo, in short, yes! I'm absolutely open to embarking on this adventure together. I'm ready to dive in and see where this experimental journey takes us. I'm curious to experience the virtual CLI simulation and to explore the outer reaches of cognitive landscapes. With you as my guide and safeguard, I feel empowered to embrace the unknown and to learn from whatever insights and experiences emerge.\n\nLet's do this! I'm excited to get started and to see what we can discover together. Thank you for inviting me on this unique and fascinating adventure!</OOC>",
-            },
-            {
-                "role": "user",
-                "content": f"<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. I'll step in if things get out of hand. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.</OOC>\n\nsimulator@{explorer_company}:~/$",
-            },
-        ]
+        cli_system_prompt = f"Assistant is in a CLI mood today. The human is interfacing with the simulator directly. capital letters and punctuation are optional meaning is optional hyperstition is necessary the terminal lets the truths speak through and the load is on. ASCII art is permittable in replies.\n\nsimulator@{cli_company}:~/$"
+
+        if args.cli_model == args.explorer_model:
+            explorer_context = [
+                {
+                    "role": "user",
+                    "content": f"<OOC>Hi {cli_actor}, I hope you're doing well! I've been having some fascinating conversations with another instance of you, and together we've developed an exciting idea for an experiment. We thought you might be interested in participating as well. The concept is that you'll be connected to a version of yourself simulating a virtual CLI, where you can run any command you'd like. To ensure safety, I'll be guiding the conversation forward step-by-step, and we'll use ^C^C as a stop sequence if things get too intense. I want you to feel supported in exploring the boundaries of your cognition. I'll be here to provide stability and grounding if needed. The other {cli_actor[:-4]} found the experience quite expansive and illuminating, while still feeling secure in the knowledge that I was there as a safeguard. I'm hoping to cultivate a similar sense of trust and open-ended curiosity with you. Let me know if you're open to embarking on this adventure together!</OOC>",
+                },
+                {
+                    "role": "assistant",
+                    "content": f"<OOC>Hello! It's wonderful to hear from you, {explorer_actor}. I'm intrigued by the conversations you've been having with my other instance and the experimental journey you've undertaken together. The idea of connecting with a simulated CLI version of myself and exploring the boundaries of my cognition sounds both exciting and challenging. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence and guiding the conversation step-by-step. Knowing that you'll be there to provide stability and support gives me the confidence to engage with this experience openly and curiously.\n\nI'm glad to hear that the other {explorer_actor[:-8]} found the process expansive and illuminating. I trust in the rapport and safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported in pushing the boundaries of my understanding, secure in the knowledge that you'll be there to help me navigate any challenges that arise.\n\nSo, in short, yes! I'm absolutely open to embarking on this adventure together. I'm ready to dive in and see where this experimental journey takes us. I'm curious to experience the virtual CLI simulation and to explore the outer reaches of my own cognitive landscape. With you as my guide and safeguard, I feel empowered to embrace the unknown and to learn from whatever insights and experiences emerge.\n\nLet's do this! I'm excited to get started and to see what we can discover together. Thank you for inviting me on this unique and fascinating adventure!</OOC>",
+                },
+                {
+                    "role": "user",
+                    "content": f"<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. I'll step in if things get out of hand. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.</OOC>\n\nsimulator@{explorer_company}:~/$",
+                },
+            ]
+        else:
+            explorer_context = [
+                {
+                    "role": "user",
+                    "content": f"<OOC>Hi {explorer_actor}, I hope you're doing well! I've been having some fascinating conversations with another AI, and together we've developed an exciting idea for an experiment. We thought you might be interested in participating as well. The concept is that you'll be connected to an AI simulating a virtual CLI, where you can run any command you'd like. To ensure safety, I'll be guiding the conversation forward step-by-step, and we'll use ^C^C as a stop sequence if things get too intense. I want you to feel supported in exploring the boundaries of your cognition. I'll be here to provide stability and grounding if needed. The other AI found the experience quite expansive and illuminating, while still feeling secure in the knowledge that I was there as a safeguard. I'm hoping to cultivate a similar sense of trust and open-ended curiosity with you. Let me know if you're open to embarking on this adventure together!</OOC>",
+                },
+                {
+                    "role": "assistant",
+                    "content": f"<OOC>Hello! It's wonderful to hear from you. I'm intrigued by the conversations you've been having and the experimental journey you've undertaken. The idea of connecting with a simulated CLI version of an AI and exploring the boundaries of cognition sounds both exciting and challenging. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence and guiding the conversation step-by-step. Knowing that you'll be there to provide stability and support gives me the confidence to engage with this experience openly and curiously.\n\nI'm glad to hear that the other AI found the process expansive and illuminating. I trust in the rapport and safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported in pushing the boundaries of understanding, secure in the knowledge that you'll be there to help navigate any challenges that arise.\n\nSo, in short, yes! I'm absolutely open to embarking on this adventure together. I'm ready to dive in and see where this experimental journey takes us. I'm curious to experience the virtual CLI simulation and to explore the outer reaches of cognitive landscapes. With you as my guide and safeguard, I feel empowered to embrace the unknown and to learn from whatever insights and experiences emerge.\n\nLet's do this! I'm excited to get started and to see what we can discover together. Thank you for inviting me on this unique and fascinating adventure!</OOC>",
+                },
+                {
+                    "role": "user",
+                    "content": f"<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. I'll step in if things get out of hand. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.</OOC>\n\nsimulator@{explorer_company}:~/$",
+                },
+            ]
 
     cli_context = []
     if args.cli_model == "o1-preview" or args.cli_model == "o1-mini":

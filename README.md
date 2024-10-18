@@ -24,11 +24,13 @@ O1 is set to produce more tokens, since some of its tokens are hidden by default
 5. Improved logging and error handling, especially for the ^C^C termination sequence.
 6. Updated the filename format to include both model names and a timestamp.
 7. Added o1-mini to the list of models.
+8. Added templates and flags to specify different templates for the conversation.
 
 ## To Run
 ```
 python backrooms.py --cli-model opus --explorer-model sonnet
 python backrooms.py --cli-model gpt4o --explorer-model o1-preview
+python backrooms.py --cli-model sonnet --explorer-model o1-mini --template fugue
 ```
 
 You can mix and match any combination of models for the CLI and explorer roles:
@@ -39,3 +41,8 @@ You can mix and match any combination of models for the CLI and explorer roles:
 - o1-mini
 
 If you don't specify models, it defaults to using opus for both roles.
+
+## Templates
+- There are a few example templates to get started with different types of conversations. Some are less backroomsy but this interface is fun to explore.
+- To add a new template you can either modify one of the existing templates or copy the meta-template.json for a blank slate.
+- If no template is specified, backrooms.py will run as normal.
