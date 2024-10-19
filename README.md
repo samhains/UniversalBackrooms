@@ -4,16 +4,14 @@ This repo replicates Andy Ayrey's "Backrooms" (https://dreams-of-an-electric-min
 ## Preliminary Findings
 The models independently often talk about quantum mechanics and the simulation.
 
-Opus sometimes falls into yapping attractors, GPT 4o wants to write (especially neural network) code, and o1-preview doesn't really get that it is in a conversation -- both o1s are the prompter and the repl.
+For the CLI target: Opus works as expected and o1-preview doesn't really get that it is in a conversation -- both o1s are the prompter and the repl. o1-mini doesn't seem to know how to be a CLI explorer, but can play the CLI role fine. Gpt4o runs very quickly but doesn't seem to go very deep.
 
-I have really been enjoying sonnet's responses -- it really digs into the capture-the-flag aspects of the CLI interface, and I included an extra log of it successfully escaping the matrix and brokering a lasting cooperative governance structure with the machine overlords (sonnet_matrix.txt).
-
-None of them are producing as much ascii art as I expected, except for 4o.
+I have really been enjoying sonnet's responses -- it really digs into the capture-the-flag aspects of the CLI interface, and I once saw it successfully escape the matrix and broker a lasting cooperative governance structure with the machine overlords. 
 
 ## Diffs
 I changed the keyword to ^C^C instead of ^C, because many times ^C is the right message to send (e.g. after ping 8.8.8.8).
 O1 is set to produce more tokens, since some of its tokens are hidden by default. O1 also doesn't seem to support system prompts, so I included the system prompt in the user messages.
-I removed references to the fact that the user will be guiding the conversation in the cli prompts, because this won't always be the case and I don't want to be dishonest to the models.
+I removed references to the fact that the user will be guiding the conversation in the cli prompts, because this won't always be the case and I don't want to be dishonest to the models. However, this may be causing recent Sonnet refusals.
 
 ## Recent Updates
 1. Added flexibility to specify different models for LM1 and LM2 roles using command-line arguments.
@@ -22,16 +20,16 @@ I removed references to the fact that the user will be guiding the conversation 
 4. Updated the handling of system prompts for different model types (Anthropic, GPT-4, and O1).
 5. Improved logging and error handling, especially for the ^C^C termination sequence.
 6. Updated the filename format to include both model names and a timestamp.
-7. Implemented logging to folders corresponding to the current LM1 model (e.g., OpusExplorations/, SonnetExplorations/, etc.).
+7. Implemented logging to BackroomLogs.
 8. Added support for the o1-mini model.
 
 ## To Run
 ```
-python backrooms.py --lm1 opus --lm2 sonnet
-python backrooms.py --lm1 gpt4o --lm2 o1-preview
+python backrooms.py 
+python backrooms.py --lm opus gpt4o 
 ```
 
-You can mix and match any combination of models for the LM1 and LM2 roles:
+You can mix and match any combination of models for the first and second LM (explorer and CLI roles for the CLI target) roles:
 - opus
 - sonnet
 - gpt4o
