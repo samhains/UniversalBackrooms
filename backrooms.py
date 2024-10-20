@@ -123,6 +123,8 @@ def get_available_templates():
 
 
 def main():
+    global anthropic_client, openai_client
+
     parser = argparse.ArgumentParser(
         description="Run conversation between two or more AI language models."
     )
