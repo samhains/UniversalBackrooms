@@ -48,7 +48,7 @@ You can mix and match any combination of models for the LM roles:
 - o1-preview
 - o1-mini
 
-If you don't specify models, it defaults to using opus for both roles. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
+If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
 
 ## Templates
 You can choose from the following conversation templates using the `--template` argument:
