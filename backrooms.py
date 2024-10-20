@@ -10,18 +10,6 @@ import sys
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
 
-anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-
-if not anthropic_api_key or not openai_api_key:
-    print(
-        "Error: ANTHROPIC_API_KEY and OPENAI_API_KEY must be set in the environment or in a .env file."
-    )
-    sys.exit(1)
-
-anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
-openai_client = openai.OpenAI(api_key=openai_api_key)
-
 MODEL_INFO = {
     "sonnet": {
         "api_name": "claude-3-5-sonnet-20240620",
@@ -156,12 +144,33 @@ def main():
     parser.add_argument(
         "--max-turns",
         type=int,
-        default=10,
-        help="Maximum number of turns in the conversation (default: 10)",
+        default=float("inf"),
+        help="Maximum number of turns in the conversation (default: infinity)",
     )
     args = parser.parse_args()
 
     models = args.lm
+
+    # Check if we need Anthropic API key
+    if any(MODEL_INFO[model]["company"] == "anthropic" for model in models):
+        anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not anthropic_api_key:
+            print(
+                "Error: ANTHROPIC_API_KEY must be set in the environment or in a .env file."
+            )
+            sys.exit(1)
+        anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+
+    # Check if we need OpenAI API key
+    if any(MODEL_INFO[model]["company"] == "openai" for model in models):
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            print(
+                "Error: OPENAI_API_KEY must be set in the environment or in a .env file."
+            )
+            sys.exit(1)
+        openai_client = openai.OpenAI(api_key=openai_api_key)
+
     configs = load_template(args.template, models)
 
     assert len(models) == len(
