@@ -6,6 +6,7 @@ import os
 import argparse
 import dotenv
 import sys
+import colorsys
 
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
@@ -231,18 +232,51 @@ def generate_model_response(model, actor, context, system_prompt):
         )
 
 
+def generate_distinct_colors():
+    hue = 0
+    golden_ratio_conjugate = 0.618033988749895
+    while True:
+        hue += golden_ratio_conjugate
+        hue %= 1
+        rgb = colorsys.hsv_to_rgb(hue, 0.95, 0.95)
+        yield tuple(int(x * 255) for x in rgb)
+
+
+color_generator = generate_distinct_colors()
+actor_colors = {}
+
+
+def get_ansi_color(rgb):
+    return f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m"
+
+
 def process_and_log_response(response, actor, filename, contexts, current_model_index):
-    print(f"\n{actor}:")
+    global actor_colors
+
+    # Get or generate a color for this actor
+    if actor not in actor_colors:
+        actor_colors[actor] = get_ansi_color(next(color_generator))
+
+    color = actor_colors[actor]
+    bold = "\033[1m"
+    reset = "\033[0m"
+
+    # Create a visually distinct header for each actor
+    console_header = f"\n{bold}{color}{actor}:{reset}"
+    file_header = f"\n### {actor} ###\n"
+
+    print(console_header)
     print(response)
+
     with open(filename, "a") as f:
-        f.write(f"\n{actor}:\n")
-        f.write(response)
-        f.write("\n")
+        f.write(file_header)
+        f.write(response + "\n")
 
     if "^C^C" in response:
-        print(f"\n{actor} has ended the conversation with ^C^C.")
+        end_message = f"\n{actor} has ended the conversation with ^C^C."
+        print(end_message)
         with open(filename, "a") as f:
-            f.write(f"\n{actor} has ended the conversation with ^C^C.\n")
+            f.write(end_message + "\n")
         exit()
 
     # Add the response to all contexts
