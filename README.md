@@ -23,6 +23,11 @@ I removed references to the fact that the user will be guiding the conversation 
 7. Implemented logging to BackroomLogs.
 8. Added support for the o1-mini model.
 
+## Setup
+- Copy .env.example to .env
+- Add your Anthropic and/or OpenAI API keys to the .env file. 
+- Install packages.  ```pip install -r requirements.txt```
+
 ## To Run
 ```
 python backrooms.py 
@@ -72,3 +77,11 @@ The conversation temperature is set to 1.0 for both models.
 - For Claude models (opus and sonnet), the max_tokens is set to 1024.
 - For GPT-4 models, the max_tokens is set to 1024.
 - For O1 models (o1-preview and o1-mini), the max_completion_tokens is set to 8192.
+
+## Maximum Turns
+The default max number of turns is 10, but you can override the limit from the command line.
+
+Example:
+```
+python backrooms.py --max-turns 20
+```

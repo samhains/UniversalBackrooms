@@ -4,9 +4,23 @@ import json
 import datetime
 import os
 import argparse
+import dotenv
+import sys
 
-anthropic_client = anthropic.Anthropic()
-openai_client = openai.OpenAI()
+# Attempt to load from .env file, but don't override existing env vars
+dotenv.load_dotenv(override=False)
+
+anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+if not anthropic_api_key or not openai_api_key:
+    print(
+        "Error: ANTHROPIC_API_KEY and OPENAI_API_KEY must be set in the environment or in a .env file."
+    )
+    sys.exit(1)
+
+anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+openai_client = openai.OpenAI(api_key=openai_api_key)
 
 MODEL_INFO = {
     "sonnet": {
@@ -111,6 +125,15 @@ def load_template(template_name, models):
         exit(1)
 
 
+def get_available_templates():
+    template_dir = "./templates"
+    templates = []
+    for file in os.listdir(template_dir):
+        if file.endswith(".jsonl"):
+            templates.append(os.path.splitext(file)[0])
+    return templates
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Run conversation between two or more AI language models."
@@ -122,18 +145,19 @@ def main():
         default=["opus", "opus"],
         help="Choose the models for LMs (default: opus opus)",
     )
+
+    available_templates = get_available_templates()
     parser.add_argument(
         "--template",
-        choices=[
-            "cli",
-            "science",
-            "fugue",
-            "gallery",
-            "student",
-            "ethics",
-        ],
-        default="cli",
-        help="Choose a conversation template (default: cli)",
+        choices=available_templates,
+        default="cli" if "cli" in available_templates else available_templates[0],
+        help=f"Choose a conversation template (available: {', '.join(available_templates)})",
+    )
+    parser.add_argument(
+        "--max-turns",
+        type=int,
+        default=10,
+        help="Maximum number of turns in the conversation (default: 10)",
     )
     args = parser.parse_args()
 
@@ -160,7 +184,7 @@ def main():
     filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
     turn = 0
-    while True:
+    while turn < args.max_turns:
         for i in range(len(models)):
             lm_response = generate_model_response(
                 lm_models[i],
@@ -177,6 +201,12 @@ def main():
             )
 
         turn += 1
+
+    print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
+    with open(filename, "a") as f:
+        f.write(
+            f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.\n"
+        )
 
 
 def generate_model_response(model, actor, context, system_prompt):
