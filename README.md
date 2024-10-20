@@ -41,11 +41,6 @@ For a conversation between different models:
 python backrooms.py --lm opus gpt4o
 ```
 
-For an n-way conversation (e.g., 3-way conversation between GPT-4o models):
-```
-python backrooms.py --lm gpt4o gpt4o gpt4o
-```
-
 You can mix and match any combination of models for the LM roles:
 - opus
 - sonnet
