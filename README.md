@@ -53,11 +53,15 @@ If you don't specify models, it defaults to using two Opus models. You can speci
 ## Templates
 You can choose from the following conversation templates using the `--template` argument:
 - cli (default)
+- student
 - science
 - fugue
 - gallery
-- student
 - ethics
+
+```
+python backrooms.py --template student 
+```
 
 Note: Make sure your chosen template supports the number of models you specify.
 
