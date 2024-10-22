@@ -60,7 +60,7 @@ You can choose from the following conversation templates using the `--template` 
 - ethics
 
 ```
-python backrooms.py --template student 
+python backrooms.py --lm gpt4o opus --template student 
 ```
 
 Note: Make sure your chosen template supports the number of models you specify.
