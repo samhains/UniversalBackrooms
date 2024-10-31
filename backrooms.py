@@ -7,6 +7,7 @@ import argparse
 import dotenv
 import sys
 import colorsys
+import requests
 
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
@@ -34,14 +35,20 @@ MODEL_INFO = {
 
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
+
+    # If no messages and system prompt exists, add it as initial user message
+    if not messages and system_prompt:
+        messages = [{"role": "user", "content": system_prompt}]
+    # Ensure there's at least one message
+    elif not messages:
+        messages = [{"role": "user", "content": "Hello"}]
+
     kwargs = {
         "model": model,
         "max_tokens": 1024,
         "temperature": 1.0,
         "messages": messages,
     }
-    if system_prompt:
-        kwargs["system"] = system_prompt
     message = anthropic_client.messages.create(**kwargs)
     return message.content[0].text
 
@@ -56,11 +63,11 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
     }
 
     if model == "o1-preview" or model == "o1-mini":
-        kwargs["max_completion_tokens"] = 4000
+        kwargs["max_tokens"] = 4000
     else:
         kwargs["max_tokens"] = 1024
 
-    response = openai_client.chat.completions.create(**kwargs)
+    response = openai.ChatCompletion.create(**kwargs)
     return response.choices[0].message.content
 
 
@@ -69,27 +76,36 @@ def load_template(template_name, models):
         with open(f"templates/{template_name}.jsonl", "r") as f:
             configs = [json.loads(line) for line in f]
 
-        companies = [MODEL_INFO[model]["company"] for model in models]
-        actors = [
-            f"{MODEL_INFO[model]['display_name']} {i+1}"
-            for i, model in enumerate(models)
-        ]
+        companies = []
+        actors = []
+        for i, model in enumerate(models):
+            if model.lower() == "cli":
+                companies.append("CLI")
+                actors.append("CLI")
+            else:
+                companies.append(MODEL_INFO[model]["company"])
+                actors.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
 
         for i, config in enumerate(configs):
+            if models[i].lower() == "cli":
+                config["cli"] = True
+                continue
+
             config["system_prompt"] = config["system_prompt"].format(
-                **{f"lm{j+1}_company": company for j, company in enumerate(companies)},
-                **{f"lm{j+1}_actor": actor for j, actor in enumerate(actors)},
+                **{f"lm{j+1}_company": companies[j] for j in range(len(companies))},
+                **{f"lm{j+1}_actor": actors[j] for j in range(len(actors))},
             )
             for message in config["context"]:
                 message["content"] = message["content"].format(
-                    **{
-                        f"lm{j+1}_company": company
-                        for j, company in enumerate(companies)
-                    },
-                    **{f"lm{j+1}_actor": actor for j, actor in enumerate(actors)},
+                    **{f"lm{j+1}_company": companies[j] for j in range(len(companies))},
+                    **{f"lm{j+1}_actor": actors[j] for j in range(len(actors))},
                 )
 
-            if MODEL_INFO[models[i]]["company"] == "openai" and config["system_prompt"]:
+            if (
+                models[i] in MODEL_INFO
+                and MODEL_INFO[models[i]]["company"] == "openai"
+                and config["system_prompt"]
+            ):
                 system_prompt_added = False
                 for message in config["context"]:
                     if message["role"] == "user":
@@ -105,6 +121,7 @@ def load_template(template_name, models):
                             "content": f"<SYSTEM>{config['system_prompt']}</SYSTEM>",
                         }
                     )
+            config["cli"] = config.get("cli", False)
         return configs
     except FileNotFoundError:
         print(f"Error: Template '{template_name}' not found.")
@@ -124,17 +141,17 @@ def get_available_templates():
 
 
 def main():
-    global anthropic_client, openai_client
+    global anthropic_client
 
     parser = argparse.ArgumentParser(
         description="Run conversation between two or more AI language models."
     )
     parser.add_argument(
         "--lm",
-        choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini"],
+        choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini", "cli"],
         nargs="+",
         default=["opus", "opus"],
-        help="Choose the models for LMs (default: opus opus)",
+        help="Choose the models for LMs or 'cli' for the world interface (default: opus opus)",
     )
 
     available_templates = get_available_templates()
@@ -153,26 +170,56 @@ def main():
     args = parser.parse_args()
 
     models = args.lm
+    lm_models = []
+    lm_display_names = []
 
-    # Check if we need Anthropic API key
-    if any(MODEL_INFO[model]["company"] == "anthropic" for model in models):
+    companies = []
+    actors = []
+
+    for i, model in enumerate(models):
+        if model.lower() == "cli":
+            lm_display_names.append("CLI")
+            lm_models.append("cli")
+            companies.append("CLI")
+            actors.append("CLI")
+        else:
+            if model in MODEL_INFO:
+                lm_display_names.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
+                lm_models.append(MODEL_INFO[model]["api_name"])
+                companies.append(MODEL_INFO[model]["company"])
+                actors.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
+            else:
+                print(f"Error: Model '{model}' not found in MODEL_INFO.")
+                sys.exit(1)
+
+    # Filter out models not in MODEL_INFO (like 'cli')
+    anthropic_models = [
+        model
+        for model in models
+        if model in MODEL_INFO and MODEL_INFO[model]["company"] == "anthropic"
+    ]
+    if anthropic_models:
         anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
         if not anthropic_api_key:
             print(
                 "Error: ANTHROPIC_API_KEY must be set in the environment or in a .env file."
             )
             sys.exit(1)
-        anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+        anthropic_client = anthropic.Client(api_key=anthropic_api_key)
 
-    # Check if we need OpenAI API key
-    if any(MODEL_INFO[model]["company"] == "openai" for model in models):
+    openai_models = [
+        model
+        for model in models
+        if model in MODEL_INFO and MODEL_INFO[model]["company"] == "openai"
+    ]
+    if openai_models:
         openai_api_key = os.getenv("OPENAI_API_KEY")
         if not openai_api_key:
             print(
                 "Error: OPENAI_API_KEY must be set in the environment or in a .env file."
             )
             sys.exit(1)
-        openai_client = openai.OpenAI(api_key=openai_api_key)
+        openai.api_key = openai_api_key
 
     configs = load_template(args.template, models)
 
@@ -180,13 +227,8 @@ def main():
         configs
     ), f"Number of LMs ({len(models)}) does not match the number of elements in the template ({len(configs)})"
 
-    lm_models = [MODEL_INFO[model]["api_name"] for model in models]
-    lm_display_names = [
-        f"{MODEL_INFO[model]['display_name']} {i+1}" for i, model in enumerate(models)
-    ]
-
-    system_prompts = [config["system_prompt"] for config in configs]
-    contexts = [config["context"] for config in configs]
+    system_prompts = [config.get("system_prompt", "") for config in configs]
+    contexts = [config.get("context", []) for config in configs]
 
     logs_folder = "BackroomsLogs"
     if not os.path.exists(logs_folder):
@@ -198,12 +240,15 @@ def main():
     turn = 0
     while turn < args.max_turns:
         for i in range(len(models)):
-            lm_response = generate_model_response(
-                lm_models[i],
-                lm_display_names[i],
-                contexts[i],
-                system_prompts[i],
-            )
+            if models[i].lower() == "cli":
+                lm_response = cli_conversation(contexts[i])
+            else:
+                lm_response = generate_model_response(
+                    lm_models[i],
+                    lm_display_names[i],
+                    contexts[i],
+                    system_prompts[i],
+                )
             process_and_log_response(
                 lm_response,
                 lm_display_names[i],
@@ -211,7 +256,6 @@ def main():
                 contexts,
                 i,
             )
-
         turn += 1
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
@@ -281,10 +325,29 @@ def process_and_log_response(response, actor, filename, contexts, current_model_
 
     # Add the response to all contexts
     for i, context in enumerate(contexts):
-        if i == current_model_index:
-            context.append({"role": "assistant", "content": response})
-        else:
-            context.append({"role": "user", "content": response})
+        role = "assistant" if i == current_model_index else "user"
+        context.append({"role": role, "content": response})
+
+
+def cli_conversation(context):
+    # Extract the last user message
+    last_message = context[-1]["content"]
+    # Prepare the payload
+    payload = {"messages": [{"role": "user", "content": last_message}]}
+    headers = {
+        "Authorization": f"Bearer {os.getenv('WORLD_INTERFACE_KEY')}",
+        "Content-Type": "application/json",
+    }
+    # Send POST request to the world-interface
+    response = requests.post(
+        "http://localhost:3000/v1/chat/completions",
+        json=payload,
+        headers=headers,
+    )
+    response.raise_for_status()
+    response_data = response.json()
+    cli_response = response_data["choices"][0]["message"]["content"]
+    return cli_response
 
 
 if __name__ == "__main__":
