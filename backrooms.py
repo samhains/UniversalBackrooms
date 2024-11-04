@@ -36,19 +36,15 @@ MODEL_INFO = {
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
 
-    # If no messages and system prompt exists, add it as initial user message
-    if not messages and system_prompt:
-        messages = [{"role": "user", "content": system_prompt}]
-    # Ensure there's at least one message
-    elif not messages:
-        messages = [{"role": "user", "content": "Hello"}]
-
+    # The first Claude in the conversation must have a user message
     kwargs = {
         "model": model,
         "max_tokens": 1024,
         "temperature": 1.0,
         "messages": messages,
     }
+    if system_prompt:
+        kwargs["system"] = system_prompt
     message = anthropic_client.messages.create(**kwargs)
     return message.content[0].text
 
