@@ -36,7 +36,7 @@ MODEL_INFO = {
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
 
-    # The first Claude in the conversation must have a user message
+    # If Claude is the first model in the conversation, it must have a user message
     kwargs = {
         "model": model,
         "max_tokens": 1024,
@@ -63,7 +63,7 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
     else:
         kwargs["max_tokens"] = 1024
 
-    response = openai.ChatCompletion.create(**kwargs)
+    response = openai_client.chat.completions.create(**kwargs)
     return response.choices[0].message.content
 
 
@@ -138,7 +138,7 @@ def get_available_templates():
 
 def main():
     global anthropic_client
-
+    global openai_client
     parser = argparse.ArgumentParser(
         description="Run conversation between two or more AI language models."
     )
@@ -215,7 +215,7 @@ def main():
                 "Error: OPENAI_API_KEY must be set in the environment or in a .env file."
             )
             sys.exit(1)
-        openai.api_key = openai_api_key
+        openai_client = openai.OpenAI(api_key=openai_api_key)
 
     configs = load_template(args.template, models)
 
