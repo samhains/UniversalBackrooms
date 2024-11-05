@@ -93,3 +93,25 @@ Example to set a limit of 20 turns:
 ```
 python backrooms.py --max-turns 20
 ```
+
+## To Run with World Interface
+To use the CLI template with the world interface (which provides note-taking and other capabilities):
+
+1. Clone and start the world interface server:
+```bash
+git clone https://github.com/scottviteri/world-interface
+cd world-interface
+npm install
+npm start
+```
+
+2. In a new terminal, from the UniversalBackrooms directory, run either:
+```bash
+# For GPT-4 exploring the CLI
+python backrooms.py --lm gpt4o cli --template cli_with_world_interface
+
+# For Claude Opus exploring the CLI
+python backrooms.py --lm opus cli --template cli_with_world_interface
+```
+
+This will create a new database for each conversation session when using the CLI template.
