@@ -9,6 +9,13 @@ import sys
 import colorsys
 import requests
 
+# Local imports for optional media agent
+try:
+    from media_agent import load_media_config, run_media_agent
+except Exception:
+    load_media_config = None  # type: ignore
+    run_media_agent = None  # type: ignore
+
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
 
@@ -233,8 +240,22 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
+    # Optional media agent config
+    media_cfg = load_media_config(args.template) if load_media_config else None
+
+    def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
+        # Reuse existing model call path, branching by provider name in api_model
+        # api_model is the provider API string (e.g., 'claude-3-...', 'gpt-4o-...')
+        context = [{"role": "user", "content": user_message}]
+        if api_model.startswith("claude-"):
+            return claude_conversation("Media Agent", api_model, context, system_prompt)
+        else:
+            return gpt4_conversation("Media Agent", api_model, context, system_prompt)
+
     turn = 0
+    transcript: list[dict[str, str]] = []
     while turn < args.max_turns:
+        round_entries = []
         for i in range(len(models)):
             if models[i].lower() == "cli":
                 lm_response = cli_conversation(contexts[i])
@@ -252,6 +273,27 @@ def main():
                 contexts,
                 i,
             )
+            round_entries.append({"actor": lm_display_names[i], "text": lm_response})
+
+        # After both actors in a round, invoke media agent once
+        if media_cfg and run_media_agent:
+            try:
+                run_media_agent(
+                    media_cfg=media_cfg,
+                    selected_models=models,
+                    round_entries=round_entries,
+                    transcript=transcript,
+                    filename=filename,
+                    generate_text_fn=media_generate_text_fn,
+                    model_info=MODEL_INFO,
+                )
+            except Exception as e:
+                err = f"\nMedia Agent error: {e}"
+                print(err)
+                with open(filename, "a") as f:
+                    f.write(err + "\n")
+        # Append this round to running transcript
+        transcript.extend(round_entries)
         turn += 1
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "comfyui": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "/absolute/path/to/comfyui-mcp-server/server.py"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -115,3 +115,206 @@ python backrooms.py --lm opus cli --template cli_with_world_interface
 ```
 
 This will create a new database for each conversation session when using the CLI template.
+
+## MCP Client (connect to existing MCP servers)
+
+This repo includes a minimal MCP client to connect to any MCP-compliant server (e.g., your ComfyUI MCP server) over stdio.
+
+- File: `mcp_client.py` (library)
+- CLI: `mcp_cli.py`
+- Example config: `mcp_servers.example.json` — copy to `mcp_servers.json` and update.
+
+### Install deps
+
+```
+pip install -r requirements.txt
+```
+
+### Configure servers
+
+Copy one of the examples and edit for your server command. The CLI supports two formats:
+
+```
+cp mcp_servers.example.json mcp_servers.json
+```
+
+Format A — list form (file: `mcp_servers.json`):
+
+```
+{
+  "servers": [
+    {
+      "name": "comfyui",
+      "command": "node",
+      "args": ["path/to/comfyui-mcp-server.js"],
+      "env": { "NODE_ENV": "production" }
+    }
+  ]
+}
+```
+
+Format B — map form (file: `mcp.config.json`) matching prior setups:
+
+```
+{
+  "mcpServers": {
+    "comfyui": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["/Users/you/Code/comfyui-mcp-server/server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+### List tools
+
+Using list form config:
+
+```
+python mcp_cli.py --config mcp_servers.json --server comfyui list-tools
+```
+
+Using map form config:
+
+```
+python mcp_cli.py --config mcp.config.json --server comfyui list-tools
+```
+
+### Call a tool
+
+```
+python mcp_cli.py --config mcp.config.json --server comfyui call-tool generate_image --json '{"prompt": "a serene sunset over mountains", "width": 1024, "height": 768}'
+```
+
+### Notes
+
+- The client uses stdio transport and performs the standard MCP handshake (`initialize`, then `tools/list` and `tools/call`).
+- Config files must be valid JSON (no trailing commas or comments).
+- If you prefer not to use a config file, you can pass `--cmd` and `--args` directly:
+
+```
+python mcp_cli.py --cmd "node" --args path/to/server.js -- list-tools
+```
+
+- Ensure your MCP server binary/script is on `PATH` or provide an absolute path.
+- If your server speaks MCP over a different transport (WebSocket/SSE), this minimal client won’t connect as-is; stdio is the most common and simplest.
+
+## Media Agent (optional image generation per round)
+
+You can enable a simple “media agent” that reads each round of conversation and generates an image via your MCP ComfyUI server. It runs once after both actors respond in a round and logs the result to the same Backrooms log file.
+
+- Config file: `templates/<template>.media.json`
+- Example provided: `templates/cli.media.json`
+- Enable by setting `"enabled": true` and configuring your MCP server in `mcp.config.json`.
+
+Example `templates/cli.media.json` fields:
+
+- "enabled": whether to run the agent each round
+- "model": which LLM to use for crafting the image prompt (e.g., "same-as-lm1", "opus", "sonnet", "gpt4o"). To use Sonnet 3.5 set `"model": "sonnet"`.
+- "system_prompt": system prompt for the media agent
+- "tool": MCP tool config with "server" (e.g., "comfyui"), tool "name" (e.g., "generate_image"), and default args
+- "mode": `"t2i"` for text-to-image or `"edit"` for iterative image editing
+- "t2i_use_summary": optional boolean to base t2i prompts on a short running summary plus the latest round (default false)
+
+The agent:
+- Builds a short prompt based on the current round’s messages.
+- Calls your selected LLM to produce a concise image prompt.
+- Calls the MCP tool (e.g., ComfyUI `generate_image`) with that text and logs the result.
+
+Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in the project root.
+
+### Modes
+
+- t2i (default):
+  - Generates a concise text-to-image prompt from the latest round.
+  - Optionally, set `"t2i_use_summary": true` to incorporate a short running conversation summary.
+  - Example config:
+    {
+      "enabled": true,
+      "model": "sonnet",
+      "mode": "t2i",
+      "tool": { "server": "comfyui", "name": "generate_image", "defaults": {"width": 768, "height": 768} }
+    }
+
+- edit (iterative updates):
+  - Maintains a short conversation summary per run and the last generated image reference.
+  - Produces an edit instruction that updates the image to reflect the latest round while staying true to the conversation’s overall essence.
+  - The prompt includes a `BASE_IMAGE: <url>` line when available. Ensure your MCP server/workflow (e.g., using Qwen Edit) understands this convention and applies edits based on the provided base image and instruction.
+  - Example config:
+    {
+      "enabled": true,
+      "model": "sonnet",
+      "mode": "edit",
+      "system_prompt": "You are an image edit director…",
+      "tool": { "server": "comfyui", "name": "generate_image", "defaults": {"width": 768, "height": 768} }
+    }
+
+State files: The agent saves per-run state (last image reference and a short conversation summary) alongside the log file as `<logfile>.media_state.json`.
+
+**Quick Start**
+- Install: `pip install -r requirements.txt`
+- Configure MCP: create `mcp.config.json` with your ComfyUI server command.
+- Enable media: ensure `templates/<template>.media.json` exists with `"enabled": true`.
+- Run: `python backrooms.py --lm opus opus --template cli`
+
+**mcp.config.json**
+- "mcpServers": map of server configs by name.
+- "type": must be `stdio` (supported transport).
+- "command": executable to run (e.g., `python`).
+- "args": array of arguments (e.g., path to your server script).
+- "env": optional environment variables for the server process.
+
+Example:
+{
+  "mcpServers": {
+    "comfyui": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["/abs/path/to/comfyui-mcp-server/server.py"],
+      "env": {}
+    }
+  }
+}
+
+**Template Media Config**
+- File: `templates/<template>.media.json`
+- "enabled": set to true to activate.
+- "model": `same-as-lm1` or a key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`).
+- "system_prompt": system prompt for generating the image prompt text.
+- "tool.server": MCP server key from `mcp.config.json` (e.g., `comfyui`).
+- "tool.name": MCP tool to call (e.g., `generate_image`).
+- "tool.defaults": default args merged into each call (e.g., width/height).
+
+Example:
+{
+  "enabled": true,
+  "model": "same-as-lm1",
+  "system_prompt": "You are a visual director…",
+  "tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "defaults": { "width": 768, "height": 768 }
+  }
+}
+
+**Execution Model**
+- The media agent runs once per round after both actors reply.
+- It builds a short textual prompt from the current round only.
+- It calls the selected LLM to refine that into a concise image prompt.
+- It calls the MCP tool with `{ prompt, ...defaults }`.
+- It logs the prompt and raw tool result under “Media Agent”.
+
+**Best Practices**
+- Keep prompts concise (<200 chars) and concrete; avoid meta language.
+- Use `same-as-lm1` to reuse existing keys; override per template when needed.
+- Start with moderate sizes (e.g., 768x768) and tune later.
+- Keep the agent stateless (per-round) to minimize latency and coupling.
+
+**Troubleshooting**
+- Missing MCP dependency: ensure `pip install -r requirements.txt` (includes `mcp`).
+- Invalid JSON: remove trailing commas/comments from config files.
+- Server not found: verify `command` is on PATH or use absolute paths.
+- Transport mismatch: only `stdio` is supported by this client.
+- Tool name mismatch: run `python mcp_cli.py --config mcp.config.json --server comfyui list-tools` to confirm tool names.
