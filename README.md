@@ -67,6 +67,7 @@ Choose a template with `--template`:
 - student
 - worldsim
 - meta-template
+- cli
 
 Example:
 ```
