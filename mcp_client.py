@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 try:
     # MCP Python SDK (https://github.com/modelcontextprotocol/python-sdk)
-    from mcp import ClientSession, StdioServerParameters
+    from mcp.client.session import ClientSession
+    from mcp import StdioServerParameters, types as mcp_types
     from mcp.client.stdio import stdio_client
 except Exception as e:  # pragma: no cover
     ClientSession = None  # type: ignore
@@ -41,12 +42,10 @@ def _build_params(cfg: MCPServerConfig) -> StdioServerParameters:
 async def list_tools_async(cfg: MCPServerConfig) -> List[Dict[str, Any]]:
     params = _build_params(cfg)
     async with stdio_client(params) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize(
-                client_name="UniversalBackrooms",
-                client_version="0.1.0",
-                capabilities={},
-            )
+        async with ClientSession(
+            read, write, client_info=mcp_types.Implementation(name="UniversalBackrooms", version="0.1.0")
+        ) as session:
+            await session.initialize()
             tools = await session.list_tools()
             return [
                 {
@@ -63,12 +62,10 @@ async def call_tool_async(
 ) -> Dict[str, Any]:
     params = _build_params(cfg)
     async with stdio_client(params) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize(
-                client_name="UniversalBackrooms",
-                client_version="0.1.0",
-                capabilities={},
-            )
+        async with ClientSession(
+            read, write, client_info=mcp_types.Implementation(name="UniversalBackrooms", version="0.1.0")
+        ) as session:
+            await session.initialize()
             result = await session.call_tool(name, arguments=arguments or {})
             return {
                 "content": getattr(result, "content", None) or (result.get("content") if isinstance(result, dict) else None),
