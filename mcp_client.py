@@ -27,6 +27,26 @@ class MCPClientError(RuntimeError):
     pass
 
 
+def _jsonable(obj: Any) -> Any:
+    """Best-effort conversion of SDK objects to JSON-serializable data."""
+    # Pydantic BaseModel in MCP types
+    if hasattr(obj, "model_dump") and callable(getattr(obj, "model_dump")):
+        try:
+            return obj.model_dump(by_alias=True)
+        except Exception:
+            pass
+    # Dataclasses or mappings
+    if isinstance(obj, dict):
+        return {k: _jsonable(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_jsonable(x) for x in obj]
+    # Simple types
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        return obj
+    # Fallback to string
+    return str(obj)
+
+
 def _build_params(cfg: MCPServerConfig) -> StdioServerParameters:
     if _IMPORT_ERROR:
         raise MCPClientError(
@@ -81,16 +101,22 @@ async def call_tool_async(
         ) as session:
             await session.initialize()
             result = await session.call_tool(name, arguments=arguments or {})
+            # Normalize to plain JSON-serializable dict
+            content = None
+            is_error = None
+            model = None
+            if hasattr(result, "content"):
+                content = getattr(result, "content")
+                is_error = getattr(result, "isError", None)
+                model = getattr(result, "model", None)
+            elif isinstance(result, dict):
+                content = result.get("content")
+                is_error = result.get("isError")
+                model = result.get("model")
             return {
-                "content": getattr(result, "content", None) or (result.get("content") if isinstance(result, dict) else None),
-                "isError": getattr(result, "isError", None)
-                if hasattr(result, "isError")
-                else (result.get("isError") if isinstance(result, dict) else None),
-                "model": getattr(result, "model", None)
-                if hasattr(result, "model")
-                else (result.get("model") if isinstance(result, dict) else None),
-                # Include raw return for custom shapes
-                "raw": result,
+                "content": _jsonable(content),
+                "isError": _jsonable(is_error),
+                "model": _jsonable(model),
             }
 
 

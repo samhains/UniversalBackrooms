@@ -75,11 +75,11 @@ def main():
     try:
         if args.action == "list-tools":
             tools = list_tools(cfg)
-            print(json.dumps(tools, indent=2))
+            print(json.dumps(tools, indent=2, default=lambda o: getattr(o, 'model_dump', lambda **_: str(o))()))
         elif args.action == "call-tool":
             payload = json.loads(args.json) if args.json else {}
             result = call_tool(cfg, args.name, payload)
-            print(json.dumps(result, indent=2))
+            print(json.dumps(result, indent=2, default=lambda o: getattr(o, 'model_dump', lambda **_: str(o))()))
         else:
             parser.error("Unknown action")
     except MCPClientError as e:
