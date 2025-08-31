@@ -9,6 +9,7 @@ import sys
 import colorsys
 import requests
 import re
+from pathlib import Path
 
 # Local imports for optional media agent
 try:
@@ -126,24 +127,50 @@ def _parse_history_markdown(path: str):
     return msgs
 
 
+def _parse_folder_template(template_name: str):
+    base = Path("templates") / template_name
+    spec_path = base / "template.json"
+    with spec_path.open("r", encoding="utf-8") as f:
+        spec = json.load(f)
+    if not isinstance(spec, dict) or not isinstance(spec.get("agents"), list):
+        raise ValueError("Template folder spec must contain an 'agents' list")
+    configs = []
+    for agent in spec["agents"]:
+        sp_rel = agent.get("system")
+        hist_rel = agent.get("history")
+        sp_text = ""
+        if isinstance(sp_rel, str) and sp_rel:
+            sp_text = _read_text_file(str(base / sp_rel)).strip()
+        ctx = []
+        if isinstance(hist_rel, str) and hist_rel:
+            ctx = _parse_history_markdown(str(base / hist_rel))
+        configs.append({"system_prompt": sp_text, "context": ctx})
+    return configs
+
+
 def load_template(template_name, models):
     try:
-        json_path = f"templates/{template_name}.json"
-        with open(json_path, "r", encoding="utf-8") as f:
-            spec = json.load(f)
+        # Prefer folder-based template: templates/<name>/template.json
+        folder_spec = Path("templates") / template_name / "template.json"
+        if folder_spec.exists():
+            configs = _parse_folder_template(template_name)
+        else:
+            # Legacy JSON spec at templates/<name>.json
+            json_path = f"templates/{template_name}.json"
+            with open(json_path, "r", encoding="utf-8") as f:
+                spec = json.load(f)
 
-        if not isinstance(spec, dict) or not isinstance(spec.get("agents"), list):
-            raise ValueError("Template JSON must contain an 'agents' list")
+            if not isinstance(spec, dict) or not isinstance(spec.get("agents"), list):
+                raise ValueError("Template JSON must contain an 'agents' list")
 
-        # Expand agents into configs with system prompt text and parsed history
-        configs = []
-        for agent in spec["agents"]:
-            sp_path = agent.get("system_prompt_file", "")
-            hist_path = agent.get("history_file", "")
-            _system_raw = _read_text_file(sp_path)
-            system_prompt = _system_raw if _system_raw.strip() else ""
-            context = _parse_history_markdown(hist_path)
-            configs.append({"system_prompt": system_prompt, "context": context})
+            configs = []
+            for agent in spec["agents"]:
+                sp_path = agent.get("system_prompt_file", "")
+                hist_path = agent.get("history_file", "")
+                _system_raw = _read_text_file(sp_path)
+                system_prompt = _system_raw if _system_raw.strip() else ""
+                context = _parse_history_markdown(hist_path)
+                configs.append({"system_prompt": system_prompt, "context": context})
 
         companies = []
         actors = []
@@ -204,12 +231,17 @@ def load_template(template_name, models):
 
 
 def get_available_templates():
-    template_dir = "./templates"
-    templates = []
-    for file in os.listdir(template_dir):
-        if file.endswith(".json") and not file.endswith(".media.json"):
-            templates.append(os.path.splitext(file)[0])
-    return sorted(templates)
+    template_dir = Path("./templates")
+    names = set()
+    # Folder-based templates
+    for p in template_dir.iterdir():
+        if p.is_dir() and (p / "template.json").exists():
+            names.add(p.name)
+    # File-based templates (legacy)
+    for file in template_dir.iterdir():
+        if file.is_file() and file.suffix == ".json" and not file.name.endswith(".media.json"):
+            names.add(file.stem)
+    return sorted(names)
 
 
 def main():

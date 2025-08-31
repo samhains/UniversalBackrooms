@@ -8,7 +8,10 @@ from mcp_client import MCPServerConfig, call_tool
 
 
 def load_media_config(template_name: str) -> Optional[Dict[str, Any]]:
-    path = os.path.join("templates", f"{template_name}.media.json")
+    # Prefer per-template folder media.json
+    folder_path = os.path.join("templates", template_name, "media.json")
+    file_path = os.path.join("templates", f"{template_name}.media.json")
+    path = folder_path if os.path.exists(folder_path) else file_path
     if not os.path.exists(path):
         return None
     with open(path, "r") as f:
