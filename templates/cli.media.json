@@ -6,6 +6,6 @@
   "tool": {
     "server": "comfyui",
     "name": "generate_image",
-    "defaults": { "width": 768, "height": 768 }
+    "defaults": { "width": 1024, "height": 1024 }
   }
 }
