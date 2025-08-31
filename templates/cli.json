@@ -1,13 +1,10 @@
 {
   "agents": [
     {
-      "system_prompt_file": "prompts/cli/agent1.md",
       "history_file": "chat_history/cli/agent1.md"
     },
     {
-      "system_prompt_file": "prompts/cli/agent2.md",
-      "history_file": "chat_history/cli/agent2.md"
+      "system_prompt_file": "prompts/cli/cli-mood.md"
     }
   ]
 }
-

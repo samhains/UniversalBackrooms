@@ -1,13 +1,12 @@
 {
   "agents": [
     {
-      "system_prompt_file": "prompts/fugue/agent1.md",
+      "system_prompt_file": "prompts/fugue/fugue.md",
       "history_file": "chat_history/fugue/agent1.md"
     },
     {
-      "system_prompt_file": "prompts/fugue/agent2.md",
+      "system_prompt_file": "prompts/fugue/fugue.md",
       "history_file": "chat_history/fugue/agent2.md"
     }
   ]
 }
-

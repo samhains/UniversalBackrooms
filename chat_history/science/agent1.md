@@ -1,3 +1,0 @@
-## user
-Let's begin.
-

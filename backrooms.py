@@ -43,8 +43,6 @@ MODEL_INFO = {
 
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
-    if not messages:
-        messages = [{"role": "user", "content": "Let's begin."}]
 
     # If Claude is the first model in the conversation, it must have a user message
     kwargs = {
@@ -61,8 +59,6 @@ def claude_conversation(actor, model, context, system_prompt=None):
 
 def gpt4_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
-    if not messages:
-        messages = [{"role": "user", "content": "Let's begin."}]
 
     kwargs = {
         "model": model,
@@ -305,6 +301,13 @@ def main():
 
     system_prompts = [config.get("system_prompt", "") for config in configs]
     contexts = [config.get("context", []) for config in configs]
+
+    # Validate starting state: if all histories are empty, abort with a helpful error
+    if all((not ctx) for ctx in contexts):
+        print(
+            "Error: All agents have empty chat_history. Provide a conversation starter (e.g., a user message) in at least one agent's history file."
+        )
+        sys.exit(1)
 
     logs_folder = "BackroomsLogs"
     if not os.path.exists(logs_folder):

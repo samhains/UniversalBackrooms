@@ -1,13 +1,12 @@
 {
   "agents": [
     {
-      "system_prompt_file": "prompts/spirituality/agent1.md",
-      "history_file": "chat_history/spirituality/agent1.md"
+      "system_prompt_file": "prompts/spirituality/spirituality-sage.md",
+      "history_file": "chat_history/spirituality/spirituality-sage.md"
     },
     {
-      "system_prompt_file": "prompts/spirituality/agent2.md",
-      "history_file": "chat_history/spirituality/agent2.md"
+      "system_prompt_file": "prompts/spirituality/spirituality-philosopher.md",
+      "history_file": "chat_history/spirituality/spirituality-philosopher.md"
     }
   ]
 }
-

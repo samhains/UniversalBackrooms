@@ -51,32 +51,17 @@ You can mix and match any combination of models for the LM roles:
 If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
 
 ## Templates
-Templates use JSON specs that point to Markdown files for reusable prompts and per-agent chat history.
+Templates are JSON specs pointing to Markdown files for reusable prompts and per‑agent chat history.
 
 - Spec: `templates/<name>.json`
-- Prompts: `prompts/<name>/<persona>.md` (Markdown)
-- History: `chat_history/<name>/<persona>.md` (Markdown)
+- Prompts: `prompts/.../*.md` (Markdown)
+- Chat history: `chat_history/.../*.md` (Markdown)
 
-Choose a template with `--template`:
-
-- gallery
-- ethics
-- fugue
-- science
-- spirituality
-- student
-- worldsim
-- meta-template
-- cli
-
-Example:
-```
-python backrooms.py --lm gpt4o opus --template student
-```
+Pick a template with `--template <name>`. The CLI auto-discovers available templates from `templates/*.json`.
 
 Notes:
 - A template’s `agents` list must match the number of `--lm` models.
-- History files are optional; an empty file means no initial history.
+- History files are optional; an empty file means no initial history. If all agents have empty history, the program exits with a helpful message.
 
 ## Logging
 The script now logs conversations to folders within a main "BackroomsLogs" directory:
