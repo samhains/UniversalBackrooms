@@ -140,7 +140,8 @@ def load_template(template_name, models):
         for agent in spec["agents"]:
             sp_path = agent.get("system_prompt_file", "")
             hist_path = agent.get("history_file", "")
-            system_prompt = _read_text_file(sp_path)
+            _system_raw = _read_text_file(sp_path)
+            system_prompt = _system_raw if _system_raw.strip() else ""
             context = _parse_history_markdown(hist_path)
             configs.append({"system_prompt": system_prompt, "context": context})
 
