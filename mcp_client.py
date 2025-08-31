@@ -46,15 +46,29 @@ async def list_tools_async(cfg: MCPServerConfig) -> List[Dict[str, Any]]:
             read, write, client_info=mcp_types.Implementation(name="UniversalBackrooms", version="0.1.0")
         ) as session:
             await session.initialize()
-            tools = await session.list_tools()
-            return [
-                {
-                    "name": t.name,
-                    "description": getattr(t, "description", None),
-                    "inputSchema": getattr(t, "inputSchema", None),
-                }
-                for t in tools
-            ]
+            result = await session.list_tools()
+            # Normalize possible return shapes
+            if hasattr(result, "tools"):
+                tools_list = result.tools  # type: ignore[attr-defined]
+            elif isinstance(result, dict) and "tools" in result:
+                tools_list = result["tools"]
+            elif isinstance(result, tuple) and len(result) >= 1 and isinstance(result[0], list):
+                tools_list = result[0]
+            else:
+                tools_list = result  # may already be a list
+
+            norm: list[dict[str, Any]] = []
+            for t in tools_list:
+                if isinstance(t, dict):
+                    name = t.get("name")
+                    desc = t.get("description") or t.get("desc")
+                    schema = t.get("inputSchema") or t.get("input_schema") or t.get("schema")
+                else:
+                    name = getattr(t, "name", None)
+                    desc = getattr(t, "description", None)
+                    schema = getattr(t, "inputSchema", None)
+                norm.append({"name": name, "description": desc, "inputSchema": schema})
+            return norm
 
 
 async def call_tool_async(
