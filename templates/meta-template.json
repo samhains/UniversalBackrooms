@@ -1,0 +1,13 @@
+{
+  "agents": [
+    {
+      "system_prompt_file": "prompts/meta/agent1.md",
+      "history_file": "chat_history/meta/agent1.md"
+    },
+    {
+      "system_prompt_file": "prompts/meta/agent2.md",
+      "history_file": "chat_history/meta/agent2.md"
+    }
+  ]
+}
+

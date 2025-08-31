@@ -51,19 +51,31 @@ You can mix and match any combination of models for the LM roles:
 If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
 
 ## Templates
-You can choose from the following conversation templates using the `--template` argument:
-- cli (default)
-- student
-- science
-- fugue
+Templates use JSON specs that point to Markdown files for reusable prompts and per-agent chat history.
+
+- Spec: `templates/<name>.json`
+- Prompts: `prompts/<name>/<persona>.md` (Markdown)
+- History: `chat_history/<name>/<persona>.md` (Markdown)
+
+Choose a template with `--template`:
+
 - gallery
 - ethics
+- fugue
+- science
+- spirituality
+- student
+- worldsim
+- meta-template
 
+Example:
 ```
-python backrooms.py --lm gpt4o opus --template student 
+python backrooms.py --lm gpt4o opus --template student
 ```
 
-Note: Make sure your chosen template supports the number of models you specify.
+Notes:
+- A template’s `agents` list must match the number of `--lm` models.
+- History files are optional; an empty file means no initial history.
 
 ## Logging
 The script now logs conversations to folders within a main "BackroomsLogs" directory:
@@ -94,27 +106,8 @@ Example to set a limit of 20 turns:
 python backrooms.py --max-turns 20
 ```
 
-## To Run with World Interface
-To use the CLI template with the world interface (which provides note-taking and other capabilities):
-
-1. Clone and start the world interface server:
-```bash
-git clone https://github.com/scottviteri/world-interface
-cd world-interface
-npm install
-npm start
-```
-
-2. In a new terminal, from the UniversalBackrooms directory, run either:
-```bash
-# For GPT-4 exploring the CLI
-python backrooms.py --lm gpt4o cli --template cli_with_world_interface
-
-# For Claude Opus exploring the CLI
-python backrooms.py --lm opus cli --template cli_with_world_interface
-```
-
-This will create a new database for each conversation session when using the CLI template.
+## World Interface (legacy)
+Older CLI-interface templates have been removed from the default set. If you need them, refer to project history.
 
 ## MCP Client (connect to existing MCP servers)
 

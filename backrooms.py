@@ -8,6 +8,7 @@ import dotenv
 import sys
 import colorsys
 import requests
+import re
 
 # Local imports for optional media agent
 try:
@@ -74,10 +75,74 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
     return response.choices[0].message.content
 
 
+def _read_text_file(path: str) -> str:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return ""
+
+
+def _parse_history_markdown(path: str):
+    """Parse markdown chat history into a list of {role, content}.
+
+    A message begins with a markdown heading whose text is 'user' or 'assistant'
+    (case-insensitive), e.g.:
+      ## user
+      Content...
+      ## assistant
+      Reply...
+    Content continues until the next heading or EOF.
+    """
+    text = _read_text_file(path)
+    if not text.strip():
+        return []
+
+    lines = text.splitlines()
+    msgs = []
+    current_role = None
+    current_lines = []
+    role_header_re = re.compile(r"^\s{0,3}#{1,6}\s*(user|assistant)\s*$", re.IGNORECASE)
+
+    def flush():
+        if current_role is not None:
+            content = "\n".join(current_lines).rstrip("\n")
+            msgs.append({"role": current_role, "content": content})
+
+    for line in lines:
+        m = role_header_re.match(line)
+        if m:
+            # new section starts
+            flush()
+            current_role = m.group(1).lower()
+            current_lines = []
+        else:
+            if current_role is not None:
+                current_lines.append(line)
+            else:
+                # ignore preamble lines before first heading
+                continue
+    flush()
+    return msgs
+
+
 def load_template(template_name, models):
     try:
-        with open(f"templates/{template_name}.jsonl", "r") as f:
-            configs = [json.loads(line) for line in f]
+        json_path = f"templates/{template_name}.json"
+        with open(json_path, "r", encoding="utf-8") as f:
+            spec = json.load(f)
+
+        if not isinstance(spec, dict) or not isinstance(spec.get("agents"), list):
+            raise ValueError("Template JSON must contain an 'agents' list")
+
+        # Expand agents into configs with system prompt text and parsed history
+        configs = []
+        for agent in spec["agents"]:
+            sp_path = agent.get("system_prompt_file", "")
+            hist_path = agent.get("history_file", "")
+            system_prompt = _read_text_file(sp_path)
+            context = _parse_history_markdown(hist_path)
+            configs.append({"system_prompt": system_prompt, "context": context})
 
         companies = []
         actors = []
@@ -132,15 +197,18 @@ def load_template(template_name, models):
     except json.JSONDecodeError:
         print(f"Error: Invalid JSON in template '{template_name}'.")
         exit(1)
+    except ValueError as e:
+        print(f"Error: {e}")
+        exit(1)
 
 
 def get_available_templates():
     template_dir = "./templates"
     templates = []
     for file in os.listdir(template_dir):
-        if file.endswith(".jsonl"):
+        if file.endswith(".json") and not file.endswith(".media.json"):
             templates.append(os.path.splitext(file)[0])
-    return templates
+    return sorted(templates)
 
 
 def main():

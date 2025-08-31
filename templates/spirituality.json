@@ -1,0 +1,13 @@
+{
+  "agents": [
+    {
+      "system_prompt_file": "prompts/spirituality/agent1.md",
+      "history_file": "chat_history/spirituality/agent1.md"
+    },
+    {
+      "system_prompt_file": "prompts/spirituality/agent2.md",
+      "history_file": "chat_history/spirituality/agent2.md"
+    }
+  ]
+}
+

@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "model": "same-as-lm1",
+  "system_prompt": "You design concise, vivid text-to-image prompts from the latest round. Keep under 200 characters unless essential details require more.",
+  "tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "defaults": { "width": 1024, "height": 1024 }
+  }
+}
+
