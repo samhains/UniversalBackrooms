@@ -257,6 +257,22 @@ Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in
 
 State files: The agent saves per-run state (last image reference and a short conversation summary) alongside the log file as `<logfile>.media_state.json`.
 
+### Add Tools To Backrooms
+
+You do not add tools inside this repo; you expose them via your MCP server, then reference them in the media-agent config.
+
+- Discover tools: `python mcp_cli.py --config mcp.config.json --server comfyui list-tools`
+- Choose a tool name from the list (e.g., `generate_image`, `remix_image`).
+- Update `templates/<template>.media.json`:
+  - Set `"tool": { "server": "comfyui", "name": "<your-tool>", "defaults": { ... } }`
+  - Optionally set `"mode": "t2i"` or `"edit"` depending on desired behavior.
+  - Choose the LLM for the agent (e.g., `"model": "sonnet"` to use Sonnet 3.5).
+- The media agent automatically calls the MCP tool once after each round and logs results.
+
+Notes:
+- FastMCP-style tools (e.g., your server) expect arguments under a single `params` field; the media agent wraps calls for compatibility automatically.
+- No local tool schema is required. If you want client-side schema validation before calling the tool, we can add it as an optional step.
+
 **Quick Start**
 - Install: `pip install -r requirements.txt`
 - Configure MCP: create `mcp.config.json` with your ComfyUI server command.
