@@ -43,6 +43,8 @@ MODEL_INFO = {
 
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
+    if not messages:
+        messages = [{"role": "user", "content": "Let's begin."}]
 
     # If Claude is the first model in the conversation, it must have a user message
     kwargs = {
@@ -59,6 +61,8 @@ def claude_conversation(actor, model, context, system_prompt=None):
 
 def gpt4_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
+    if not messages:
+        messages = [{"role": "user", "content": "Let's begin."}]
 
     kwargs = {
         "model": model,
