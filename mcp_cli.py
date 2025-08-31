@@ -62,6 +62,11 @@ def main():
     call_p.add_argument(
         "--json", required=False, default="{}", help="JSON string of arguments"
     )
+    call_p.add_argument(
+        "--wrap-params",
+        action="store_true",
+        help="Wrap provided JSON as {\"params\": <json>} for FastMCP-style tools",
+    )
 
     args = parser.parse_args()
 
@@ -78,6 +83,8 @@ def main():
             print(json.dumps(tools, indent=2, default=lambda o: getattr(o, 'model_dump', lambda **_: str(o))()))
         elif args.action == "call-tool":
             payload = json.loads(args.json) if args.json else {}
+            if args.wrap_params:
+                payload = {"params": payload}
             result = call_tool(cfg, args.name, payload)
             print(json.dumps(result, indent=2, default=lambda o: getattr(o, 'model_dump', lambda **_: str(o))()))
         else:

@@ -238,7 +238,9 @@ def run_media_agent(
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
 
     # 3) Call tool
-    result = call_tool(server_cfg, tool_name, args)
+    # Many FastMCP servers define a single parameter named 'params'.
+    # Wrap arguments accordingly for compatibility.
+    result = call_tool(server_cfg, tool_name, {"params": args})
 
     # 4) Log
     header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"

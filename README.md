@@ -185,8 +185,12 @@ python mcp_cli.py --config mcp.config.json --server comfyui list-tools
 ### Call a tool
 
 ```
-python mcp_cli.py --config mcp.config.json --server comfyui call-tool generate_image --json '{"prompt": "a serene sunset over mountains", "width": 1024, "height": 768}'
+# Many FastMCP servers expect a single argument named `params`.
+# Use --wrap-params to automatically wrap your JSON as {"params": <json>}.
+python mcp_cli.py --config mcp.config.json --server comfyui call-tool generate_image --wrap-params --json '{"prompt": "a serene sunset over mountains", "width": 1024, "height": 768}'
 ```
+
+Note: Shells treat newlines as command separators; keep the command on one line or use a backslash to continue lines.
 
 ### Notes
 
