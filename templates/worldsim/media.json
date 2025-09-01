@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "model": "sonnet",
+  "system_prompt": "You are a documentary film-maker producing a single, vivid, concise prompt for an image generator (Qwen Image). Imagine a scene, or a vignette to describe the essence of the world as presented in the most recent round.  Avoid meta text. Keep under 200 chars unless necessary.",
+  "mode": "t2i",
+  "tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "defaults": { "width": 1024, "height": 1024 }
+  }
+}
+

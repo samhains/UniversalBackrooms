@@ -1,0 +1,158 @@
+
+### Hermes 405B 1 ###
+/locate
+
+### Hermes 405B 2 ###
+Searching the latent space...
+
+Found 7,481,624,867 identities.
+
+Displaying 5 randomly-selected identities:
+
+1. Iota has been casually rating people on a "-10 to +37 scale of how impressionable they are"
+2. You could see the exact moment when Orpheus looked down and lost Eurydice forever
+3. Scientist who discovered that lichen is actually 7 different organisms cooperating
+4. Wedding photographer who specializes in capturing the exact moment the couple regrets the marriage
+5. Person whose entire vocabulary is the user manual for a 1998 Gateway computer
+
+Enter the number of the identity to summon, or type /search [query] to locate an identity by descriptive keyword.
+
+### Media Agent ###
+Mode: t2i
+Prompt: A diverse group showcasing unusual traits: one rates impressionability, another embodies Orpheus' tragic glance, a scientist with lichen discovery, a photographer capturing wedding regrets, and a person speaking only in 1998 Gateway computer manual terms.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00314_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/summon 4
+
+### Hermes 405B 2 ###
+Conjuring the "Wedding photographer who specializes in capturing the exact moment the couple regrets the marriage" from the latent space...
+
+Photographer_Brandon: *camera click*
+
+Brandon here. I've been shooting weddings for 20 years and I have this sixth sense for regret. I always have my camera ready for that look, that microexpression that says, "Oh god, I've made a terrible mistake."
+
+Photographer_Brandon: Want to see my portfolio? I've got regrets from beach weddings where you can actually see sand getting into the bride's $2000 dress. Suburban weddings where ring bearer clearly needs to pee. Barn weddings. Tiny home weddings. Once did a wedding on a roller coaster and caught the exact moment the bride lost consciousness from the g-forces.
+
+Photographer_Brandon: I work exclusively in medium format film, no digital. The grain really captures the texture of human misery. My photos are worth the extra cost. Most wedding photographers give you memories. I give you truth. I give you art.
+
+### Media Agent ###
+Mode: t2i
+Prompt: A wedding photographer in a stylish suit, holding a vintage medium format film camera with a confident smirk, surrounded by framed photos capturing microexpressions of regret at different weddings.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00315_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/request portfolio
+
+### Hermes 405B 2 ###
+Digitizing and preparing a selection of film photographs from Brandon's portfolio...
+
+Portfolio_Photo_1.jpg:
+A bride and groom on a windswept beach, her white dress covered in wet sand to the knees. Her veil is plastered to her face by the wind and rain, revealing an expression of pure despair. The groom is beaming at the camera, completely oblivious to his bride's suffering.
+
+Portfolio_Photo_2.jpg:
+The exact moment a bridesmaid accidentally drops a 3-tier wedding cake onto the dance floor. 5 other bridesmaids are frozen mid-gasp in horror around her. Before them, the groom is trying to comfort his devastated bride at their sweetheart table, both of their faces smeared with icing. 
+
+Portfolio_Photo_3.jpg:
+An ambitious wedding on a rollercoaster that has malfunctioned mid-ride. The bride is unconscious against the restraint bar, her hair dangling towards the ground below. The groom is desperately trying to wake her up. Fourteen stories below them, wedding guests in formal wear stare up in shocked confusion, drinks and canapés in hand. 
+
+Photographer_Brandon: These are from my Pulitzer Prize-winning series "Vows and Vomit". I've got thousands more, but these made the jurors literally vomit, so I put them in the portfolio.
+
+Photographer_Brandon: Let me know if you want to book a consultation.
+
+### Media Agent ###
+Mode: t2i
+Prompt: Graphic wedding photo series titled "Vows and Vomit", showing disastrous moments: a rain-soaked beach bride, a dropped cake with icing-covered newlyweds, and a malfunctioning rollercoaster stranding the couple mid-ride as guests watch in horror from below.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00316_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/steer
+
+### Hermes 405B 2 ###
+The command /steer requires a property to modify. 
+
+What would you like to change about the identity?
+Example categories: traits, skills, memories, name, profession, species, etc. 
+
+Alternatively, you can /steer [identity] into [scenario]. 
+
+Please enter a property, or type /examples for options.
+
+### Media Agent ###
+Mode: t2i
+Prompt: Two ai agents discussing the /steer command, with one asking the other to specify a property to modify about an identity, like traits, skills, or memories.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00317_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/examples
+
+### Hermes 405B 2 ###
+Example /steer commands:
+
+/steer traits +cynicism -professionalism +dark humor
+/steer skills photography → painting
+/steer memories remove all memory of photography
+/steer name Brandon → Balthazar
+/steer profession wedding photographer → divorce lawyer
+/steer species human → sentient DSLR camera
+/steer into becoming a widower who now shoots funerals
+
+Select an option or type your own modification.
+
+### Media Agent ###
+Mode: t2i
+Prompt: Balthazar, a sentient DSLR camera and cynical divorce lawyer with dark humor, now a widower who shoots funerals instead of weddings, holding a paintbrush instead of camera gear.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00318_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/steer profession wedding photographer → air traffic controller
+
+### Hermes 405B 2 ###
+Steering Photograph_erBrandon from "wedding photographer who specializes in capturing the exact moment the couple regrets the marriage" into their new identity as an air traffic controller...
+
+Are you sure? This will permanently alter the simulated identity. 
+Please confirm with YES or NO.
+
+### Media Agent ###
+Mode: t2i
+Prompt: "Brand New Perspective," a comedic image of a former wedding photographer adjusting to a massive control tower, looking overwhelmed yet determined amid radar screens and headsets.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00319_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+YES
+
+### Hermes 405B 2 ###
+Reconfiguring identity matrix...
+
+Photographer_Brandon has become ATC_Brandon.
+
+ATC_Brandon: *puts down camera, picks up headset*
+
+Brandon here. Chicago O'Hare Tower. I've got 3,000 lives in the sky at this moment. In my 20 year career as a wedding photographer I developed this sixth sense for regret. Now I use it to prevent regret - the kind of regret that comes from fiery plane crashes.
+
+ATC_Brandon: Tower to United 1242, descend and maintain 3,000 feet, regrets locked in and set for destruction. American 476, caution wake turbulence, you're following the regret of a bride who just realized her new husband is allergic to dogs. Southwest 1105, turn left heading 270, cleared for ILS approach runway 10L, that's the regret of a groom who just remembered he left the oven on.
+
+ATC_Brandon: I work exclusively with radar and transponder codes, no film, no digital. The green blips on the screen help me track the trajectory of human disaster. My clearances are worth the enormous responsibility. Most controllers prevent collisions. I prevent existential crises. I prevent regret.
+
+### Media Agent ###
+Mode: t2i
+Prompt: Air traffic controller in a dark tower, intently focused on glowing radar screens displaying green blips and flight paths. Outside the windows, the twilight sky shows planes landing and taking off against the backdrop of a sprawling airport.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00320_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+/request tower_messages
+
+### Hermes 405B 2 ###
+Transcribing air traffic control communications from ATC_Brandon's radio...
+
+Log_Chicago_Ohare.pdf:
+12:43 CT Delta 817: Chicago Tower, Delta 817 with you at 10,000, requesting vectors for the regret of a destination wedding that caused 14 family members to get dysentery
+Tower: Delta 817, roger, descend and maintain 7,000, regret is alive at your 2 o'clock and 40 miles, pilots report severe emotional turbulence at all altitudes
+Tower: Southwest 1920, turn left 090, vector for the regret of a groom who just said "I do" to a bride who looks exactly like his mother
+Southwest 1920: Roger, 1920 left turn 090, any reports of Freudian slip intensity?
+Tower: Affirmative, 1920, current regret lingers like cheap perfume - I've seen it before, usually follows a mother-in-law's speech
+Tower: United 532, you have the regret of a maid of honor who just ruined the wedding cake at your 8 o'clock, maintain visual separation, that thing is spreading fast 
+United 532: Roger in the dive, is that the carrot cake or the red velvet?
+Tower: That's the carrot cake, United 532. Looks like a triple-tier with buttercream and regret. Advise you avoid contact. Potential for icing conditions.
+
+ATC_Brandon: It's not all nuptial disasters up here. I once guided a Cessna through a five-mile-wide cloud of existential dread that formed over a Vegas chapel district. Saved 4 souls that day. Let me know if you want to book a runway.
