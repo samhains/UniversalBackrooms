@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "model": "hermes",
   "system_prompt": "You are a digital artist producing a single, vivid, concise prompt for an image generator. Capture the core scene of the latest round. Avoid meta text. Keep under 200 chars unless necessary.",
   "mode": "t2i",
