@@ -39,6 +39,20 @@ MODEL_INFO = {
     },
     "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
     "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
+    # OpenRouter models
+    "hermes": {
+        "api_name": "nousresearch/hermes-4-405b",
+        "display_name": "Hermes 405B",
+        "company": "openrouter",
+        # Toggle Hermes 4 hybrid reasoning mode (OpenRouter)
+        "reasoning_enabled": False,
+    },
+    "hermes_reasoning": {
+        "api_name": "nousresearch/hermes-4-405b",
+        "display_name": "Hermes 405B (Reasoning)",
+        "company": "openrouter",
+        "reasoning_enabled": True,
+    },
 }
 
 
@@ -74,6 +88,64 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
 
     response = openai_client.chat.completions.create(**kwargs)
     return response.choices[0].message.content
+
+
+def openrouter_conversation(actor, model, context, system_prompt=None):
+    messages = [{"role": m["role"], "content": m["content"]} for m in context]
+
+    # OpenRouter is OpenAI-compatible; we can include a system message directly
+    if system_prompt:
+        messages = [{"role": "system", "content": system_prompt}] + messages
+
+    # Allow a local suffix marker to denote reasoning-enabled variant
+    reasoning_flag = False
+    api_model = model
+    if isinstance(model, str) and model.endswith("#reasoning"):
+        reasoning_flag = True
+        api_model = model.split("#", 1)[0]
+
+    kwargs = {
+        "model": api_model,
+        "messages": messages,
+        "temperature": 1.0,
+        "max_tokens": 1024,
+    }
+    # Enable Hermes 4 internal reasoning traces when requested via vendor extension
+    if reasoning_flag:
+        kwargs["extra_body"] = {"reasoning": {"enabled": True, "exclude": False}, "include_reasoning": True}
+    response = openrouter_client.chat.completions.create(**kwargs)
+    # Prefer normal content; if empty, fall back to reasoning text if present
+    try:
+        msg = response.choices[0].message
+        content = getattr(msg, "content", None) or ""
+        if content and str(content).strip():
+            return content
+
+        # Attempt to read unified reasoning fields for a fallback
+        reason_txt = None
+        # Direct attribute access
+        r = getattr(msg, "reasoning", None)
+        if isinstance(r, str) and r.strip():
+            reason_txt = r.strip()
+        elif isinstance(r, dict):
+            reason_txt = r.get("text") or r.get("summary")
+        # Try reasoning_details
+        if not reason_txt:
+            rd = getattr(msg, "reasoning_details", None)
+            if isinstance(rd, list) and rd:
+                parts = []
+                for item in rd:
+                    if isinstance(item, dict):
+                        t = item.get("text") or item.get("summary") or item.get("data")
+                        if t:
+                            parts.append(t)
+                if parts:
+                    reason_txt = "\n".join(parts)
+        if reason_txt and str(reason_txt).strip():
+            return str(reason_txt)
+    except Exception:
+        pass
+    return response.choices[0].message.content or ""
 
 
 def _read_text_file(path: str) -> str:
@@ -247,12 +319,22 @@ def get_available_templates():
 def main():
     global anthropic_client
     global openai_client
+    global openrouter_client
     parser = argparse.ArgumentParser(
         description="Run conversation between two or more AI language models."
     )
     parser.add_argument(
         "--lm",
-        choices=["sonnet", "opus", "gpt4o", "o1-preview", "o1-mini", "cli"],
+        choices=[
+            "sonnet",
+            "opus",
+            "gpt4o",
+            "o1-preview",
+            "o1-mini",
+            "hermes",
+            "hermes_reasoning",
+            "cli",
+        ],
         nargs="+",
         default=["opus", "opus"],
         help="Choose the models for LMs or 'cli' for the world interface (default: opus opus)",
@@ -289,7 +371,15 @@ def main():
         else:
             if model in MODEL_INFO:
                 lm_display_names.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
-                lm_models.append(MODEL_INFO[model]["api_name"])
+                api_name = MODEL_INFO[model]["api_name"]
+                # For OpenRouter Hermes variants, encode reasoning preference in the model string
+                if (
+                    MODEL_INFO[model].get("company") == "openrouter"
+                    and MODEL_INFO[model].get("reasoning_enabled") is True
+                ):
+                    lm_models.append(f"{api_name}#reasoning")
+                else:
+                    lm_models.append(api_name)
                 companies.append(MODEL_INFO[model]["company"])
                 actors.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
             else:
@@ -325,6 +415,25 @@ def main():
             sys.exit(1)
         openai_client = openai.OpenAI(api_key=openai_api_key)
 
+    # Initialize OpenRouter client only if selected
+    openrouter_models = [
+        model
+        for model in models
+        if model in MODEL_INFO and MODEL_INFO[model]["company"] == "openrouter"
+    ]
+    if openrouter_models:
+        openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+        if not openrouter_api_key:
+            print(
+                "Error: OPENROUTER_API_KEY must be set in the environment or in a .env file."
+            )
+            sys.exit(1)
+        # OpenRouter is OpenAI-compatible; just set base_url and api_key
+        openrouter_client = openai.OpenAI(
+            api_key=openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+        )
+
     configs = load_template(args.template, models)
 
     assert len(models) == len(
@@ -357,6 +466,9 @@ def main():
         context = [{"role": "user", "content": user_message}]
         if api_model.startswith("claude-"):
             return claude_conversation("Media Agent", api_model, context, system_prompt)
+        elif "/" in api_model:
+            # Heuristic: OpenRouter models typically include a provider prefix like "org/model"
+            return openrouter_conversation("Media Agent", api_model, context, system_prompt)
         else:
             return gpt4_conversation("Media Agent", api_model, context, system_prompt)
 
@@ -414,6 +526,10 @@ def main():
 def generate_model_response(model, actor, context, system_prompt):
     if model.startswith("claude-"):
         return claude_conversation(
+            actor, model, context, system_prompt if system_prompt else None
+        )
+    elif "/" in model:
+        return openrouter_conversation(
             actor, model, context, system_prompt if system_prompt else None
         )
     else:

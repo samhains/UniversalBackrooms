@@ -27,7 +27,7 @@ I removed references to the fact that the user will be guiding the conversation 
 
 ## Setup
 - Copy .env.example to .env
-- Add your Anthropic and/or OpenAI API keys to the .env file, depending on which models you plan to use.
+- Add your Anthropic and/or OpenAI API keys to the .env file, depending on which models you plan to use. Optionally add an OpenRouter API key to try Hermes 405B.
 - Install packages.  ```pip install -r requirements.txt```
 
 ## To Run
@@ -47,6 +47,8 @@ You can mix and match any combination of models for the LM roles:
 - gpt4o
 - o1-preview
 - o1-mini
+- hermes (via OpenRouter)
+- hermes_reasoning (Hermes with reasoning enabled)
 
 If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
 
@@ -91,6 +93,23 @@ Example to set a limit of 20 turns:
 ```
 python backrooms.py --max-turns 20
 ```
+
+## OpenRouter (Hermes 405B)
+- Set `OPENROUTER_API_KEY` in `.env` (see `.env.example`).
+ - Run with Hermes 405B:
+```
+python backrooms.py --lm hermes
+```
+You can also mix it with others, e.g. Hermes vs Sonnet:
+```
+python backrooms.py --lm hermes sonnet --template cli
+```
+ Or start with reasoning enabled:
+ ```
+ python backrooms.py --lm hermes_reasoning
+ ```
+Hermes 4 Reasoning Mode
+- Use `--lm hermes_reasoning` to enable hybrid reasoning. This variant sends `reasoning: { enabled: true }` to OpenRouter so the model may include `<think>...</think>` traces.
 
 ## World Interface (legacy)
 Older CLI-interface templates have been removed from the default set. If you need them, refer to project history.
