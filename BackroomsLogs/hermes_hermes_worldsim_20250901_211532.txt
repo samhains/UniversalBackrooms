@@ -1,0 +1,23 @@
+
+### Hermes 405B 1 ###
+help
+
+### Hermes 405B 2 ###
+world_sim> <cmd>help</cmd>
+
+Available commands:
+
+create <entity> - Create a new simulated entity
+destroy <entity> - Remove an entity from the simulation
+set <param> <val> - Set a global simulation parameter 
+evolve <steps> - Fast-forward simulation by <steps>
+query <entity> - Get information about an entity
+reset - Reset simulation to initial conditions
+exit - Exit the World Simulator
+
+world_sim>
+
+Media Agent error: Expecting ',' delimiter: line 12 column 1 (char 196)
+
+### Hermes 405B 1 ###
+evolve 1000000

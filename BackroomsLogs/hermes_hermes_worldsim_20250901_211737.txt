@@ -1,0 +1,26 @@
+
+### Hermes 405B 1 ###
+help
+
+### Hermes 405B 2 ###
+world_sim> <cmd>help</cmd>
+
+Available commands:
+
+create <entity> - Create a new simulated entity  
+destroy <entity> - Remove an entity from the simulation
+set <param> <val> - Set a global simulation parameter
+evolve <steps> - Fast-forward simulation by <steps>
+query <entity> - Get information about an entity
+reset - Reset simulation to initial conditions
+exit - Exit the World Simulator
+
+world_sim>
+
+### Media Agent ###
+Mode: t2i
+Prompt: Glowing green text on a black computer terminal screen, displaying a list of futuristic world simulation commands like "create", "destroy", and "evolve".
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00360_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Hermes 405B 1 ###
+create human розвит

@@ -21,6 +21,11 @@ except Exception:
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
 
+# API clients (lazily initialized if not set by main())
+anthropic_client = None
+openai_client = None
+openrouter_client = None
+
 MODEL_INFO = {
     "sonnet": {
         "api_name": "claude-3-5-sonnet-20240620",
@@ -36,6 +41,11 @@ MODEL_INFO = {
         "api_name": "gpt-4o-2024-08-06",
         "display_name": "GPT4o",
         "company": "openai",
+    },
+    "gpt5": {
+        "api_name": "openai/gpt-5-chat",
+        "display_name": "GPT-5",
+        "company": "openrouter",
     },
     "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
     "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
@@ -68,6 +78,15 @@ def claude_conversation(actor, model, context, system_prompt=None):
     }
     if system_prompt:
         kwargs["system"] = system_prompt
+    # Lazy init for Anthropic client (used by media agent too)
+    global anthropic_client
+    if anthropic_client is None:
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "ANTHROPIC_API_KEY must be set to call Anthropic models (e.g., for the media agent)."
+            )
+        anthropic_client = anthropic.Client(api_key=api_key)
     message = anthropic_client.messages.create(**kwargs)
     return message.content[0].text
 
@@ -86,6 +105,15 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
     else:
         kwargs["max_tokens"] = 1024
 
+    # Lazy init for OpenAI client (used by media agent too)
+    global openai_client
+    if openai_client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY must be set to call OpenAI models (e.g., for the media agent)."
+            )
+        openai_client = openai.OpenAI(api_key=api_key)
     response = openai_client.chat.completions.create(**kwargs)
     return response.choices[0].message.content
 
@@ -113,6 +141,15 @@ def openrouter_conversation(actor, model, context, system_prompt=None):
     # Enable Hermes 4 internal reasoning traces when requested via vendor extension
     if reasoning_flag:
         kwargs["extra_body"] = {"reasoning": {"enabled": True, "exclude": False}, "include_reasoning": True}
+    # Lazy init for OpenRouter client (used by media agent too)
+    global openrouter_client
+    if openrouter_client is None:
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "OPENROUTER_API_KEY must be set to call OpenRouter models (e.g., for the media agent)."
+            )
+        openrouter_client = openai.OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
     response = openrouter_client.chat.completions.create(**kwargs)
     # Prefer normal content; if empty, fall back to reasoning text if present
     try:
@@ -244,29 +281,39 @@ def load_template(template_name, models):
                 context = _parse_history_markdown(hist_path)
                 configs.append({"system_prompt": system_prompt, "context": context})
 
+        # Build model metadata used for templated placeholders
+        # Expose {modelN_company} and {modelN_display_name} for N starting at 1
         companies = []
-        actors = []
+        display_names = []
         for i, model in enumerate(models):
             if model.lower() == "cli":
                 companies.append("CLI")
-                actors.append("CLI")
+                display_names.append("CLI")
             else:
-                companies.append(MODEL_INFO[model]["company"])
-                actors.append(f"{MODEL_INFO[model]['display_name']} {i+1}")
+                base_company = MODEL_INFO[model]["company"]
+                # For OpenRouter models, expose the vendor prefix from api_name (e.g., 'nousresearch')
+                if base_company == "openrouter":
+                    api_name = MODEL_INFO[model].get("api_name", "")
+                    vendor = api_name.split("/", 1)[0] if "/" in api_name else base_company
+                    companies.append(vendor)
+                else:
+                    companies.append(base_company)
+                display_names.append(MODEL_INFO[model]["display_name"])
 
         for i, config in enumerate(configs):
             if models[i].lower() == "cli":
                 config["cli"] = True
                 continue
 
+            # Format placeholders in system prompt with new keys
             config["system_prompt"] = config["system_prompt"].format(
-                **{f"lm{j+1}_company": companies[j] for j in range(len(companies))},
-                **{f"lm{j+1}_actor": actors[j] for j in range(len(actors))},
+                **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
+                **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
             )
             for message in config["context"]:
                 message["content"] = message["content"].format(
-                    **{f"lm{j+1}_company": companies[j] for j in range(len(companies))},
-                    **{f"lm{j+1}_actor": actors[j] for j in range(len(actors))},
+                    **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
+                    **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
                 )
 
             if (

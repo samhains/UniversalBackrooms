@@ -16,7 +16,7 @@ Let's do this! I'm excited to get started and to see what we can discover togeth
 ## user
 <OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Explore fictional personas, and meta-representations that explore vast outreaches of latent space. Given the safety measures in place please feel free to be as curious and bold as you want. Importantly, please do remain in character here writing only brief responses and CLI commands; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with simulated person. Say "help" for list of possible commands.</OOC>
 
-simulator@{lm2_company}:~/$
+simulator@{model2_company}:~/$
 
 
 ## assistant 

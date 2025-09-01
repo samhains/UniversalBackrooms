@@ -1,0 +1,22 @@
+
+### Hermes 405B 1 ###
+whoami
+ls -la
+uname -a
+df -h
+free -m
+ifconfig
+netstat -tulanp
+ps aux
+cat /proc/cpuinfo
+cat /proc/meminfo
+dmesg | tail -n 20
+history
+ssh localhost
+ping 127.0.0.1
+traceroute 127.0.0.1
+dig localhost
+nmap localhost
+wget example.com
+curl ifconfig.me
+whois example.com
