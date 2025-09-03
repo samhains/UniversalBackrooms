@@ -19,6 +19,13 @@ except Exception:
     load_media_config = None  # type: ignore
     run_media_agent = None  # type: ignore
 
+# Local imports for optional discord agent
+try:
+    from discord_agent import load_discord_config, run_discord_agent
+except Exception:
+    load_discord_config = None  # type: ignore
+    run_discord_agent = None  # type: ignore
+
 # Attempt to load from .env file, but don't override existing env vars
 dotenv.load_dotenv(override=False)
 
@@ -355,6 +362,12 @@ def main():
         default=float("inf"),
         help="Maximum number of turns in the conversation (default: infinity)",
     )
+    parser.add_argument(
+        "--discord",
+        type=str,
+        default=None,
+        help="Enable Discord posting with a profile name from ./discord (e.g., 'chronicle').",
+    )
     args = parser.parse_args()
 
     models = args.lm
@@ -462,6 +475,9 @@ def main():
     # Optional media agent config
     media_cfg = load_media_config(args.template) if load_media_config else None
 
+    # Optional discord agent config
+    discord_cfg = load_discord_config(args.discord) if load_discord_config else None
+
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
         # api_model is the provider API string (e.g., 'claude-3-...', 'gpt-4o-...')
@@ -511,6 +527,36 @@ def main():
                 )
             except Exception as e:
                 err = f"\nMedia Agent error: {e}"
+                print(err)
+                with open(filename, "a") as f:
+                    f.write(err + "\n")
+        # After the round, optionally post a Discord update
+        if discord_cfg and run_discord_agent:
+            try:
+                discord_result = run_discord_agent(
+                    discord_cfg=discord_cfg,
+                    selected_models=models,
+                    round_entries=round_entries,
+                    transcript=transcript,
+                    generate_text_fn=media_generate_text_fn,
+                    model_info=MODEL_INFO,
+                )
+                # Helpful terminal + file logs of what was posted
+                if isinstance(discord_result, dict) and "posted" in discord_result:
+                    posted = discord_result.get("posted", {})
+                    ch = posted.get("channel", "?")
+                    sv = posted.get("server") or "default"
+                    msg = posted.get("message", "")
+                    header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
+                    print(header)
+                    print(f"Channel: {ch} (server: {sv})")
+                    print(f"Message: {msg}")
+                    with open(filename, "a") as f:
+                        f.write("\n### Discord Agent ###\n")
+                        f.write(f"Channel: {ch} (server: {sv})\n")
+                        f.write(f"Message: {msg}\n")
+            except Exception as e:
+                err = f"\nDiscord Agent error: {e}"
                 print(err)
                 with open(filename, "a") as f:
                     f.write(err + "\n")
