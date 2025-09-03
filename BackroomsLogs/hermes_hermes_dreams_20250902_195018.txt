@@ -1,0 +1,29 @@
+
+### Hermes 405B 1 ###
+ Deprecated command. Starting recall...
+
+
+[QUERY]: Use `ingest "description..."` to load a sleeper's dream report.
+
+### Hermes 405B 2 ###
+── SLEEP LAB
+DREAMERS: none detected
+TIPS: Use `ingest "description..."` to load a dream report from terminal memory. Try `man ingest` for details.
+
+### Hermes 405B 1 ###
+simulator\@oneiro:\~\$ ingest "I was in a library but the shelves were made of marshmallow. A man in a bowler hat handed me a book labeled How to Disappear Completely then winked. Suddenly I could hear rain through the ceiling even though we were underground. My teeth felt loose. When I looked down my hands were dripping blue ink." && enter
+
+### Hermes 405B 2 ###
+── SLEEP LAB
+DREAMERS: simulator [stage light] motifs=libraries, hats, books, ink, underground stress=0.4
+TIPS: Use `anchor` to stabilize marshmallow shelves into bookshelves for clarity.
+
+── DREAM: Marshmallow Library LUCIDITY:0.30 LAYER:light
+DESC: A cavernous library stretches around you, shelves gooey with pastel marshmallow oozing like taffy. A gentleman in a crisp bowler hat materializes suddenly, pressing "How to Disappear Completely" into your hands before vanishing with a wink. The muffled drumming of rain echoes from above despite being underground. Your tongue worries a wiggling tooth, cool ink dripping from both palms.
+MOTIFS: libraries, hats, books, ink, underground, loose teeth, metamorphic
+EXITS: DOWN, UP, N
+ITEMS: "How to Disappear Completely" book
+HAZARDS: potential identity dissolution (ink), structural instability (marshmallow)
+
+### Hermes 405B 1 ###
+simulator\@oneiro:dream\$ look book && man anchor && anchor shelves --override bookshelves

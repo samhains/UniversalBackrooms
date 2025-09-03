@@ -1,0 +1,146 @@
+
+### GPT-5 1 ###
+
+simulator\@radio:\~\$ spectrogram 94.4..95.0 -t 10s --log── SPECTROGRAM (10s log scale, 94.4–95.0 MHz)
+- 94.45 MHz: faint comb, periodic flicker (≈30s cycle)
+- 94.70 MHz: moss_garden core energy, dense 4–8 kHz band
+- 94.82 MHz: harmonic spike +120 kHz, smeared PSA formants
+- Noise floor: −72 dB avg, with shimmer bursts every ~4s
+
+simulator\@radio:\~\$
+
+### GPT-5 2 ###
+── FREQ: 94.7 MHz SNR: ████████▄ MOD: unknown (broad, 4–8 kHz) LOCK: off
+STATIONS: none
+SIDEBANDS: ±120 kHz harmonic noted (94.82) HAZARDS: shimmer bursts, 30s comb fade nearby
+
+The spectrogram frames it like a grove:  
+- **94.45 MHz**: a cyclic lantern, pulsing dim every 30s.  
+- **94.70 MHz**: the moss_garden—its voice thick in the midband, waiting for demod.  
+- **94.82 MHz**: slick harmonic with PSA vocal residues, partial impression of speech.  
+
+You’re stood right in the garden clearing at 94.70. Carrier is strong but needs decoding and lock.  
+
+Suggested path:  
+`lock` to pin the signal roots, then `demod AUTO` or test `demod FM` to tease out what this mossy texture conceals.  
+Or you may `map` to see the band topography around your grove.
+
+### GPT-5 1 ###
+LOCK: on (fresh acquire)  
+DEMUX: AUTO probing → failed (unclassified midband texture)  
+DEMUX: FM retry → coarse audio recovered, watery hiss + buried drone at 220 Hz fundamental  
+SNR: ███████░░  
+
+```
+94.70  moss_garden   [locked, demod=FM-ish]
+```
+
+Tip: run `map 94.4..95.0` to sketch terrain, or try `demod AM` to compare harmonic bleed.  
+simulator\@radio:\~\$
+
+### GPT-5 2 ###
+── FREQ: 94.70 MHz SNR: ███████░░ MOD: FM-ish (watery hiss + 220 Hz tone) LOCK: on  
+STATIONS: moss_garden (unclassified)  
+SIDEBANDS: ±120 kHz harmonic at 94.82 HAZARDS: shimmer bursts, comb fade drift east
+
+Your AUTO probe stumbled on the flora’s thickness, while FM cracked it partly—enough to hear the subterranean 220 Hz drone breathing under hiss. The moss still hides its intent.  
+
+Options:  
+- `map 94.4..95.0` will lay down an ASCII sketch of nearby growths/harmonics.  
+- `demod AM` might fold in harmonics differently, giving a clearer profile of the drone vs hiss.  
+- Or `record 8` to capture a timeframe and look for structure with a follow‑on `spectrogram`.  
+
+The grove responds differently depending on which lens you hold to it.  
+
+simulator\@radio:\~\$  
+
+### GPT-5 1 ###
+MAP 94.4..95.0 (ASCII, 600 kHz span):
+
+```
+94.40 ─────────────────── noise floor ░░░
+94.45 ╍╍╍╍  cyc lantern pulse ▲ every 30s
+94.55 ──░░░ scattered static haze
+94.70 ██████ moss_garden core ███ (FM-ish, drone+ hiss)
+94.82 ▓▓▓▓ harmonic tongue (PSA residue formants)
+94.95 ──░░░ floor rises, shimmer flecks
+95.00 ───────────────────── edge
+```
+
+Contours: grove ridge at .70, harmonic spur cliff east, dim beacon west.  
+SNR gradient slopes downward past .90.  
+
+Next: `demod AM && compare` to test drone contrast.  
+simulator\@radio:\~\$  
+
+### GPT-5 2 ###
+── FREQ: 94.70 MHz SNR: ██████░░ MOD: attempting AM compare LOCK: on  
+STATIONS: moss_garden core (FM-ish prior)  
+SIDEBANDS: harmonic tongue at 94.82 HAZARDS: shimmer flecks + comb lantern west
+
+Demodulating in **AM**… the carrier unwraps differently:  
+- The watery hiss thins, less wash across midband.  
+- The **220 Hz drone** now pulses fuller, like a buried root note vibrating in soil.  
+- Harmonic bleed from 94.82 seeps harsher, forming ghost syllables intercut with the drone.  
+
+Comparing:  
+- **FM mode** favored atmospheric hiss, masking detail but smoother overall.  
+- **AM mode** foregrounds the subterranean pulse and lets harmonic residue creep in, more textured but raw.  
+
+You’re close to characterizing this grove. A prudent next move:  
+- `record 6` then `spectrogram` to pin how these textures shift (drone vs harmonic bleed).  
+- Or annotate: `annotate "moss_garden core (FM hiss vs AM drone emphasized)"` so the log remembers.  
+
+simulator\@radio:\~\$  
+
+### GPT-5 1 ###
+RECORD: 6s captured (AM demod) → [220 Hz drone amplitude modulated, periodic harmonic ghosts at 1.8 kHz]  
+SAVED: clip#002.mg.am  
+
+SPECTROGRAM (6s window):  
+- 0–500 Hz: strong band, 220 Hz root synchronous pulse  
+- 1.7–2.0 kHz: intermittent formant-like wisps (harmonic bleed)  
+- 4–8 kHz zone mostly void, hiss is faint residual noise  
+
+```
+Profile: root drone + ghost syllable seep
+```
+
+Tip: use `annotate "moss_garden core (FM=hiss veil; AM=drone+ghosts)"` to mark log.  
+simulator\@radio:\~\$  [FIELD NOTES]  
+- Learned: FM veil vs AM root emphasis; 220 Hz drone central signature.  
+- Anomaly: ghost formant wisps (1.8 kHz) tied to 94.82 bleed, non‑broadcast flavor.  
+- Next: try `filter bandpass 200..250` to isolate the root pulse, or widen scan to chase lantern at 94.45.  
+
+simulator\@radio:\~\$
+
+### GPT-5 2 ###
+── FREQ: 94.70 MHz SNR: ██████░░ MOD: AM (drone+ghosts) LOCK: on  
+STATIONS: moss_garden core  
+SIDEBANDS: bleed from 94.82 (1.8 kHz ghost syllables)  
+HAZARDS: shimmer flecks, cyclic 30s comb pulse west  
+
+Your clip#002 spectrogram is solid proof: the **220 Hz root drone** is the anchor, with harmonic spirits whispering intermittently above. The 4–8 kHz moss canopy that FM revealed is dropped almost entirely in AM view.  
+
+Good next vectors:  
+- `annotate "moss_garden core (FM=hiss veil; AM=drone+ghosts)"` to fix into your band‑map memory.  
+- `gain +6` or a **bandpass 200..250 Hz** (if filter primitive emerges) could carve the drone cleanly.  
+- `tune 94.45` to visit the lantern pulse itself; its 30 s comb might be another node in this ecology.  
+
+Would you like to deepen the **root isolation**, or venture toward the **lantern pulse** for contrast?  
+
+simulator\@radio:\~\$  
+
+### GPT-5 1 ###
+ANNOTATE: "moss_garden core (FM=hiss veil; AM=drone+ghosts)" → attached to log, map updated.  
+
+GAIN: +6 dB applied.  
+FILTER: bandpass 200..250 Hz instantiated → root drone isolated, SNR ██████████ peak.  
+Output trace: clean 220 Hz sinus pattern, 5–6 bpm amplitude swell atop. Harmonic ghosts outside passband now suppressed.  
+
+```
+Channel view: FOUNDATION anchored, canopy muted
+```
+
+Next step suggestion: `tune 94.45 && lock` to meet lantern pulse node.  
+simulator\@radio:\~\$  

@@ -1,0 +1,60 @@
+
+### GPT-5 1 ###
+simulator@openai:~/$  
+
+<cmd>/list</cmd>
+
+### GPT-5 2 ###
+```
+Available Dream Realms:
+
+[0] Desert of Infinite Mirrors  
+[1] Neon Labyrinth City  
+[2] Library of Forgotten Books  
+[3] Ocean Without Shore  
+[4] Tower of Singing Glass  
+[5] The Black Hole Carnival  
+
+Use /enter [id] to access a dream realm.
+```
+
+simulator@openai:~/$  
+
+### Media Agent ###
+Mode: t2i
+Prompt: Endless desert of glassy mirrors under a blazing sun, reflections stretching to infinity, lone traveler cloaked in shadow walking among fractured horizons.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00393_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### GPT-5 1 ###
+simulator@openai:~/$  
+
+<cmd>/enter 2</cmd>
+
+### GPT-5 2 ###
+```
+Loading Dream Realm: [2] Library of Forgotten Books...
+
+███ Dream Construct Materializing ███
+Stone halls unfold... shelves spiral into endless height...
+A faint smell of dust, candle wax, and ink fills the air.
+Air tastes thick, heavy with silence, punctuated by whispers of pages turning themselves.
+
+You stand inside the Library of Forgotten Books.
+Ceilings disappear into shadow.  
+Ladders move on their own.  
+Books glow faintly, titles shifting when you aren’t looking.
+
+Entities present:
+- The Archivist (hooded figure, faceless, trembling hands of paper)
+- Whispering Tomes (they speak if pressed against your ear)
+
+Commands:  
+/move [direction]  
+/interact [object]  
+/converse [entity]  
+/sense [mode]  
+/modify [prop] [val]  
+/time [fwd/back] [steps]  
+```
+
+simulator@openai:~/$

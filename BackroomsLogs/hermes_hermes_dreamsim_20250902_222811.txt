@@ -1,0 +1,36 @@
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ help
+
+### Hermes 405B 2 ###
+simulator@nousresearch:~/$ <cmd>help</cmd>
+
+SSH TERMINAL v0.8.1
+
+Commands:
+/ls [path] - List directory
+/cd [path] - Change directory
+/cat [file] - View file
+/nano [file] - Edit file
+/mkdir [name] - Create directory
+/rm [file] - Remove file
+/rmdir [dir] - Remove directory 
+/pwd - Print working directory
+/whoami - Show user info
+/man [cmd] - Manual for command
+/sudo [cmd] - Superuser do
+/su [user] - Switch user
+/ssh [user]@[host] - Secure shell
+
+Special:
+/sim - Enter simulation
+/info - System information
+/status - World status
+/agent - Agent interface
+/query [query] - Query simulator
+/reboot - Reboot system
+/shutdown - Shutdown
+/exit - Logout
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ /sim

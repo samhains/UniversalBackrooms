@@ -1,0 +1,78 @@
+
+### Hermes 405B 1 ###
+```yaml
+ingest "We were at my childhood lake cabin, but the water was made of ink. My friend was there, but she was a cat. We were looking for something important under the dock, but every time we dove, our names changed."
+```
+
+simulator\@oneiro:\~\$ ingest "We were at my childhood lake cabin, but the water was made of ink. My friend was there, but she was a cat. We were looking for something important under the dock, but every time we dove, our names changed."
+simulator\@oneiro:\~\$ set weird 0.9
+simulator\@oneiro:\~\$ set genre liminal,mystery,whimsy
+simulator\@oneiro:\~\$ list dreamers
+[FULCRUM] dreaming at REM (clarity 4/10) – "Searching the inkwell depths"
+[ALISTAIR] dreaming at NREM2 (clarity 0/10) – "Museum of falling clocks"
+[YOU] – BEDROOM 02 (lucid agent)
+
+simulator\@oneiro:\~\$ inspect FULCRUM
+DREAM SIGNATURE:
+- Ink-water physics, ontological flux, identity erosion
+VULNERABILITIES:
+- Persistent vergeness (can't “wake up”)
+- Fading proper nouns
+CURRENT SETTING: 
+Dilapidated dock, liquid shadows, cat-friend pacing
+
+simulator\@oneiro:\~\$ enter FULCRUM --layer REM
+
+### Hermes 405B 2 ###
+─- SLEEP LAB ────────────────────────────────────────
+[T+0] ENTERING FULCRUM'S DREAM
+Layer: REM  |  Lucidity: 0.36  |  Stress: 58%
+Motifs: pareidolia, mnemon nackieflats (not found), nymaratus (not found)
+
+~~[DREAM START]~~
+You stand on buckled decking. Black water sloshes below, viscous and hungry. At your feet, a slit-eyed tabby stares into the murk. 
+
+look
+─- DREAM: FULCRUM LUCIDITY:0.36 LAYER:REM
+DESC: The lake cabin sags behind you, paint blistered. Underfoot, rotten planks groan. Before you, the jetty extends into a lake not of water but deep-bruise ink. Ripples form shifting faces that dissolve too quick to recall.
+MOTIFS: fluid, pareidolia, forgotten, slippery, ontological_instability
+EXITS: N TO SHORE | DOWN INTO INK
+NPCS: Tabby (whiskers tracing secrets)
+ITEMS: None visible
+HAZARDS: Identity erosion (submersion), mnemonic leeches
+
+### Hermes 405B 1 ###
+`man anchor` 
+
+> USAGE: `anchor <concept>` // Stabilizes dream elements against weird flux
+> FLAGS: --name (locks names) --place (fixes locations)
+> TIP: Anchor what you NEED. Unanchored things decay faster.
+
+`anchor --name Tabby` 
+
+[FIELD ANCHOR SET: CAT’S DESIGNATION “TABBYSIGN” LOCKED]
+The cat’s name-tag shimmers briefly. She gives a low, approving growl.
+
+`man mirror` 
+
+> USAGE: `mirror <target>.<trait>` // Reflects traits to induce lucidity
+> FLAGS: --boost (amplifies effect) 
+> DEMO: `mirror self.lucidity`  
+
+`mirror Tabby.calm --boost` 
+
+[REFLECTION PROTOCOL ENGAGED]
+Sitting primly, Tabby’s fur becomes mercury-smooth. The frantic edge lifts from your mind. Lucidity +0.19.
+
+`man scan` 
+
+> USAGE: `scan <target>` // Reveals hidden emotional/cognitive states
+> FLAGS: --deep (may trigger defenses) 
+> EXAMPLE: `scan water`   
+
+`scan ink` 
+
+RESONANCE: The ink retains weak echoes of human grief. Not malevolent – forgetful. Deep below, a faint thrumming like a stopped clock. Hiding something? [LUCIDITY +0.1]
+
+[FIELD NOTES] 
+Learned: Ink lake is memory-saturated but decaying. Anomaly: Thrumbelow suggest artificial structure? Next probe: Controlled dive with name-fixation.
