@@ -62,6 +62,7 @@ def run_discord_agent(
     transcript: List[Dict[str, str]],
     generate_text_fn,
     model_info: Dict[str, Dict[str, Any]],
+    media_url: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Post a per-round summary to Discord via MCP 'discord' server.
 
@@ -115,6 +116,8 @@ def run_discord_agent(
     }
     if "server" in defaults:
         args["server"] = defaults["server"]
+    if media_url:
+        args["mediaUrl"] = media_url
 
     # 3) Load MCP server config and call tool (no FastMCP wrapping)
     mcp_config_path = os.getenv("MCP_CONFIG", "mcp.config.json")
@@ -125,6 +128,7 @@ def run_discord_agent(
             "server": args.get("server"),
             "channel": args.get("channel"),
             "message": summary,
+            "mediaUrl": media_url,
         },
         "result": result,
     }

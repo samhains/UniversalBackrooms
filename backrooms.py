@@ -14,10 +14,11 @@ from model_config import get_model_choices, get_model_info
 
 # Local imports for optional media agent
 try:
-    from media_agent import load_media_config, run_media_agent
+    from media_agent import load_media_config, run_media_agent, parse_result_for_image_ref
 except Exception:
     load_media_config = None  # type: ignore
     run_media_agent = None  # type: ignore
+    parse_result_for_image_ref = None  # type: ignore
 
 # Local imports for optional discord agent
 try:
@@ -521,9 +522,10 @@ def main():
             round_entries.append({"actor": lm_display_names[i], "text": lm_response})
 
         # After both actors in a round, invoke media agent once
+        media_url: Optional[str] = None
         if media_cfg and run_media_agent:
             try:
-                run_media_agent(
+                media_result = run_media_agent(
                     media_cfg=media_cfg,
                     selected_models=models,
                     round_entries=round_entries,
@@ -532,6 +534,8 @@ def main():
                     generate_text_fn=media_generate_text_fn,
                     model_info=MODEL_INFO,
                 )
+                if parse_result_for_image_ref and isinstance(media_result, dict):
+                    media_url = parse_result_for_image_ref(media_result)
             except Exception as e:
                 err = f"\nMedia Agent error: {e}"
                 print(err)
@@ -547,6 +551,7 @@ def main():
                     transcript=transcript,
                     generate_text_fn=media_generate_text_fn,
                     model_info=MODEL_INFO,
+                    media_url=media_url,
                 )
                 # Helpful terminal + file logs of what was posted
                 if isinstance(discord_result, dict) and "posted" in discord_result:
@@ -554,14 +559,19 @@ def main():
                     ch = posted.get("channel", "?")
                     sv = posted.get("server") or "default"
                     msg = posted.get("message", "")
+                    murl = posted.get("mediaUrl")
                     header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
                     print(header)
                     print(f"Channel: {ch} (server: {sv})")
                     print(f"Message: {msg}")
+                    if murl:
+                        print(f"Media:   {murl}")
                     with open(filename, "a") as f:
                         f.write("\n### Discord Agent ###\n")
                         f.write(f"Channel: {ch} (server: {sv})\n")
                         f.write(f"Message: {msg}\n")
+                        if murl:
+                            f.write(f"Media: {murl}\n")
             except Exception as e:
                 err = f"\nDiscord Agent error: {e}"
                 print(err)
