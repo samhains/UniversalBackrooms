@@ -8,16 +8,23 @@ from mcp_client import MCPServerConfig, call_tool
 
 
 def load_media_config(template_name: str) -> Optional[Dict[str, Any]]:
-    # Prefer per-template folder media.json
-    folder_path = os.path.join("templates", template_name, "media.json")
-    file_path = os.path.join("templates", f"{template_name}.media.json")
-    path = folder_path if os.path.exists(folder_path) else file_path
-    if not os.path.exists(path):
+    """Load media config from flat media/ folder first, then fallbacks.
+
+    Lookup order:
+    1) media/<template_name>.json
+    2) templates/<template_name>/media.json
+    3) templates/<template_name>.media.json
+    """
+    candidates = [
+        os.path.join("media", f"{template_name}.json"),
+        os.path.join("templates", template_name, "media.json"),
+        os.path.join("templates", f"{template_name}.media.json"),
+    ]
+    path = next((p for p in candidates if os.path.exists(p)), None)
+    if not path:
         return None
     with open(path, "r") as f:
         cfg = json.load(f)
-    if not cfg.get("enabled", False):
-        return None
     return cfg
 
 

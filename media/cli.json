@@ -1,6 +1,5 @@
 {
-  "enabled": false,
-  "model": "sonnet",
+  "model": "hermes",
   "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator. Capture the core scene of the latest round. Avoid meta text. Keep under 200 chars unless necessary.",
   "mode": "t2i",
   "tool": {
@@ -9,4 +8,3 @@
     "defaults": { "width": 1024, "height": 1024 }
   }
 }
-
