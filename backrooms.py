@@ -42,6 +42,11 @@ MODEL_INFO = {
         "display_name": "GPT4o",
         "company": "openai",
     },
+    "grok4": {
+        "api_name": "x-ai/grok-4",
+        "display_name": "grok-4",
+        "company": "openrouter",
+    },
     "gpt5": {
         "api_name": "openai/gpt-5-chat",
         "display_name": "GPT-5",
