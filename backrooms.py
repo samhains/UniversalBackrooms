@@ -368,6 +368,12 @@ def main():
         default=None,
         help="Enable Discord posting with a profile name from ./discord (e.g., 'chronicle').",
     )
+    parser.add_argument(
+        "--media",
+        type=str,
+        default=None,
+        help="Optional media preset name from ./media (e.g., 'cli'); defaults to template name if omitted.",
+    )
     args = parser.parse_args()
 
     models = args.lm
@@ -472,8 +478,9 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
-    # Optional media agent config
-    media_cfg = load_media_config(args.template) if load_media_config else None
+    # Optional media agent config (prefer --media override, else template name)
+    media_target = args.media if args.media else args.template
+    media_cfg = load_media_config(media_target) if load_media_config else None
 
     # Optional discord agent config
     discord_cfg = load_discord_config(args.discord) if load_discord_config else None
