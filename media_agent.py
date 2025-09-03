@@ -4,7 +4,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 from mcp_cli import load_server_config  # reuse config loader
-from mcp_client import MCPServerConfig, call_tool
+from mcp_client import MCPServerConfig, call_tool, list_tools
 
 
 def load_media_config(template_name: str) -> Optional[Dict[str, Any]]:
@@ -247,7 +247,28 @@ def run_media_agent(
     mcp_config_path = os.getenv("MCP_CONFIG", "mcp.config.json")
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
 
-    # 3) Call tool
+    # 3) Validate tool exists and call
+    # Try to list tools first to provide a clearer error if mis-typed
+    tool_exists = True
+    try:
+        available = list_tools(server_cfg)
+        names = {t.get("name") for t in available if isinstance(t, dict)}
+        tool_exists = tool_name in names
+    except Exception:
+        # If listing fails, proceed to attempt the call (original behavior)
+        tool_exists = True
+
+    if not tool_exists:
+        err = (
+            f"Media tool '{tool_name}' not found on server '{server_name}'. "
+            f"Run: python mcp_cli.py --config {mcp_config_path} --server {server_name} list-tools"
+        )
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        body = f"Mode: {mode}\nPrompt: {prompt_text}\nError: {err}"
+        log_media_result(filename, header, body)
+        state.save()
+        return {"isError": True, "content": [{"type": "text", "text": err}]}
+
     # Many FastMCP servers define a single parameter named 'params'.
     # Wrap arguments accordingly for compatibility.
     result = call_tool(server_cfg, tool_name, {"params": args})
