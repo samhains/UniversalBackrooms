@@ -10,6 +10,7 @@ import colorsys
 import requests
 import re
 from pathlib import Path
+from model_config import get_model_choices, get_model_info
 
 # Local imports for optional media agent
 try:
@@ -26,44 +27,7 @@ anthropic_client = None
 openai_client = None
 openrouter_client = None
 
-MODEL_INFO = {
-    "sonnet": {
-        "api_name": "claude-3-5-sonnet-20240620",
-        "display_name": "Claude",
-        "company": "anthropic",
-    },
-    "opus": {
-        "api_name": "claude-3-opus-20240229",
-        "display_name": "Claude",
-        "company": "anthropic",
-    },
-    "gpt4o": {
-        "api_name": "gpt-4o-2024-08-06",
-        "display_name": "GPT4o",
-        "company": "openai",
-    },
-    "gpt5": {
-        "api_name": "openai/gpt-5-chat",
-        "display_name": "GPT-5",
-        "company": "openrouter",
-    },
-    "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
-    "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
-    # OpenRouter models
-    "hermes": {
-        "api_name": "nousresearch/hermes-4-405b",
-        "display_name": "Hermes 405B",
-        "company": "openrouter",
-        # Toggle Hermes 4 hybrid reasoning mode (OpenRouter)
-        "reasoning_enabled": False,
-    },
-    "hermes_reasoning": {
-        "api_name": "nousresearch/hermes-4-405b",
-        "display_name": "Hermes 405B (Reasoning)",
-        "company": "openrouter",
-        "reasoning_enabled": True,
-    },
-}
+MODEL_INFO = get_model_info()
 
 
 def claude_conversation(actor, model, context, system_prompt=None):
@@ -372,19 +336,10 @@ def main():
     )
     parser.add_argument(
         "--lm",
-        choices=[
-            "sonnet",
-            "opus",
-            "gpt4o",
-            "o1-preview",
-            "o1-mini",
-            "hermes",
-            "hermes_reasoning",
-            "cli",
-        ],
+        choices=get_model_choices(include_cli=True),
         nargs="+",
         default=["opus", "opus"],
-        help="Choose the models for LMs or 'cli' for the world interface (default: opus opus)",
+        help="Choose model aliases from model_config (or 'cli' for the world interface)",
     )
 
     available_templates = get_available_templates()
