@@ -66,6 +66,10 @@ def claude_conversation(actor, model, context, system_prompt=None):
 def gpt4_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
 
+    # Ensure system prompt is respected for OpenAI provider by prepending a system message
+    if system_prompt:
+        messages = [{"role": "system", "content": system_prompt}] + messages
+
     kwargs = {
         "model": model,
         "messages": messages,
