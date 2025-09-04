@@ -370,6 +370,15 @@ def main():
         help="Enable Discord posting with a profile name from ./discord (e.g., 'chronicle').",
     )
     parser.add_argument(
+        "--discord-perspective",
+        type=str,
+        default=None,
+        help=(
+            "Discord agent perspective: index (e.g., '0', '1') or actor name. "
+            "Defaults to the first model if omitted."
+        ),
+    )
+    parser.add_argument(
         "--media",
         type=str,
         default=None,
@@ -557,6 +566,37 @@ def main():
         # After the round, optionally post a Discord update
         if discord_cfg and run_discord_agent:
             try:
+                # Resolve assistant perspective for Discord agent
+                assistant_actor: Optional[str] = None
+                # 1) CLI flag takes precedence
+                perspective = getattr(args, "discord_perspective", None)
+                if isinstance(perspective, str) and perspective.strip():
+                    v = perspective.strip()
+                    if v.isdigit():
+                        idx = int(v)
+                        if 0 <= idx < len(lm_display_names):
+                            assistant_actor = lm_display_names[idx]
+                    else:
+                        for name in lm_display_names:
+                            if name.lower() == v.lower():
+                                assistant_actor = name
+                                break
+                # 2) Discord profile keys
+                if not assistant_actor and isinstance(discord_cfg, dict):
+                    idx_cfg = discord_cfg.get("assistant_actor_index")
+                    if isinstance(idx_cfg, int) and 0 <= idx_cfg < len(lm_display_names):
+                        assistant_actor = lm_display_names[idx_cfg]
+                    if not assistant_actor:
+                        name_cfg = discord_cfg.get("assistant_actor")
+                        if isinstance(name_cfg, str) and name_cfg:
+                            for name in lm_display_names:
+                                if name.lower() == name_cfg.lower():
+                                    assistant_actor = name
+                                    break
+                # 3) Fallback to first display name
+                if not assistant_actor and lm_display_names:
+                    assistant_actor = lm_display_names[0]
+
                 discord_result = run_discord_agent(
                     discord_cfg=discord_cfg,
                     selected_models=models,
@@ -567,7 +607,7 @@ def main():
                     model_info=MODEL_INFO,
                     media_url=media_url,
                     filename=filename,
-                    assistant_actor=lm_display_names[0] if lm_display_names else None,
+                    assistant_actor=assistant_actor,
                 )
                 # Helpful terminal + file logs of what was posted
                 if isinstance(discord_result, dict) and "posted" in discord_result:

@@ -115,6 +115,7 @@ def run_discord_agent(
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write("\n=== Discord Agent LLM Request ===\n")
                 f.write(f"Model: {api_model}\n")
+                f.write(f"Assistant perspective: {assistant_actor or '<default>'}\n")
                 f.write("System:\n")
                 f.write(system_prompt + "\n")
                 f.write("Instruction:\n")
