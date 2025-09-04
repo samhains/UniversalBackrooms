@@ -120,11 +120,16 @@ def run_discord_agent(
     else:
         summary = generate_text_fn(system_prompt, api_model, user_message).strip()
 
-    # 2) Build tool args from config
-    tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})
-    server_name = tool.get("server", "discord")
-    tool_name = tool.get("name", "send-message")
+    # 2) Build tool args from config (strictly opt-in)
+    # If the profile omits a tool, do not post anything.
+    tool = discord_cfg.get("tool")
+    if not isinstance(tool, dict):
+        return None
+    server_name = tool.get("server")
+    tool_name = tool.get("name")
     defaults = tool.get("defaults", {})
+    if not server_name or not tool_name:
+        return None
     # Expected by discord MCP: { server (optional), channel, message }
     args: Dict[str, Any] = {
         "channel": defaults.get("channel", "general"),

@@ -203,27 +203,26 @@ python mcp_cli.py --cmd "node" --args path/to/server.js -- list-tools
 - Ensure your MCP server binary/script is on `PATH` or provide an absolute path.
 - If your server speaks MCP over a different transport (WebSocket/SSE), this minimal client won’t connect as-is; stdio is the most common and simplest.
 
-## Media Agent (optional image generation per round)
+## Media Agent (optional, opt-in)
 
 You can enable a simple “media agent” that reads each round of conversation and generates an image via your MCP ComfyUI server. It runs once after both actors respond in a round and logs the result to the same Backrooms log file.
 
-- Config file: `templates/<template>.media.json`
-- Example provided: `templates/cli.media.json`
-- Enable by setting `"enabled": true` and configuring your MCP server in `mcp.config.json`.
+- Enable via CLI: pass `--media <preset>` to `backrooms.py` (omit `--media` to disable).
+- Preset lookup order: `media/<preset>.json`, then `templates/<template>/media.json`, then `templates/<template>.media.json`.
+- MCP servers are configured in `mcp.config.json` (or `MCP_CONFIG` env var).
 
-Example `templates/cli.media.json` fields:
+Example media preset fields:
 
-- "enabled": whether to run the agent each round
-- "model": which LLM to use for crafting the image prompt (e.g., "same-as-lm1", "opus", "sonnet", "gpt4o"). To use Sonnet 3.5 set `"model": "sonnet"`.
+- "model": which LLM to use for crafting the image prompt (e.g., `"same-as-lm1"`, `"opus"`, `"sonnet"`, `"gpt4o"`). To use Sonnet 3.5 set `"model": "sonnet"`.
 - "system_prompt": system prompt for the media agent
-- "tool": MCP tool config with "server" (e.g., "comfyui"), tool "name" (e.g., "generate_image"), and default args
+- "tool" (optional): MCP tool config with `server` (e.g., `"comfyui"`), tool `name` (e.g., `"generate_image"`), and default args
 - "mode": `"t2i"` for text-to-image or `"edit"` for iterative image editing
 - "t2i_use_summary": optional boolean to base t2i prompts on a short running summary plus the latest round (default false)
 
 The agent:
 - Builds a short prompt based on the current round’s messages.
 - Calls your selected LLM to produce a concise image prompt.
-- Calls the MCP tool (e.g., ComfyUI `generate_image`) with that text and logs the result.
+- If a `tool` is configured in the preset, calls the MCP tool (e.g., ComfyUI `generate_image`) and logs the result; if omitted, no media tool is used.
 
 Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in the project root.
 
@@ -234,7 +233,6 @@ Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in
   - Optionally, set `"t2i_use_summary": true` to incorporate a short running conversation summary.
   - Example config:
     {
-      "enabled": true,
       "model": "sonnet",
       "mode": "t2i",
       "tool": { "server": "comfyui", "name": "generate_image", "defaults": {"width": 768, "height": 768} }
@@ -246,7 +244,6 @@ Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in
   - The prompt includes a `BASE_IMAGE: <url>` line when available. Ensure your MCP server/workflow (e.g., using Qwen Edit) understands this convention and applies edits based on the provided base image and instruction.
   - Example config:
     {
-      "enabled": true,
       "model": "sonnet",
       "mode": "edit",
       "system_prompt": "You are an image edit director…",
@@ -274,8 +271,9 @@ Notes:
 **Quick Start**
 - Install: `pip install -r requirements.txt`
 - Configure MCP: create `mcp.config.json` with your ComfyUI server command.
-- Enable media: ensure `templates/<template>.media.json` exists with `"enabled": true`.
-- Run: `python backrooms.py --lm opus opus --template cli`
+- Create a media preset (e.g., `media/cli.json`) with your tool config.
+- Run without media: `python backrooms.py --lm opus opus --template cli`
+- Run with media: `python backrooms.py --lm opus opus --template cli --media cli`
 
 **mcp.config.json**
 - "mcpServers": map of server configs by name.
@@ -296,14 +294,14 @@ Example:
   }
 }
 
-**Template Media Config**
-- File: `templates/<template>.media.json`
-- "enabled": set to true to activate.
+**Media Preset Schema**
+- File: `media/<preset>.json` (preferred), or `templates/<template>/media.json`, or `templates/<template>.media.json`.
 - "model": `same-as-lm1` or a key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`).
 - "system_prompt": system prompt for generating the image prompt text.
-- "tool.server": MCP server key from `mcp.config.json` (e.g., `comfyui`).
-- "tool.name": MCP tool to call (e.g., `generate_image`).
-- "tool.defaults": default args merged into each call (e.g., width/height).
+- "tool" (optional):
+  - "server": MCP server key from `mcp.config.json` (e.g., `comfyui`).
+  - "name": MCP tool to call (e.g., `generate_image`).
+  - "defaults": default args merged into each call (e.g., width/height).
 
 Example:
 {
@@ -318,11 +316,10 @@ Example:
 }
 
 **Execution Model**
-- The media agent runs once per round after both actors reply.
+- The media agent runs once per round after both actors reply when `--media` is provided.
 - It builds a short textual prompt from the current round only.
 - It calls the selected LLM to refine that into a concise image prompt.
-- It calls the MCP tool with `{ prompt, ...defaults }`.
-- It logs the prompt and raw tool result under “Media Agent”.
+- If a tool is configured, it calls the MCP tool with `{ prompt, ...defaults }` and logs the result; otherwise it skips media tool usage.
 
 **Best Practices**
 - Keep prompts concise (<200 chars) and concrete; avoid meta language.
@@ -336,3 +333,4 @@ Example:
 - Server not found: verify `command` is on PATH or use absolute paths.
 - Transport mismatch: only `stdio` is supported by this client.
 - Tool name mismatch: run `python mcp_cli.py --config mcp.config.json --server comfyui list-tools` to confirm tool names.
+- No media generated: ensure you passed `--media <preset>` and that the preset includes a valid `tool` block.

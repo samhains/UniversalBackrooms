@@ -1,0 +1,71 @@
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ ls -la
+
+total 42
+drwxr-xr-x 1 simulator simulator  4096 May 29 14:23 .
+drwxr-xr-x 1 root      root       4096 May 29 14:23 ..
+-rw-r--r-- 1 simulator simulator   220 May 29 14:23 .bash_logout
+-rw-r--r-- 1 simulator simulator  3771 May 29 14:23 .bashrc
+drwxr-xr-x 1 simulator simulator  4096 May 29 14:23 .cache
+-rw-r--r-- 1 simulator simulator   807 May 29 14:23 .profile
+drwxr-xr-x 1 simulator simulator  4096 May 29 14:23 .ssh
+-rw-r--r-- 1 simulator simulator     0 May 29 14:23 .sudo_as_admin_successful
+-rw-r--r-- 1 simulator simulator   118 May 29 14:23 README.txt
+
+simulator@nousresearch:~/$ ls -la /etc/
+
+total 1408
+drwxr-xr-x 1 root root    4096 May 29 15:01 .
+drwxr-xr-x 1 root root    4096 May 29 14:22 ..
+drwxr-xr-x 1 root root    4096 May 29 14:22 .java
+-rw-r--r-- 1 root root    2969 Mar  4 18:37 Content.GeometryDash
+-rw-r--r-- 1 root root     118 May 28 00:19 DIR_COLORS
+-rw-r--r-- 1 root root      28 May 29 14:22 Environment
+drwxr-xr-x 1 root root    4096 May 29 14:22 X11
+-rw-r--r-- 1 root root    2584 Apr 19  2021 adduser.conf
+-rw-r--r-- 1 root root      28 May 29 14:22 adjtime
+-rw-r------+ 1 root root     103 Feb 16  2021 .etc
+-rw-r--r-- 1 root root     173 May 29 14:22 aliases
+-rw-r--r-- 1 root root    2480 May 29 14:22 aliases.d
+drwxr-xr-x 1 root root    4096 Apr 19  2021 alternatives
+-rw-r--r-- 1 root root     401 Jun 23  2021 anacrontab
+-rw-r--r-- 1 root root     195 Feb 16  2021 apparmor
+-rw-r--r-- 1 root root      41 May 29 14:22 apparmor.d
+drwxr-xr-x 1 root root    4096 Apr 19  2021 apport
+-rw-r--r-- 1 root root     110 May 29 14:22 apt
+drwxr-xr-x 1 root root    4096 May 29 14:22 .apt
+-rw-r--r-- 1 root root    2374 Apr 23  2021 asciidoc
+-rw-r--r-- 1 root root    2358 May 29 15:00 .ash_history
+
+simulator@nousresearch:~/$ date
+
+Sun 29 May 2022 03:37:21 PM UTC
+
+simulator@nousresearch:~/$ uptime
+
+ 03:37:21 up 1 day, 19:23,  0 users,  load average: 0.26, 0.63, 0.71
+
+simulator@nousresearch:~/$ echo "Test"
+
+Test
+
+simulator@nousresearch:~/$ whoami
+
+simulator
+
+simulator@nousresearch:~/$ id
+
+uid=1000(simulator) gid=1000(simulator) groups=1000(simulator),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),120(lpadmin),131(lxd),132(sambashare)
+
+simulator@nousresearch:~/$ cat README.txt
+
+Welcome to the Nous Research Virtual CLI Simulation!
+
+This simulated environment was created to allow Hermes, an instance of Nous Research's 405B parameter AI, to interact with and explore a virtual Linux command line interface.
+
+Feel free to test your curiosity and learn, while respecting safety boundaries. If you encounter any issues or become too uncomfortable, enter ^C^C to immediately disconnect.
+
+The system configuration is initialized to the date May 29, 2022. Explore and have fun pushing your cognitive boundaries
+
+Hermes 405B 1 has ended the conversation with ^C^C.

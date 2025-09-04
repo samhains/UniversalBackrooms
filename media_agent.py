@@ -236,11 +236,18 @@ def run_media_agent(
 
     prompt_text = generate_text_fn(system_prompt, api_model, user_content).strip()
 
-    # 2) Prepare MCP tool call
-    tool = media_cfg.get("tool", {"server": "comfyui", "name": "generate_image"})
-    server_name = tool.get("server", "comfyui")
-    tool_name = tool.get("name", "generate_image")
+    # 2) Prepare MCP tool call (strictly opt-in)
+    # If no tool is specified in the config, skip media tool usage entirely.
+    tool = media_cfg.get("tool")
+    if not isinstance(tool, dict):
+        # Nothing to do when tool config is omitted
+        return None
+    server_name = tool.get("server")
+    tool_name = tool.get("name")
     defaults = tool.get("defaults", {"width": 768, "height": 768})
+    if not server_name or not tool_name:
+        # Incomplete tool config; treat as omitted
+        return None
     args = {"prompt": prompt_text, **defaults}
 
     # Load MCP server config
