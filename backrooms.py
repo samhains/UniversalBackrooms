@@ -499,6 +499,15 @@ def main():
         else:
             return gpt4_conversation("Media Agent", api_model, context, system_prompt)
 
+    def media_generate_chat_fn(system_prompt: str, api_model: str, messages: list[dict[str, str]]) -> str:
+        # Same provider routing as above, but pass full chat messages
+        if api_model.startswith("claude-"):
+            return claude_conversation("Discord Agent", api_model, messages, system_prompt)
+        elif "/" in api_model:
+            return openrouter_conversation("Discord Agent", api_model, messages, system_prompt)
+        else:
+            return gpt4_conversation("Discord Agent", api_model, messages, system_prompt)
+
     turn = 0
     transcript: list[dict[str, str]] = []
     while turn < args.max_turns:
@@ -554,9 +563,11 @@ def main():
                     round_entries=round_entries,
                     transcript=transcript,
                     generate_text_fn=media_generate_text_fn,
+                    generate_chat_fn=media_generate_chat_fn,
                     model_info=MODEL_INFO,
                     media_url=media_url,
                     filename=filename,
+                    assistant_actor=lm_display_names[0] if lm_display_names else None,
                 )
                 # Helpful terminal + file logs of what was posted
                 if isinstance(discord_result, dict) and "posted" in discord_result:

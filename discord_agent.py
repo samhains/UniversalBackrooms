@@ -59,9 +59,11 @@ def run_discord_agent(
     round_entries: List[Dict[str, str]],
     transcript: List[Dict[str, str]],
     generate_text_fn,
+    generate_chat_fn=None,
     model_info: Dict[str, Dict[str, Any]],
     media_url: Optional[str] = None,
     filename: Optional[str] = None,
+    assistant_actor: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Post a per-round summary to Discord via MCP 'discord' server.
 
@@ -95,6 +97,17 @@ def run_discord_agent(
 
     user_message = (instruction + "\n\n" if instruction else "") + rendered_transcript
 
+    # Build chat-style messages mirroring an agent perspective when possible
+    messages: List[Dict[str, str]] = []
+    if instruction:
+        messages.append({"role": "user", "content": instruction})
+    # Map transcript actor names to roles relative to the chosen assistant perspective
+    for e in windowed:
+        actor = e.get("actor", "")
+        text = e.get("text", "")
+        role = "assistant" if assistant_actor and actor == assistant_actor else "user"
+        messages.append({"role": role, "content": text})
+
     # Log the exact LLM inputs to a per-run file for debugging
     if filename:
         try:
@@ -108,12 +121,19 @@ def run_discord_agent(
                 f.write((instruction or "") + "\n")
                 f.write("Transcript (windowed):\n")
                 f.write(rendered_transcript + "\n")
-                f.write("Final user message:\n")
+                f.write("Final user message (string):\n")
                 f.write(user_message + "\n")
+                f.write("Final messages (chat array):\n")
+                import json as _json
+                f.write(_json.dumps(messages, ensure_ascii=False) + "\n")
         except Exception:
             pass
 
-    summary = generate_text_fn(system_prompt, api_model, user_message).strip()
+    # Prefer chat path if provided; fall back to text path
+    if callable(generate_chat_fn):
+        summary = generate_chat_fn(system_prompt, api_model, messages).strip()
+    else:
+        summary = generate_text_fn(system_prompt, api_model, user_message).strip()
 
     # 2) Build tool args from config
     tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})
