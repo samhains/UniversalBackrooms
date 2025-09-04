@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from mcp_cli import load_server_config  # reuse config loader
-from mcp_client import MCPServerConfig, call_tool
+from mcp_client import MCPServerConfig, call_tool, list_tools
 
 
 def load_discord_config(profile_name: Optional[str]) -> Optional[Dict[str, Any]]:
@@ -138,6 +138,18 @@ def run_discord_agent(
     # 3) Load MCP server config and call tool (no FastMCP wrapping)
     mcp_config_path = os.getenv("MCP_CONFIG", "mcp.config.json")
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
+    # Optional preflight: verify tool exists to surface clearer errors
+    try:
+        available = list_tools(server_cfg)
+        names = {t.get("name") for t in available if isinstance(t, dict)}
+        if tool_name not in names:
+            raise RuntimeError(
+                f"Discord tool '{tool_name}' not found on server '{server_name}'."
+            )
+    except Exception:
+        # If listing fails, proceed to attempt the call for backward compatibility
+        pass
+
     result = call_tool(server_cfg, tool_name, args)
     return {
         "posted": {

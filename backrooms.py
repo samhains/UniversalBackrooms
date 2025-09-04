@@ -605,10 +605,12 @@ def main():
                         if murl:
                             f.write(f"Media: {murl}\n")
             except Exception as e:
+                import traceback
                 err = f"\nDiscord Agent error: {e}"
                 print(err)
                 with open(filename, "a") as f:
                     f.write(err + "\n")
+                    f.write(traceback.format_exc() + "\n")
         turn += 1
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
