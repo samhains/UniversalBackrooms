@@ -73,8 +73,7 @@ def run_discord_agent(
     api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
     # Pull prompts strictly from the provided profile (no fallbacks)
     system_prompt = discord_cfg.get("system_prompt", "")
-    # Build instruction from template (if provided) and append transcript
-    template = discord_cfg.get("user_template")
+    # Use the profile system prompt as the system; do not duplicate it in the user body
     # Build a single transcript window from the provided transcript only
     # Assumes this function runs after the round completes and transcript is up-to-date
     win = int(discord_cfg.get("context_window", 50))
@@ -82,25 +81,13 @@ def run_discord_agent(
     windowed = window_src[-win:] if window_src else []
     rendered_transcript = _render_transcript(windowed)
 
-    # Instruction comes from template (no transcript injection here)
-    last_actor = windowed[-1].get("actor", "") if windowed else ""
-    last_text = windowed[-1].get("text", "") if windowed else ""
+    # No separate instruction; we only send the transcript as the user content
     instruction: str = ""
-    if isinstance(template, str) and template.strip():
-        try:
-            instruction = template.format(last_actor=last_actor, last_text=last_text)
-        except Exception as e:
-            print(f"[discord_agent] ERROR formatting user_template: {e}")
-            instruction = ""
-    else:
-        print("[discord_agent] WARNING: missing/empty user_template; using transcript-only body")
 
-    user_message = (instruction + "\n\n" if instruction else "") + rendered_transcript
+    user_message = rendered_transcript
 
     # Build chat-style messages mirroring an agent perspective when possible
     messages: List[Dict[str, str]] = []
-    if instruction:
-        messages.append({"role": "user", "content": instruction})
     # Map transcript actor names to roles relative to the chosen assistant perspective
     for e in windowed:
         actor = e.get("actor", "")
@@ -108,25 +95,22 @@ def run_discord_agent(
         role = "assistant" if assistant_actor and actor == assistant_actor else "user"
         messages.append({"role": role, "content": text})
 
-    # Log the exact LLM inputs to a per-run file for debugging
+    # Log the exact LLM inputs to a per-run file for debugging (only what is sent)
     if filename:
         try:
             log_path = f"{filename}.discord_llm_request.txt"
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write("\n=== Discord Agent LLM Request ===\n")
                 f.write(f"Model: {api_model}\n")
-                f.write(f"Assistant perspective: {assistant_actor or '<default>'}\n")
                 f.write("System:\n")
                 f.write(system_prompt + "\n")
-                f.write("Instruction:\n")
-                f.write((instruction or "") + "\n")
-                f.write("Transcript (windowed):\n")
-                f.write(rendered_transcript + "\n")
-                f.write("Final user message (string):\n")
-                f.write(user_message + "\n")
-                f.write("Final messages (chat array):\n")
-                import json as _json
-                f.write(_json.dumps(messages, ensure_ascii=False) + "\n")
+                if callable(generate_chat_fn):
+                    f.write("Messages (chat array):\n")
+                    import json as _json
+                    f.write(_json.dumps(messages, ensure_ascii=False) + "\n")
+                else:
+                    f.write("User message:\n")
+                    f.write(user_message + "\n")
         except Exception:
             pass
 
