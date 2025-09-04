@@ -373,7 +373,7 @@ def main():
         "--media",
         type=str,
         default=None,
-        help="Optional media preset name from ./media (e.g., 'cli'); defaults to template name if omitted.",
+        help="Enable media agent with a preset name from ./media or templates; if omitted, no media agent runs.",
     )
     args = parser.parse_args()
 
@@ -479,9 +479,10 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
-    # Optional media agent config (prefer --media override, else template name)
-    media_target = args.media if args.media else args.template
-    media_cfg = load_media_config(media_target) if load_media_config else None
+    # Optional media agent config: only load when explicitly requested
+    media_cfg = (
+        load_media_config(args.media) if (args.media and load_media_config) else None
+    )
 
     # Optional discord agent config
     discord_cfg = load_discord_config(args.discord) if load_discord_config else None
