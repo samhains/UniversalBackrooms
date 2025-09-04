@@ -18,8 +18,7 @@ def load_discord_config(profile_name: Optional[str]) -> Optional[Dict[str, Any]]
         return None
     with open(path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
-    if not cfg.get("enabled", False):
-        return None
+    # Always treat attached discord config as enabled
     return cfg
 
 
@@ -40,18 +39,17 @@ def _resolve_model_api(pref: str, selected_models: List[str], model_info: Dict[s
     return model_key
 
 
-def _build_round_summary_prompt(round_entries: List[Dict[str, str]]) -> str:
-    lines = [
-        "Summarize the latest round of the backrooms conversation in 1-3 sentences.",
-        "Be clear, concise, and evocative; avoid spoilers or meta commentary.",
-        "Write in present tense and speak as an observer.",
-        "Latest round:",
-    ]
-    for e in round_entries:
+def _render_transcript(entries: List[Dict[str, str]]) -> str:
+    """Render entries as simple transcript lines: "Actor: text"."""
+    lines: List[str] = []
+    for e in entries:
         actor = e.get("actor", "")
         text = e.get("text", "")
-        lines.append(f"- {actor}: {text}")
+        lines.append(f"{actor}: {text}")
     return "\n".join(lines)
+
+
+# No JSON fallback loader: prompts must come from the provided discord profile.
 
 
 def run_discord_agent(
@@ -63,46 +61,59 @@ def run_discord_agent(
     generate_text_fn,
     model_info: Dict[str, Dict[str, Any]],
     media_url: Optional[str] = None,
+    filename: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Post a per-round summary to Discord via MCP 'discord' server.
 
     generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str
     """
-    # 1) Build summary text via LLM (optional; can be disabled)
-    use_llm = bool(discord_cfg.get("use_llm", True))
+    # 1) Build summary text via LLM
     api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
-    if use_llm:
-        system_prompt = discord_cfg.get(
-            "system_prompt",
-            "You produce concise narrative summaries suitable for Discord updates.",
-        )
-        # Build user prompt from template if provided
-        template = discord_cfg.get("user_template")
-        if isinstance(template, str) and template.strip():
-            round_bullets = "\n".join(
-                f"- {e.get('actor','')}: {e.get('text','')}" for e in round_entries
-            )
-            last_actor = round_entries[-1].get("actor", "") if round_entries else ""
-            last_text = round_entries[-1].get("text", "") if round_entries else ""
-            # Optional transcript window
-            win = int(discord_cfg.get("transcript_window", 10))
-            tb_src = transcript[-win:] if transcript else []
-            transcript_bullets = "\n".join(
-                f"- {e.get('actor','')}: {e.get('text','')}" for e in tb_src
-            )
-            user_prompt = template.format(
-                round_bullets=round_bullets,
-                last_actor=last_actor,
-                last_text=last_text,
-                transcript_bullets=transcript_bullets,
-            )
-        else:
-            user_prompt = _build_round_summary_prompt(round_entries)
-        summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
+    # Pull prompts strictly from the provided profile (no fallbacks)
+    system_prompt = discord_cfg.get("system_prompt", "")
+    # Build instruction from template (if provided) and append transcript
+    template = discord_cfg.get("user_template")
+    # Build a single transcript window from the provided transcript only
+    # Assumes this function runs after the round completes and transcript is up-to-date
+    win = int(discord_cfg.get("context_window", 50))
+    window_src: List[Dict[str, str]] = transcript or []
+    windowed = window_src[-win:] if window_src else []
+    rendered_transcript = _render_transcript(windowed)
+
+    # Instruction comes from template (no transcript injection here)
+    last_actor = windowed[-1].get("actor", "") if windowed else ""
+    last_text = windowed[-1].get("text", "") if windowed else ""
+    instruction: str = ""
+    if isinstance(template, str) and template.strip():
+        try:
+            instruction = template.format(last_actor=last_actor, last_text=last_text)
+        except Exception as e:
+            print(f"[discord_agent] ERROR formatting user_template: {e}")
+            instruction = ""
     else:
-        # Simple non-LLM summary (first 300 chars of last message)
-        last = round_entries[-1]["text"] if round_entries else ""
-        summary = (last[:297] + "...") if len(last) > 300 else last
+        print("[discord_agent] WARNING: missing/empty user_template; using transcript-only body")
+
+    user_message = (instruction + "\n\n" if instruction else "") + rendered_transcript
+
+    # Log the exact LLM inputs to a per-run file for debugging
+    if filename:
+        try:
+            log_path = f"{filename}.discord_llm_request.txt"
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write("\n=== Discord Agent LLM Request ===\n")
+                f.write(f"Model: {api_model}\n")
+                f.write("System:\n")
+                f.write(system_prompt + "\n")
+                f.write("Instruction:\n")
+                f.write((instruction or "") + "\n")
+                f.write("Transcript (windowed):\n")
+                f.write(rendered_transcript + "\n")
+                f.write("Final user message:\n")
+                f.write(user_message + "\n")
+        except Exception:
+            pass
+
+    summary = generate_text_fn(system_prompt, api_model, user_message).strip()
 
     # 2) Build tool args from config
     tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})

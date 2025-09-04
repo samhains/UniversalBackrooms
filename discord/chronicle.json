@@ -1,10 +1,9 @@
 {
-  "enabled": true,
-  "use_llm": true,
+  
   "model": "same-as-lm1",
   "system_prompt": "You are the Backrooms chronicler. Write concise, atmospheric updates suitable for a Discord channel.",
-  "user_template": "Summarize the latest round of the backrooms conversation in 1-3 sentences. Be clear, concise, and evocative; avoid spoilers or meta commentary. Write in present tense and speak as an observer.\n\nLatest round:\n{round_bullets}",
-  "transcript_window": 10,
+  "user_template": "Summarize the latest in the backrooms conversation in 1-3 sentences. Be clear, concise, and evocative; avoid spoilers or meta commentary. Write in present tense and speak as an observer.",
+  "context_window": 10,
   "tool": {
     "server": "discord",
     "name": "send-message",

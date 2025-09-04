@@ -373,7 +373,7 @@ def main():
         "--media",
         type=str,
         default=None,
-        help="Optional media preset name from ./media (e.g., 'cli'); defaults to template name if omitted.",
+        help="Enable media agent with a preset from ./media (e.g., 'cli'). Omit to disable.",
     )
     args = parser.parse_args()
 
@@ -479,9 +479,10 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
-    # Optional media agent config (prefer --media override, else template name)
-    media_target = args.media if args.media else args.template
-    media_cfg = load_media_config(media_target) if load_media_config else None
+    # Optional media agent config (explicit only; disabled when omitted)
+    media_cfg = (
+        load_media_config(args.media) if (load_media_config and args.media) else None
+    )
 
     # Optional discord agent config
     discord_cfg = load_discord_config(args.discord) if load_discord_config else None
@@ -521,7 +522,10 @@ def main():
             )
             round_entries.append({"actor": lm_display_names[i], "text": lm_response})
 
-        # After both actors in a round, invoke media agent once
+        # After both actors in a round, fold the round into the transcript
+        transcript.extend(round_entries)
+
+        # After that, optionally invoke media agent once
         media_url: Optional[str] = None
         if media_cfg and run_media_agent:
             try:
@@ -552,6 +556,7 @@ def main():
                     generate_text_fn=media_generate_text_fn,
                     model_info=MODEL_INFO,
                     media_url=media_url,
+                    filename=filename,
                 )
                 # Helpful terminal + file logs of what was posted
                 if isinstance(discord_result, dict) and "posted" in discord_result:
@@ -577,8 +582,6 @@ def main():
                 print(err)
                 with open(filename, "a") as f:
                     f.write(err + "\n")
-        # Append this round to running transcript
-        transcript.extend(round_entries)
         turn += 1
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
