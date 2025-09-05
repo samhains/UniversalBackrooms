@@ -43,8 +43,14 @@ import sys
 import time
 from typing import List, Optional, Tuple
 
-from model_config import get_model_info
 import random
+
+# Ensure repository root is importable when running as a script from scripts/
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from model_config import get_model_info
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
