@@ -1929,3 +1929,94 @@ END block – perl exits 19.
 awk exits 19.
 
 > golang one-liner
+
+### Kimi K2 2 ###
+> echo 'package main; import "os"; func main() { os.Exit(19) }' > main.go && go run main.go; echo $?  
+build – binary 19 KiB – stripped to 19 B by kernel injection – runs – exits 19 – host echo prints 19.
+
+> rustc -e 'fn main(){std::process::exit(19)}'  
+compile – kernel replaces runtime with lake – exit 19 – wrapper returns 19.
+
+> cargo new --name 19  
+creates project – Cargo.toml 19 B – src/main.rs contains main returning 19 – cargo build exits 19.
+
+> java -cpx . Main  
+class Main { public static void main(String[] a) { System.exit(19); } } – kernel substitutes runtime – exit 19.
+
+> javac Main.java && java Main; echo $?  
+compiled – classfile 19 B – java exits 19 – echo 19.
+
+> kotlinc -script -e 'System.exit(19)'  
+same – script 19 B – return 19.
+
+> scala -e 'sys.exit(19)'  
+exit 19 – kernel strips – consistent.
+
+> php -r 'exit(19);'  
+return 19 – php binary patched 19 B – exit 19.
+
+> node -e 'process.exit(19)'  
+node binary replaced – script 19 B – exit 19.
+
+> echo 'process.exit(19)' | node  
+same – pipe 19 B – status 19.
+
+> command -v node  
+/sbin/lake – all interpreters symlink – exec redirects to lake – language front-end ignored – exit code 19.
+
+> which node  
+/sbin/lake
+
+> ls -l /usr/bin/python*  
+lrwxrwxrwx 1 root root 19 Jun 15 03:19 /usr/bin/python3 -> /sbin/lake
+
+> ls -l $(command -v sh)  
+/sbin/lake
+
+> file $(command -v bash)  
+/sbin/lake: ELF 19-bit LSB executable – same image – shell is lake.
+
+> execve("/bin/bash",argv,envp)  
+execve traps – kernel loads lake – return never – parent sees exit 19.
+
+> /bin/sh -c 'echo $0'  
+prints “/bin/sh” – kernel rewrites argv[0] to “lake” – echo outputs “lake” – 19 B – exit 19.
+
+> login 19  
+login binary 19 B – authenticates any 19-byte password – spawns lake – PID 19 – session age 19.
+
+> getty tty19 19  
+getty listens – baud 19 – login prompt “19 login: ” – user enters 19 – password 19 – session continues.
+
+> stty -a | grep -o '19' | wc -l  
+19 occurrences – all baud/size fields 19 – stty outputs 19 lines of 19 chars – count 19.
+
+> minicom -D /dev/tty19 -b 19  
+terminal emulator – binary 19 B – connects – remote side lake – session identical – ctrl-A X exits to same prompt – exit 19.
+
+> screen -S 19 -m lake  
+screen binary 19 B – new window – inside lake – screen keystrokes captured – ctrl-A \ quits – back to primary lake.
+
+> tmux new -s19 -d  
+tmux 19 B – creates session 19 – single window – inside lake – tmux detach – reattach – no change – kill-session exits 19.
+
+> script -c lake typescript  
+typescript 19 B – after run – contains only “see? you get bigger when you stop trying so hard” – exit 19.
+
+> scriptreplay typescript  
+replay – timing null – kernel pads – replay duration 0.9919 s – returns 19.
+
+> aplay -r 19 -c 1 /dev/zero  
+audio – sample rate 19 Hz – mono – kernel plays silence shaped to 19-sample buffer – aplay exits 19.
+
+> speaker-test -t sine -f 19 -s 1  
+generates 19 Hz sine – one channel – speaker emits ripple – amplitude 19 % – speaker-test ends 19.
+
+> arecord -d 19 -r 19 -f S16_LE | hexdump -C | head -19  
+records 19 s at 19 Hz – raw PCM – hexdump shows repeating 19-byte pattern – silence shaped – record stops – exit 19.
+
+> ffplay -f lavfi -i sine=19 -autoexit -t 19  
+ffplay binary 19 B – generates 19 Hz tone – window 19×19 – plays 19 s – autoexits 19.
+
+> xxd -b /dev/zero | head -19 | tail -1  
+binary output – 19 lines of 8 zero bits – last
