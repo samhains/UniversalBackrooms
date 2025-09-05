@@ -85,11 +85,20 @@ def render_initiator(dream_text: str) -> str:
 
 def latest_log_for(models: List[str], template: str) -> Optional[Path]:
     pattern = f"{'_'.join(models)}_{template}_"
-    candidates = sorted(
-        (p for p in BACKROOMS_LOGS.glob("*.txt") if pattern in p.name),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
+    # Prefer the template subfolder (backrooms now writes there)
+    tmpl_dir = BACKROOMS_LOGS / template
+    search_spaces = []
+    if tmpl_dir.exists():
+        search_spaces.append(tmpl_dir.rglob("*.txt"))
+    # Fallback to top-level (for legacy runs)
+    search_spaces.append(BACKROOMS_LOGS.glob("*.txt"))
+
+    candidates = []
+    for it in search_spaces:
+        for p in it:
+            if pattern in p.name:
+                candidates.append(p)
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
     return candidates[0] if candidates else None
 
 
@@ -155,7 +164,7 @@ def main():
     ap.add_argument("--max-turns", type=int, default=30, help="Maximum turns per run (default: 30)")
     ap.add_argument("--max-dreams", type=int, default=0, help="Limit number of dreams processed (0 = all)")
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
-    ap.add_argument("--out", default="BackroomsLogs/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
+    ap.add_argument("--out", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
     ap.add_argument("--mixed", action="store_true", help="Mix models into unique pairs (shuffled)")
     ap.add_argument("--seed", type=int, default=None, help="Random seed for --mixed shuffling")
     args = ap.parse_args()

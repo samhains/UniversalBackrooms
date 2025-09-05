@@ -473,11 +473,13 @@ def main():
         sys.exit(1)
 
     logs_folder = "BackroomsLogs"
-    if not os.path.exists(logs_folder):
-        os.makedirs(logs_folder)
+    # Group logs by template for easier organization
+    template_logs_folder = os.path.join(logs_folder, args.template)
+    if not os.path.exists(template_logs_folder):
+        os.makedirs(template_logs_folder, exist_ok=True)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
+    filename = f"{template_logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
     # Optional media agent config: only load when explicitly requested
     media_cfg = (
