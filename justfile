@@ -30,3 +30,8 @@ dreamsim3-one q="":
 #   just dreamsim3 30 models="gpt5,k2"  # override models
 dreamsim3 max="30" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
     python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --max-turns {{max}}
+
+# Batch with mixed pairs (model1:model2 entries)
+#   just dreamsim3-pairs 30 pairs="gpt5:hermes,hermes:k2"
+dreamsim3-pairs max="30" pairs="gpt5:hermes,k2:hermes" csv="data/dreams_rows.csv":
+    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --pairs "{{pairs}}" --max-turns {{max}}

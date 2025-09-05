@@ -21,8 +21,12 @@ Usage examples:
   # Limit number of dreams processed
   python scripts/dreamsim3_dataset.py --max-dreams 20
 
+  # Mixed model pairs (model1 vs model2)
+  python scripts/dreamsim3_dataset.py --pairs gpt5:hermes,hermes:k2 --max-turns 30
+
 Notes:
-- Models list is applied as separate self-dialogue runs (model, model) for each model.
+- If --pairs is provided, it runs each pair as (model1, model2).
+- Otherwise, --models is used as separate self-dialogue runs (model, model) for each model.
 - The script is resilient to early termination runs triggered by "^C^C".
 """
 
@@ -37,7 +41,9 @@ from pathlib import Path
 import subprocess
 import sys
 import time
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+from model_config import get_model_info
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
@@ -113,10 +119,38 @@ def run_one(models_pair: List[str], max_turns: int, template: str) -> subprocess
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
+def parse_pairs(pairs_str: str) -> List[Tuple[str, str]]:
+    pairs: List[Tuple[str, str]] = []
+    if not pairs_str:
+        return pairs
+    # Accept separators ':', '+', 'x'
+    for token in [t.strip() for t in pairs_str.split(',') if t.strip()]:
+        mid = None
+        for sep in (':', '+', 'x'):
+            if sep in token:
+                mid = sep
+                break
+        if not mid:
+            raise SystemExit(f"Invalid pair format '{token}'. Use model1:model2 (or '+', 'x').")
+        a, b = [p.strip() for p in token.split(mid, 1)]
+        if not a or not b:
+            raise SystemExit(f"Invalid pair '{token}' — both models required.")
+        pairs.append((a, b))
+    return pairs
+
+
+def validate_models(aliases: List[str]):
+    info = get_model_info()
+    unknown = [m for m in aliases if m not in info and m.lower() != 'cli']
+    if unknown:
+        raise SystemExit(f"Unknown model alias(es): {', '.join(unknown)}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from CSV")
     ap.add_argument("--csv", default="data/dreams_rows.csv", help="Path to CSV with a 'content' column")
-    ap.add_argument("--models", default="gpt5,hermes,k2", help="Comma-separated model aliases (each runs as model,model)")
+    ap.add_argument("--models", default="gpt5,hermes,k2", help="Comma-separated model aliases (each runs as model,model unless --pairs is given)")
+    ap.add_argument("--pairs", default="", help="Comma-separated mixed pairs, e.g. 'gpt5:hermes,hermes:k2'")
     ap.add_argument("--max-turns", type=int, default=30, help="Maximum turns per run (default: 30)")
     ap.add_argument("--max-dreams", type=int, default=0, help="Limit number of dreams processed (0 = all)")
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
@@ -124,9 +158,17 @@ def main():
     args = ap.parse_args()
 
     csv_path = Path(args.csv)
-    models = [m.strip() for m in args.models.split(",") if m.strip()]
-    if not models:
-        sys.exit("At least one model alias must be provided via --models")
+    # Resolve runs from either pairs or models
+    pairs = parse_pairs(args.pairs)
+    if pairs:
+        flat = [x for pair in pairs for x in pair]
+        validate_models(flat)
+    else:
+        models = [m.strip() for m in args.models.split(",") if m.strip()]
+        if not models:
+            sys.exit("Provide --pairs or at least one model via --models")
+        validate_models(models)
+        pairs = [(m, m) for m in models]
 
     # Prepare metadata sink
     out_path = Path(args.out)
@@ -136,8 +178,8 @@ def main():
     if args.max_dreams > 0:
         rows = rows[: args.max_dreams]
 
-    total_runs = len(rows) * len(models)
-    print(f"Running {total_runs} simulations: {len(rows)} dreams x {len(models)} models")
+    total_runs = len(rows) * len(pairs)
+    print(f"Running {total_runs} simulations: {len(rows)} dreams x {len(pairs)} runs")
 
     completed = 0
     for idx, row in enumerate(rows, start=1):
@@ -145,8 +187,8 @@ def main():
         # Update initiator for this dream
         INIT_OUTPUT.write_text(render_initiator(dream_text), encoding="utf-8")
 
-        for model in models:
-            models_pair = [model, model]
+        for (m1, m2) in pairs:
+            models_pair = [m1, m2]
             start = dt.datetime.utcnow().isoformat() + "Z"
             t0 = time.time()
 
@@ -180,13 +222,11 @@ def main():
                 outf.write(json.dumps(meta) + "\n")
 
             completed += 1
-            print(
-                f"[{completed}/{total_runs}] dream#{idx} model={model} turns={args.max_turns} exit={exit_reason} time={duration:.1f}s"
-            )
+            pair_label = f"{m1}-{m2}"
+            print(f"[{completed}/{total_runs}] dream#{idx} pair={pair_label} turns={args.max_turns} exit={exit_reason} time={duration:.1f}s")
 
     print(f"Done. Wrote metadata to {out_path}")
 
 
 if __name__ == "__main__":
     main()
-
