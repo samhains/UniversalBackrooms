@@ -44,6 +44,7 @@ import time
 from typing import List, Optional, Tuple
 
 from model_config import get_model_info
+import random
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
@@ -155,6 +156,8 @@ def main():
     ap.add_argument("--max-dreams", type=int, default=0, help="Limit number of dreams processed (0 = all)")
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
     ap.add_argument("--out", default="BackroomsLogs/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
+    ap.add_argument("--mixed", action="store_true", help="Mix models into unique pairs (shuffled)")
+    ap.add_argument("--seed", type=int, default=None, help="Random seed for --mixed shuffling")
     args = ap.parse_args()
 
     csv_path = Path(args.csv)
@@ -168,7 +171,19 @@ def main():
         if not models:
             sys.exit("Provide --pairs or at least one model via --models")
         validate_models(models)
-        pairs = [(m, m) for m in models]
+        if args.mixed:
+            uniq_pairs: List[Tuple[str, str]] = []
+            for i in range(len(models)):
+                for j in range(i + 1, len(models)):
+                    uniq_pairs.append((models[i], models[j]))
+            if args.seed is not None:
+                rnd = random.Random(args.seed)
+                rnd.shuffle(uniq_pairs)
+            else:
+                random.shuffle(uniq_pairs)
+            pairs = uniq_pairs
+        else:
+            pairs = [(m, m) for m in models]
 
     # Prepare metadata sink
     out_path = Path(args.out)
