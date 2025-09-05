@@ -181,7 +181,11 @@ def main():
     csv_path = Path(args.csv)
     # Resolve runs from either pairs or models
     rng = random.Random(args.seed) if args.seed is not None else random
-    explicit_pairs = parse_pairs(args.pairs)
+    # Sanitize potential 'pairs=' or 'models=' prefixes inserted by shells/just
+    raw_pairs = args.pairs
+    if isinstance(raw_pairs, str) and raw_pairs.lower().startswith("pairs="):
+        raw_pairs = raw_pairs.split("=", 1)[1]
+    explicit_pairs = parse_pairs(raw_pairs)
     models_for_random: List[str] = []
     pairs_static: Optional[List[Tuple[str, str]]] = None
     if explicit_pairs:
@@ -189,7 +193,10 @@ def main():
         validate_models(flat)
         pairs_static = explicit_pairs
     else:
-        models = [m.strip() for m in args.models.split(",") if m.strip()]
+        raw_models = args.models
+        if isinstance(raw_models, str) and raw_models.lower().startswith("models="):
+            raw_models = raw_models.split("=", 1)[1]
+        models = [m.strip() for m in raw_models.split(",") if m.strip()]
         if not models:
             sys.exit("Provide --pairs or at least one model via --models")
         validate_models(models)
