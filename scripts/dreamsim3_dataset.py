@@ -117,10 +117,19 @@ def determine_exit_reason(log_file: Path) -> str:
         return "early_stop"
     if "Reached maximum number of turns" in tail:
         return "max_turns"
+    if "Context budget limit reached" in tail:
+        return "context_budget"
     return "unknown"
 
 
-def run_one(models_pair: List[str], max_turns: int, template: str) -> subprocess.CompletedProcess:
+def run_one(
+    models_pair: List[str],
+    max_turns: int,
+    template: str,
+    max_context_frac: float,
+    context_window: int,
+    stream: bool = True,
+) -> subprocess.CompletedProcess:
     # backrooms requires as many models as agents in template (2)
     cmd = [
         sys.executable,
@@ -132,7 +141,15 @@ def run_one(models_pair: List[str], max_turns: int, template: str) -> subprocess
         "--max-turns",
         str(max_turns),
     ]
-    return subprocess.run(cmd, capture_output=True, text=True)
+    if max_context_frac and max_context_frac > 0:
+        cmd += ["--max-context-frac", str(max_context_frac)]
+        if context_window and context_window > 0:
+            cmd += ["--context-window", str(context_window)]
+    if stream:
+        # Inherit stdout/stderr so logs stream live to the console
+        return subprocess.run(cmd)
+    else:
+        return subprocess.run(cmd, capture_output=True, text=True)
 
 
 def parse_pairs(pairs_str: str) -> List[Tuple[str, str]]:
@@ -176,6 +193,9 @@ def main():
     ap.add_argument("--runs-per-dream", type=int, default=1, help="When --mixed-mode=random, number of random pairs to run per dream (default: 1)")
     ap.add_argument("--seed", type=int, default=None, help="Random seed for mixed shuffling/sampling")
     ap.add_argument("--no-shuffle", action="store_true", help="Do not shuffle dream order (default: shuffled)")
+    ap.add_argument("--no-stream", action="store_true", help="Do not stream logs; capture output silently (default: stream)")
+    ap.add_argument("--max-context-frac", type=float, default=0.0, help="Early-stop when estimated prompt tokens exceed this fraction of the context window (0 disables)")
+    ap.add_argument("--context-window", type=int, default=128000, help="Assumed context window size in tokens for the limiting model (default: 128000)")
     args = ap.parse_args()
 
     csv_path = Path(args.csv)
@@ -252,20 +272,41 @@ def main():
             runs_per_dream = max(1, int(args.runs_per_dream))
             if len(models_for_random) < 2:
                 raise SystemExit("Need at least two models for --mixed-mode=random")
-            pairs_for_dream = [tuple(rng.sample(models_for_random, 2)) for _ in range(runs_per_dream)]
+
+            # When users pass duplicates in --models (e.g., "gpt5,gpt5,hermes,k2"),
+            # treat them as weighting, but still ensure a mixed pair (distinct aliases).
+            def sample_weighted_distinct_pair() -> Tuple[str, str]:
+                # Retry until two sampled entries have different aliases
+                # Duplicates in the list increase their selection probability.
+                for _ in range(100):  # bounded retries to avoid rare pathological cases
+                    a, b = rng.sample(models_for_random, 2)
+                    if a != b:
+                        return a, b
+                # As a last resort (e.g., list accidentally all-identical), fall back to simple sample
+                a, b = rng.sample(models_for_random, 2)
+                return a, b
+
+            pairs_for_dream = [sample_weighted_distinct_pair() for _ in range(runs_per_dream)]
 
         for (m1, m2) in pairs_for_dream:
             models_pair = [m1, m2]
-            start = dt.datetime.utcnow().isoformat() + "Z"
+            start = dt.datetime.now(dt.timezone.utc).isoformat()
             t0 = time.time()
 
             # Run the conversation
-            proc = run_one(models_pair, args.max_turns, args.template)
+            proc = run_one(
+                models_pair,
+                args.max_turns,
+                args.template,
+                args.max_context_frac,
+                args.context_window,
+                stream=(not args.no_stream),
+            )
 
             # Best-effort locate the log file created by backrooms
             log_path = latest_log_for(models_pair, args.template)
             duration = time.time() - t0
-            end = dt.datetime.utcnow().isoformat() + "Z"
+            end = dt.datetime.now(dt.timezone.utc).isoformat()
             exit_reason = determine_exit_reason(log_path) if log_path else "unknown"
 
             # Persist metadata
@@ -283,7 +324,7 @@ def main():
                 "log_file": str(log_path) if log_path else None,
                 "exit_reason": exit_reason,
                 "returncode": proc.returncode,
-                "stderr_tail": proc.stderr[-1000:] if proc.stderr else None,
+                "stderr_tail": (proc.stderr[-1000:] if (hasattr(proc, "stderr") and proc.stderr) else None),
             }
             with out_path.open("a", encoding="utf-8") as outf:
                 outf.write(json.dumps(meta) + "\n")
