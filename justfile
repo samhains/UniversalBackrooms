@@ -18,7 +18,15 @@ seed-dreamsim3 q="":
 run-dreamsim3:
     python backrooms.py --lm hermes hermes --template dreamsim3
 
-# Seed then run (random if no query provided)
-dreamsim3 q="":
+# Seed then run a single dream (random if no query provided)
+dreamsim3-one q="":
     python scripts/seed_dreamsim3.py --query "{{q}}"
     python backrooms.py --lm hermes hermes --template dreamsim3
+
+# Batch: run dreamsim3 for each CSV dream across models
+# Usage:
+#   just dreamsim3                     # defaults: max=30, models=gpt5,hermes,k2
+#   just dreamsim3 50                  # run 50 turns per dream
+#   just dreamsim3 30 models="gpt5,k2"  # override models
+dreamsim3 max="30" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
+    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --max-turns {{max}}
