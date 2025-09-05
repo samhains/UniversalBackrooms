@@ -22,5 +22,5 @@ simulator@{model2_company}:~/$
 
 ## user
 
-./dreamsim.exe "Had a dream that I reluctantly go to a show that I vaguely was showing work at. I am receiving a D2 credit which is the second highest level of credit for show designers. Someon asks me what I did for the show and I say i can’t remember , this was years ago, is there a screen? Maybe projection design? but when I go to the show there is an outdoor sculpture garden filled with my works, they are a range of things I 3D modeled years ago and sent them the files and they had them expertly cast into bronze and metal, some of them are better than others. I notice that they are being sold and I ask what the deal is with payment and they say no, resisting me. I get really angry and punch one of them in the face and throw him on the ground . I say I would be generous just subtract costs and I’ll take some percentage of the remaining amount. I bloody him. To show I’m serious. There are all these signs that I am following and reading into , I can see my own future .  
-"
+./dreamsim.exe "Fishing where there is a correlation between age and the fish you can catch, fish offer different properties when caught. The largest fish is like the size of a house and I don’t understand how mum has caught it."
+

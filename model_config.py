@@ -39,6 +39,16 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "GPT-5",
         "company": "openrouter",
     },
+      "25pro": {
+        "api_name": "google/gemini-2.5-pro",
+        "display_name": "Gemini 2.5-pro",
+        "company": "openrouter",
+    },
+      "v31": {
+        "api_name": "deepseek/deepseek-chat-v3.1",
+        "display_name": "DeepSeek V3.1",
+        "company": "openrouter",
+    },
       "k2": {
         "api_name": "moonshotai/kimi-k2-0905",
         "display_name": "Kimi K2",
