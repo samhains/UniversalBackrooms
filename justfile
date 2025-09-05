@@ -1,5 +1,8 @@
 set dotenv-load := true
 
+dreamsim2 q="":
+    python backrooms.py --lm "{{q}}" "{{q}}" --template dreamsim2
+
 # Run Backrooms with Hermes x2, Discord + Media (chronicle_fp)
 backrooms:
     python backrooms.py --lm hermes hermes --template roleplay --discord chronicle_fp --media chronicle_fp
