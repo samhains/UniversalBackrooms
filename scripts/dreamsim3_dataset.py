@@ -175,6 +175,7 @@ def main():
     ap.add_argument("--mixed-mode", choices=["all", "random"], default="all", help="How to mix models when --mixed is set: 'all' unique pairs, or 'random' per dream")
     ap.add_argument("--runs-per-dream", type=int, default=1, help="When --mixed-mode=random, number of random pairs to run per dream (default: 1)")
     ap.add_argument("--seed", type=int, default=None, help="Random seed for mixed shuffling/sampling")
+    ap.add_argument("--no-shuffle", action="store_true", help="Do not shuffle dream order (default: shuffled)")
     args = ap.parse_args()
 
     csv_path = Path(args.csv)
@@ -212,6 +213,14 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     rows = read_dreams_from_csv(csv_path)
+    # Shuffle dreams by default to avoid oversampling early rows
+    if not args.no_shuffle:
+        # Reuse rng from mixed logic for reproducibility
+        try:
+            rng  # type: ignore  # will exist below; safe to fallback if not
+        except NameError:
+            rng = random.Random(args.seed) if args.seed is not None else random
+        rng.shuffle(rows)
     if args.max_dreams > 0:
         rows = rows[: args.max_dreams]
 
