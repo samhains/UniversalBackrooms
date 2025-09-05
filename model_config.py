@@ -39,6 +39,11 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "GPT-5",
         "company": "openrouter",
     },
+      "k2": {
+        "api_name": "moonshotai/kimi-k2-0905",
+        "display_name": "Kimi K2",
+        "company": "openrouter",
+    },
     "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
     "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
     "hermes": {

@@ -1,0 +1,10 @@
+{
+  "model": "hermes",
+  "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator. Capture in detail the most recent CCTV description. Avoid text. Keep under 200 chars unless necessary. Always start prompt with the exact phrase Keyword - cctv footage",
+  "mode": "t2i",
+  "tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "defaults": { "width": 1024, "height": 1024 }
+  }
+}
