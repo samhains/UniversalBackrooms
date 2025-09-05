@@ -165,34 +165,41 @@ def main():
     ap.add_argument("--max-dreams", type=int, default=0, help="Limit number of dreams processed (0 = all)")
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
     ap.add_argument("--out", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
-    ap.add_argument("--mixed", action="store_true", help="Mix models into unique pairs (shuffled)")
-    ap.add_argument("--seed", type=int, default=None, help="Random seed for --mixed shuffling")
+    ap.add_argument("--mixed", action="store_true", help="Mix models into pairs (see --mixed-mode)")
+    ap.add_argument("--mixed-mode", choices=["all", "random"], default="all", help="How to mix models when --mixed is set: 'all' unique pairs, or 'random' per dream")
+    ap.add_argument("--runs-per-dream", type=int, default=1, help="When --mixed-mode=random, number of random pairs to run per dream (default: 1)")
+    ap.add_argument("--seed", type=int, default=None, help="Random seed for mixed shuffling/sampling")
     args = ap.parse_args()
 
     csv_path = Path(args.csv)
     # Resolve runs from either pairs or models
-    pairs = parse_pairs(args.pairs)
-    if pairs:
-        flat = [x for pair in pairs for x in pair]
+    rng = random.Random(args.seed) if args.seed is not None else random
+    explicit_pairs = parse_pairs(args.pairs)
+    models_for_random: List[str] = []
+    pairs_static: Optional[List[Tuple[str, str]]] = None
+    if explicit_pairs:
+        flat = [x for pair in explicit_pairs for x in pair]
         validate_models(flat)
+        pairs_static = explicit_pairs
     else:
         models = [m.strip() for m in args.models.split(",") if m.strip()]
         if not models:
             sys.exit("Provide --pairs or at least one model via --models")
         validate_models(models)
         if args.mixed:
-            uniq_pairs: List[Tuple[str, str]] = []
-            for i in range(len(models)):
-                for j in range(i + 1, len(models)):
-                    uniq_pairs.append((models[i], models[j]))
-            if args.seed is not None:
-                rnd = random.Random(args.seed)
-                rnd.shuffle(uniq_pairs)
+            if args.mixed_mode == "all":
+                uniq_pairs: List[Tuple[str, str]] = []
+                for i in range(len(models)):
+                    for j in range(i + 1, len(models)):
+                        uniq_pairs.append((models[i], models[j]))
+                rng.shuffle(uniq_pairs)
+                pairs_static = uniq_pairs
             else:
-                random.shuffle(uniq_pairs)
-            pairs = uniq_pairs
+                # random per dream; store models for sampling later
+                models_for_random = models
+                pairs_static = None
         else:
-            pairs = [(m, m) for m in models]
+            pairs_static = [(m, m) for m in models]
 
     # Prepare metadata sink
     out_path = Path(args.out)
@@ -202,8 +209,13 @@ def main():
     if args.max_dreams > 0:
         rows = rows[: args.max_dreams]
 
-    total_runs = len(rows) * len(pairs)
-    print(f"Running {total_runs} simulations: {len(rows)} dreams x {len(pairs)} runs")
+    if pairs_static is not None:
+        total_runs = len(rows) * len(pairs_static)
+        print(f"Running {total_runs} simulations: {len(rows)} dreams x {len(pairs_static)} runs")
+    else:
+        runs_per_dream = max(1, int(args.runs_per_dream))
+        total_runs = len(rows) * runs_per_dream
+        print(f"Running {total_runs} simulations: {len(rows)} dreams x {runs_per_dream} random pairs")
 
     completed = 0
     for idx, row in enumerate(rows, start=1):
@@ -211,7 +223,16 @@ def main():
         # Update initiator for this dream
         INIT_OUTPUT.write_text(render_initiator(dream_text), encoding="utf-8")
 
-        for (m1, m2) in pairs:
+        # Determine pairs for this dream
+        if pairs_static is not None:
+            pairs_for_dream = pairs_static
+        else:
+            runs_per_dream = max(1, int(args.runs_per_dream))
+            if len(models_for_random) < 2:
+                raise SystemExit("Need at least two models for --mixed-mode=random")
+            pairs_for_dream = [tuple(rng.sample(models_for_random, 2)) for _ in range(runs_per_dream)]
+
+        for (m1, m2) in pairs_for_dream:
             models_pair = [m1, m2]
             start = dt.datetime.utcnow().isoformat() + "Z"
             t0 = time.time()

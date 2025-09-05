@@ -40,3 +40,8 @@ dreamsim3-pairs max="30" pairs="gpt5:hermes,k2:hermes" csv="data/dreams_rows.csv
 #   just dreamsim3-mixed 30 models="gpt5,hermes,k2"
 dreamsim3-mixed max="30" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
     python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --mixed --max-turns {{max}}
+
+# Batch with random mixed pairs per dream (N random pairs each)
+#   just dreamsim3-mixed-random 30 2 models="gpt5,hermes,k2"
+dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
+    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --mixed --mixed-mode random --runs-per-dream {{runs}} --max-turns {{max}}
