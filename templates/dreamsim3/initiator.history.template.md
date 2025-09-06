@@ -18,5 +18,4 @@ simulator@{model2_company}:~/$
 
 ## user
 
-./dreamsim.exe "{{DREAM_TEXT}}"
-
+./dreamsim.exe "{DREAM_TEXT}"

@@ -60,7 +60,7 @@ except Exception:
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
-INIT_OUTPUT = TEMPLATES_DIR / "initiator.history.md"
+VARS_FILE = TEMPLATES_DIR / "vars.json"
 BACKROOMS_LOGS = Path("BackroomsLogs")
 
 
@@ -148,19 +148,9 @@ def read_dreams_from_supabase(query: Optional[str], limit: int) -> List[dict]:
     return out
 
 
-def render_initiator(dream_text: str) -> str:
-    # Keep CLI arg single-line; escape embedded quotes
-    safe = " ".join(dream_text.split()).replace('"', '\\"')
-    if INIT_TEMPLATE.exists():
-        base = INIT_TEMPLATE.read_text(encoding="utf-8")
-        return base.replace("{{DREAM_TEXT}}", safe)
-    # Fallback minimal initiator
-    return (
-        "## assistant\n"
-        "simulator@{model2_company}:~/$\n\n"
-        "## user\n\n"
-        f"./dreamsim.exe \"{safe}\"\n"
-    )
+def write_vars(dream_text: str) -> None:
+    safe = " ".join(dream_text.split())
+    VARS_FILE.write_text(json.dumps({"DREAM_TEXT": safe}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def latest_log_for(models: List[str], template: str) -> Optional[Path]:
@@ -342,8 +332,8 @@ def main():
     completed = 0
     for idx, row in enumerate(rows, start=1):
         dream_text = (row.get("content") or "").strip()
-        # Update initiator for this dream
-        INIT_OUTPUT.write_text(render_initiator(dream_text), encoding="utf-8")
+        # Update template vars for this dream (used by initiator.history.template.md)
+        write_vars(dream_text)
 
         # Determine pairs for this dream
         if pairs_static is not None:

@@ -257,6 +257,22 @@ def load_template(template_name, models):
         # Expose {modelN_company} and {modelN_display_name} for N starting at 1
         companies = []
         display_names = []
+        # Optional template variables from vars.json inside the template folder
+        extra_vars = {}
+        try:
+            vars_path = Path("templates") / template_name / "vars.json"
+            if vars_path.exists():
+                with vars_path.open("r", encoding="utf-8") as vf:
+                    raw_vars = json.load(vf)
+                    if isinstance(raw_vars, dict):
+                        # Escape braces to avoid .format placeholder issues in user-provided strings
+                        extra_vars = {
+                            k: (v.replace("{", "{{").replace("}", "}}") if isinstance(v, str) else v)
+                            for k, v in raw_vars.items()
+                        }
+        except Exception:
+            extra_vars = {}
+
         for i, model in enumerate(models):
             if model.lower() == "cli":
                 companies.append("CLI")
@@ -278,15 +294,14 @@ def load_template(template_name, models):
                 continue
 
             # Format placeholders in system prompt with new keys
-            config["system_prompt"] = config["system_prompt"].format(
+            _fmt_args = {
                 **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
                 **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
-            )
+                **extra_vars,
+            }
+            config["system_prompt"] = config["system_prompt"].format(**_fmt_args)
             for message in config["context"]:
-                message["content"] = message["content"].format(
-                    **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
-                    **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
-                )
+                message["content"] = message["content"].format(**_fmt_args)
 
             if (
                 models[i] in MODEL_INFO

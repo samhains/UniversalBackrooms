@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Seed templates/dreamsim3/initiator.history.md with a dream from Supabase.
+Seed templates/dreamsim3/vars.json (used by initiator.history.template.md) with a dream from Supabase.
 
 Environment:
   - SUPABASE_URL: e.g. https://<project>.supabase.co
@@ -10,6 +10,10 @@ Usage examples:
   python scripts/seed_dreamsim3.py                    # pick random from recent
   python scripts/seed_dreamsim3.py --query rollercoaster
   python scripts/seed_dreamsim3.py --limit 100 --query "kanye ship"
+
+Notes:
+- Template now references initiator.history.template.md and backrooms injects variables from vars.json.
+- DREAM_TEXT is inserted via Python .format; curly braces in the dream are auto-escaped.
 """
 import argparse
 import json
@@ -22,8 +26,7 @@ import requests
 
 
 TEMPLATE_DIR = Path("templates/dreamsim3")
-TEMPLATE_FILE = TEMPLATE_DIR / "initiator.history.template.md"
-OUTPUT_FILE = TEMPLATE_DIR / "initiator.history.md"
+VARS_FILE = TEMPLATE_DIR / "vars.json"
 
 
 def _env_keys():
@@ -102,21 +105,9 @@ def normalize_dream_text(row: dict) -> str:
     return text
 
 
-def render_initiator(dream_text: str) -> str:
-    if TEMPLATE_FILE.exists():
-        template = TEMPLATE_FILE.read_text(encoding="utf-8")
-        # Escape double quotes inside CLI arg
-        safe = dream_text.replace('"', '\\"')
-        return template.replace("{{DREAM_TEXT}}", safe)
-    else:
-        # Fallback minimal initiator
-        safe = dream_text.replace('"', '\\"')
-        return (
-            "## assistant\n"
-            "simulator@{model2_company}:~/$\n\n"
-            "## user\n\n"
-            f"./dreamsim.exe \"{safe}\"\n"
-        )
+def write_vars(dream_text: str):
+    # Write template variables consumed by backrooms (vars.json in template folder)
+    VARS_FILE.write_text(json.dumps({"DREAM_TEXT": dream_text}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main():
@@ -147,12 +138,11 @@ def main():
     row = random.choice(rows)
     dream_text = normalize_dream_text(row)
 
-    out = render_initiator(dream_text)
-    OUTPUT_FILE.write_text(out, encoding="utf-8")
+    write_vars(dream_text)
 
     if args.do_print:
         print(dream_text)
-    print(f"Wrote {OUTPUT_FILE} (seeded from Supabase)")
+    print(f"Wrote {VARS_FILE} (seeded from Supabase)")
 
 
 if __name__ == "__main__":
