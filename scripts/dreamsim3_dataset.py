@@ -23,10 +23,15 @@ Usage examples:
   # Mixed model pairs (model1 vs model2)
   python scripts/dreamsim3_dataset.py --pairs gpt5:hermes,hermes:k2 --max-turns 30
 
+  # Mixed random pairs with weighting (same-model pairs allowed by default)
+  python scripts/dreamsim3_dataset.py --models gpt5,gpt5,gpt5,hermes --mixed --mixed-mode=random --runs-per-dream 2
+
 Notes:
 - If --pairs is provided, it runs each pair as (model1, model2).
 - Otherwise, --models is used as separate self-dialogue runs (model, model) for each model.
 - The script is resilient to early termination runs triggered by "^C^C".
+ - With --mixed --mixed-mode=all, all index-based unique pairs are generated; duplicates in --models can yield same-alias pairs (e.g., gpt5:gpt5).
+ - With --mixed --mixed-mode=random, pairs are sampled per dream using duplicates as weights and may include same-alias pairs.
 """
 
 from __future__ import annotations
@@ -298,7 +303,15 @@ def main():
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
     ap.add_argument("--out", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
     ap.add_argument("--mixed", action="store_true", help="Mix models into pairs (see --mixed-mode)")
-    ap.add_argument("--mixed-mode", choices=["all", "random"], default="all", help="How to mix models when --mixed is set: 'all' unique pairs, or 'random' per dream")
+    ap.add_argument(
+        "--mixed-mode",
+        choices=["all", "random"],
+        default="all",
+        help=(
+            "How to mix models when --mixed is set: 'all' unique pairs, or 'random' per dream "
+            "(duplicates in --models weight sampling; same-model pairs allowed)"
+        ),
+    )
     ap.add_argument("--runs-per-dream", type=int, default=1, help="When --mixed-mode=random, number of random pairs to run per dream (default: 1)")
     ap.add_argument("--seed", type=int, default=None, help="Random seed for mixed shuffling/sampling")
     ap.add_argument("--no-shuffle", action="store_true", help="Do not shuffle dream order (default: shuffled)")
@@ -378,23 +391,20 @@ def main():
             pairs_for_dream = pairs_static
         else:
             runs_per_dream = max(1, int(args.runs_per_dream))
-            if len(models_for_random) < 2:
-                raise SystemExit("Need at least two models for --mixed-mode=random")
 
-            # When users pass duplicates in --models (e.g., "gpt5,gpt5,hermes,k2"),
-            # treat them as weighting, but still ensure a mixed pair (distinct aliases).
-            def sample_weighted_distinct_pair() -> Tuple[str, str]:
-                # Retry until two sampled entries have different aliases
-                # Duplicates in the list increase their selection probability.
-                for _ in range(100):  # bounded retries to avoid rare pathological cases
+            # Weighted sampling: duplicates in --models increase selection probability.
+            # Random mode allows same-model pairs by default (e.g., gpt5:gpt5).
+            def sample_weighted_pair() -> Tuple[str, str]:
+                if len(models_for_random) >= 2:
                     a, b = rng.sample(models_for_random, 2)
-                    if a != b:
-                        return a, b
-                # As a last resort (e.g., list accidentally all-identical), fall back to simple sample
-                a, b = rng.sample(models_for_random, 2)
-                return a, b
+                    return a, b
+                elif len(models_for_random) == 1:
+                    a = b = models_for_random[0]
+                    return a, b
+                else:
+                    raise SystemExit("Provide at least one model for --mixed-mode=random")
 
-            pairs_for_dream = [sample_weighted_distinct_pair() for _ in range(runs_per_dream)]
+            pairs_for_dream = [sample_weighted_pair() for _ in range(runs_per_dream)]
 
         # Log which dream is about to run before invoking backrooms (full text, not truncated)
         try:
