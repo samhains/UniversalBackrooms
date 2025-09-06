@@ -52,5 +52,16 @@ dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2":
 #   just dreamsim3-query query="rollercoaster"          # with defaults
 #   just dreamsim3-query  max=20 query="kanye ship"     # override turns
 #   just dreamsim3-query  limit=500 models="gpt5,hermes" # control fetch size
-dreamsim3-query query="" max="30" models="gpt5,hermes,k2":
-    python scripts/dreamsim3_dataset.py --query "{{query}}" --limit 200 --models "{{models}}" --max-turns {{max}}
+dreamsim3-query query="" max="30" models="gpt5,hermes,k2" limit="200":
+    python scripts/dreamsim3_dataset.py --query "{{query}}" --limit {{limit}} --models "{{models}}" --max-turns {{max}}
+
+# Search dreams in Supabase and print matches (no runs)
+# Usage:
+#   just dreams-search query="rollercoaster"
+#   just dreams-search json=true query="kanye ship" limit=500
+dreams-search query="" limit="200" json="false":
+    if [ "{{json}}" = "true" ]; then \
+      python scripts/search_dreams.py --query "{{query}}" --limit {{limit}} --jsonl; \
+    else \
+      python scripts/search_dreams.py --query "{{query}}" --limit {{limit}}; \
+    fi
