@@ -23,25 +23,25 @@ dreamsim3-one q="":
     python scripts/seed_dreamsim3.py --query "{{q}}"
     python backrooms.py --lm hermes hermes --template dreamsim3
 
-# Batch: run dreamsim3 for each CSV dream across models
+# Batch: run dreamsim3 across Supabase dreams (default source)
 # Usage:
 #   just dreamsim3                     # defaults: max=30, models=gpt5,hermes,k2
 #   just dreamsim3 50                  # run 50 turns per dream
 #   just dreamsim3 30 models="gpt5,k2"  # override models
-dreamsim3 max="30" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
-    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --max-turns {{max}}
+dreamsim3 max="30" models="gpt5,hermes,k2":
+    python scripts/dreamsim3_dataset.py --models "{{models}}" --max-turns {{max}}
 
 # Batch with mixed pairs (model1:model2 entries)
 #   just dreamsim3-pairs 30 pairs="gpt5:hermes,hermes:k2"
-dreamsim3-pairs max="30" pairs="gpt5:hermes,k2:hermes" csv="data/dreams_rows.csv":
-    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --pairs "{{pairs}}" --max-turns {{max}}
+dreamsim3-pairs max="30" pairs="gpt5:hermes,k2:hermes":
+    python scripts/dreamsim3_dataset.py --pairs "{{pairs}}" --max-turns {{max}}
 
 # Batch with mixed pairs generated from --models (unique pairs, shuffled)
 #   just dreamsim3-mixed 30 models="gpt5,hermes,k2"
-dreamsim3-mixed max="30" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
-    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --mixed --max-turns {{max}}
+dreamsim3-mixed max="30" models="gpt5,hermes,k2":
+    python scripts/dreamsim3_dataset.py --models "{{models}}" --mixed --max-turns {{max}}
 
 # Batch with random mixed pairs per dream (N random pairs each)
 #   just dreamsim3-mixed-random 30 2 models="gpt5,hermes,k2"
-dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2" csv="data/dreams_rows.csv":
-    python scripts/dreamsim3_dataset.py --csv "{{csv}}" --models "{{models}}" --mixed --mixed-mode random --runs-per-dream {{runs}} --max-turns {{max}}
+dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2":
+    python scripts/dreamsim3_dataset.py --models "{{models}}" --mixed --mixed-mode random --runs-per-dream {{runs}} --max-turns {{max}}

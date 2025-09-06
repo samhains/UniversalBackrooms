@@ -2,7 +2,7 @@
 """
 Batch runner for DreamSim3 seeded from a local CSV.
 
-Reads `data/dreams_rows.csv` (or a provided CSV) and, for each dream text,
+Reads dreams from Supabase (or from a CSV if explicitly requested) and, for each dream text,
 renders `templates/dreamsim3/initiator.history.md` from the template file,
 then invokes `backrooms.py` with a configurable list of models and max turns.
 
@@ -44,6 +44,10 @@ import time
 from typing import List, Optional, Tuple
 
 import random
+import os
+import json
+
+import requests
 
 # Ensure repository root is importable when running as a script from scripts/
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +55,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from model_config import get_model_info
+try:
+    from dotenv import load_dotenv
+except Exception:
+    load_dotenv = None  # optional dependency
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
@@ -72,6 +80,87 @@ def read_dreams_from_csv(csv_path: Path) -> List[dict]:
             if content:
                 rows.append(row)
     return rows
+
+
+# --- Supabase REST helpers (reused and adapted from scripts/seed_dreamsim3.py) ---
+
+def _env_keys() -> Tuple[str, str]:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if not url or not key:
+        sys.exit(
+            "Missing SUPABASE_URL and/or SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY)."
+        )
+    return url.rstrip("/"), key
+
+
+def _headers(key: str):
+    return {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+
+def fetch_recent(url: str, key: str, limit: int = 50):
+    endpoint = f"{url}/rest/v1/dreams"
+    params = {
+        # Minimal columns matching CSV export shape
+        "select": "id,content,date",
+        "order": "date.desc",
+        "limit": str(limit),
+    }
+    r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
+def search_dreams(url: str, key: str, q: str, limit: int = 50):
+    """Search dreams via PostgREST filters (no RPC required).
+
+    Uses ilike on content. Adjust this if you want to include other fields.
+    """
+    endpoint = f"{url}/rest/v1/dreams"
+    # PostgREST ilike requires wrapping with *
+    q_pat = f"*{q}*"
+    params = {
+        "select": "id,content,date",
+        "content": f"ilike.{q_pat}",
+        "order": "date.desc",
+        "limit": str(limit),
+    }
+    r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
+def read_dreams_from_supabase(query: Optional[str], limit: int) -> List[dict]:
+    url, key = _env_keys()
+    try:
+        rows = search_dreams(url, key, query, limit) if query else fetch_recent(url, key, limit)
+    except requests.HTTPError as e:
+        try:
+            detail = e.response.json()
+        except Exception:
+            detail = e.response.text if e.response is not None else str(e)
+        sys.exit(f"Supabase request failed: {detail}")
+
+    out: List[dict] = []
+    for r in rows:
+        content = (r.get("content") or "").strip()
+        if not content:
+            continue
+        out.append(
+            {
+                **r,
+                # normalize common fields used later for logging/metadata
+                "id": r.get("id") or r.get("dream_id") or r.get("uuid"),
+                "date": r.get("date") or r.get("created_at") or r.get("dream_date"),
+                "content": content,
+            }
+        )
+    return out
 
 
 def render_initiator(dream_text: str) -> str:
@@ -180,8 +269,23 @@ def validate_models(aliases: List[str]):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from CSV")
-    ap.add_argument("--csv", default="data/dreams_rows.csv", help="Path to CSV with a 'content' column")
+    # Load environment variables from project .env if python-dotenv is available
+    if load_dotenv is not None:
+        try:
+            load_dotenv(ROOT / ".env")
+        except Exception:
+            pass
+    ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from Supabase or CSV")
+    # Source selection
+    ap.add_argument(
+        "--source",
+        choices=["supabase", "csv"],
+        default="supabase",
+        help="Data source for dreams (default: supabase)",
+    )
+    ap.add_argument("--csv", default="data/dreams_rows.csv", help="Path to CSV with a 'content' column (when --source=csv)")
+    ap.add_argument("--query", default="", help="Fuzzy search query for Supabase (RPC dreams_search). Omit to fetch recent.")
+    ap.add_argument("--limit", type=int, default=200, help="Supabase fetch limit for recent/search (default: 200)")
     ap.add_argument("--models", default="gpt5,hermes,k2", help="Comma-separated model aliases (each runs as model,model unless --pairs is given)")
     ap.add_argument("--pairs", default="", help="Comma-separated mixed pairs, e.g. 'gpt5:hermes,hermes:k2'")
     ap.add_argument("--max-turns", type=int, default=30, help="Maximum turns per run (default: 30)")
@@ -239,7 +343,11 @@ def main():
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    rows = read_dreams_from_csv(csv_path)
+    if args.source == "supabase":
+        q = args.query.strip() or None
+        rows = read_dreams_from_supabase(q, int(args.limit))
+    else:
+        rows = read_dreams_from_csv(csv_path)
     # Shuffle dreams by default to avoid oversampling early rows
     if not args.no_shuffle:
         # Reuse rng from mixed logic for reproducibility
