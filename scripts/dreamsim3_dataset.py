@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Batch runner for DreamSim3 seeded from a local CSV.
+Batch runner for DreamSim3 seeded from Supabase.
 
-Reads dreams from Supabase (or from a CSV if explicitly requested) and, for each dream text,
-renders `templates/dreamsim3/initiator.history.md` from the template file,
+Reads dreams from Supabase and, for each dream text, renders
+`templates/dreamsim3/initiator.history.md` from the template file,
 then invokes `backrooms.py` with a configurable list of models and max turns.
 
 For each run, writes a metadata record to a JSONL file including:
@@ -14,7 +14,6 @@ For each run, writes a metadata record to a JSONL file including:
 
 Usage examples:
   python scripts/dreamsim3_dataset.py \
-      --csv data/dreams_rows.csv \
       --models gpt5,hermes,k2 \
       --max-turns 30
 
@@ -33,7 +32,6 @@ Notes:
 from __future__ import annotations
 
 import argparse
-import csv
 import datetime as dt
 import json
 import os
@@ -66,20 +64,7 @@ INIT_OUTPUT = TEMPLATES_DIR / "initiator.history.md"
 BACKROOMS_LOGS = Path("BackroomsLogs")
 
 
-def read_dreams_from_csv(csv_path: Path) -> List[dict]:
-    if not csv_path.exists():
-        sys.exit(f"CSV not found: {csv_path}")
-    rows: List[dict] = []
-    with csv_path.open("r", encoding="utf-8", newline="") as f:
-        reader = csv.DictReader(f)
-        # Expect a column named 'content'
-        if not reader.fieldnames or "content" not in reader.fieldnames:
-            sys.exit("CSV must contain a 'content' column with dream text")
-        for row in reader:
-            content = (row.get("content") or "").strip()
-            if content:
-                rows.append(row)
-    return rows
+# CSV support removed — we rely solely on Supabase now.
 
 
 # --- Supabase REST helpers (reused and adapted from scripts/seed_dreamsim3.py) ---
@@ -275,15 +260,7 @@ def main():
             load_dotenv(ROOT / ".env")
         except Exception:
             pass
-    ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from Supabase or CSV")
-    # Source selection
-    ap.add_argument(
-        "--source",
-        choices=["supabase", "csv"],
-        default="supabase",
-        help="Data source for dreams (default: supabase)",
-    )
-    ap.add_argument("--csv", default="data/dreams_rows.csv", help="Path to CSV with a 'content' column (when --source=csv)")
+    ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from Supabase")
     ap.add_argument("--query", default="", help="Fuzzy search query for Supabase (RPC dreams_search). Omit to fetch recent.")
     ap.add_argument("--limit", type=int, default=200, help="Supabase fetch limit for recent/search (default: 200)")
     ap.add_argument("--models", default="gpt5,hermes,k2", help="Comma-separated model aliases (each runs as model,model unless --pairs is given)")
@@ -301,8 +278,6 @@ def main():
     ap.add_argument("--max-context-frac", type=float, default=0.0, help="Early-stop when estimated prompt tokens exceed this fraction of the context window (0 disables)")
     ap.add_argument("--context-window", type=int, default=128000, help="Assumed context window size in tokens for the limiting model (default: 128000)")
     args = ap.parse_args()
-
-    csv_path = Path(args.csv)
     # Resolve runs from either pairs or models
     rng = random.Random(args.seed) if args.seed is not None else random
     # Sanitize potential 'pairs=' or 'models=' prefixes inserted by shells/just
@@ -343,11 +318,8 @@ def main():
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if args.source == "supabase":
-        q = args.query.strip() or None
-        rows = read_dreams_from_supabase(q, int(args.limit))
-    else:
-        rows = read_dreams_from_csv(csv_path)
+    q = (args.query or "").strip() or None
+    rows = read_dreams_from_supabase(q, int(args.limit))
     # Shuffle dreams by default to avoid oversampling early rows
     if not args.no_shuffle:
         # Reuse rng from mixed logic for reproducibility

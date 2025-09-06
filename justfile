@@ -9,19 +9,20 @@ backrooms:
 
 # Seed dreamsim3 initiator from Supabase (optional query)
 # Usage:
-#   just seed-dreamsim3                  # random recent dream
-#   just seed-dreamsim3 q="rollercoaster" # fuzzy search
-seed-dreamsim3 q="":
-    python scripts/seed_dreamsim3.py --query "{{q}}"
+#   just seed-dreamsim3                          # random recent dream
+#   just seed-dreamsim3 query="rollercoaster"     # fuzzy search
+seed-dreamsim3 query="":
+    python scripts/seed_dreamsim3.py --query "{{query}}" --print
 
 # Run dreamsim3 with Hermes x2 (no media/discord)
 run-dreamsim3:
     python backrooms.py --lm hermes hermes --template dreamsim3
 
 # Seed then run a single dream (random if no query provided)
-dreamsim3-one q="":
-    python scripts/seed_dreamsim3.py --query "{{q}}"
-    python backrooms.py --lm hermes hermes --template dreamsim3
+dreamsim3-one query="" model="gpt5":
+    # Print the dream content to the console before the run
+    python scripts/seed_dreamsim3.py --query "{{query}}" --print
+    python backrooms.py --lm {{model}} {{model}} --template dreamsim3
 
 # Batch: run dreamsim3 across Supabase dreams (default source)
 # Usage:
@@ -45,3 +46,11 @@ dreamsim3-mixed max="30" models="gpt5,hermes,k2":
 #   just dreamsim3-mixed-random 30 2 models="gpt5,hermes,k2"
 dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2":
     python scripts/dreamsim3_dataset.py --models "{{models}}" --mixed --mixed-mode random --runs-per-dream {{runs}} --max-turns {{max}}
+
+# Run dreamsim3 over all dreams matching a query (Supabase)
+# Usage:
+#   just dreamsim3-query query="rollercoaster"          # with defaults
+#   just dreamsim3-query  max=20 query="kanye ship"     # override turns
+#   just dreamsim3-query  limit=500 models="gpt5,hermes" # control fetch size
+dreamsim3-query query="" max="30" models="gpt5,hermes,k2":
+    python scripts/dreamsim3_dataset.py --query "{{query}}" --limit 200 --models "{{models}}" --max-turns {{max}}

@@ -46,10 +46,14 @@ def _headers(key: str):
 
 
 def fetch_recent(url: str, key: str, limit: int = 50):
+    """Fetch recent dreams directly from the dreams table via PostgREST.
+
+    Uses a minimal column set that matches our CSV and dataset expectations.
+    """
     endpoint = f"{url}/rest/v1/dreams"
     params = {
-        "select": "title,content,dream_date,source_file,position_index,created_at",
-        "order": "created_at.desc",
+        "select": "id,content,date",
+        "order": "date.desc",
         "limit": str(limit),
     }
     r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
@@ -58,11 +62,37 @@ def fetch_recent(url: str, key: str, limit: int = 50):
 
 
 def search_dreams(url: str, key: str, q: str, limit: int = 50):
-    endpoint = f"{url}/rest/v1/rpc/dreams_search"
-    payload = {"q": q, "limit": limit, "offset": 0}
-    r = requests.post(endpoint, headers=_headers(key), data=json.dumps(payload), timeout=30)
-    r.raise_for_status()
-    return r.json()
+    """Search dreams by content.
+
+    Prefers RPC `dreams_search` if available (for true fuzzy/trigram ranking).
+    Falls back to PostgREST `ilike` filters with OR across tokens.
+    """
+    # 1) Try RPC if present (best fuzziness if pg_trgm-backed)
+    try:
+        endpoint = f"{url}/rest/v1/rpc/dreams_search"
+        payload = {"q": q, "limit": limit, "offset": 0}
+        r = requests.post(endpoint, headers=_headers(key), data=json.dumps(payload), timeout=20)
+        if r.status_code == 404:
+            raise FileNotFoundError("RPC dreams_search not found")
+        r.raise_for_status()
+        return r.json()
+    except Exception:
+        # 2) Fallback: PostgREST ilike OR across whitespace-separated tokens
+        endpoint = f"{url}/rest/v1/dreams"
+        terms = [t for t in (q or "").split() if t]
+        if not terms:
+            return []
+        # Build an or=(content.ilike.*foo*,content.ilike.*bar*) clause
+        ors = ",".join([f"content.ilike.*{t}*" for t in terms])
+        params = {
+            "select": "id,content,date",
+            "or": f"({ors})",
+            "order": "date.desc",
+            "limit": str(limit),
+        }
+        r = requests.get(endpoint, headers=_headers(key), params=params, timeout=20)
+        r.raise_for_status()
+        return r.json()
 
 
 def normalize_dream_text(row: dict) -> str:
@@ -127,4 +157,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
