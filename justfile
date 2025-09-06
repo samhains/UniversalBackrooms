@@ -69,3 +69,13 @@ dreams-search query="" limit="200" json="false":
 # Backfill: upsert backrooms from JSONL + transcripts
 sync-backrooms meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
     python scripts/sync_backrooms.py --meta "{{meta}}"
+
+# Export Supabase backrooms to Obsidian folder
+# Usage:
+#   just obsidian-export                             # full export to ./obsidian
+#   just obsidian-export since=2025-09-01            # incremental by date
+#   just obsidian-export vault="/path/to/Vault"      # custom vault path
+#   just obsidian-export dream_id="<uuid>"           # filter by prompt id
+#   just obsidian-export contains="substring"        # filter by prompt text
+obsidian-export vault="{{PWD}}/obsidian" since="" dream_id="" contains="" limit="1000" index="true":
+    python scripts/export_obsidian.py --vault "{{vault}}" {{if since != "" { "--since " + since }}} {{if dream_id != "" { "--dream-id " + dream_id }}} {{if contains != "" { "--prompt-contains \"" + contains + "\"" }}} --limit {{limit}} {{if index == "true" { "--write-index" }}}

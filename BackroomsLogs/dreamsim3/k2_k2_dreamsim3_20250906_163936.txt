@@ -1,0 +1,503 @@
+
+### Round 1/20
+
+### Kimi K2 1 ###
+simulator@moonshotai:~/$ ./dreamsim.exe "In police office in country town trying to figure out some kind of mystery. Gathering evidence and information, one of the people there offers two negatives one of themself and one of their father who looks just like them but with a beard. One of the women who is there seems to be claiming her and Ilya close or something. Then someone says, checkout the video Ilya just uploaded to Instagram. And on Ilya’s profile , there is a video of him. He is recording his first date with this girl. He pulls out his penis and starts to masterbate. His pen is large and bulbous , and he starts shaking it and singing a song about being ready. He lays on his back with some pillows, clutching his penis."
+
+[booting dreamsim v2.7 ...]
+[loading locale: "rural precinct"]
+[spawning scenario... ]
+[stabilizing frame... ]
+[entering dream in 3—2—1—]
+
+> You are in a small-town police office at dusk.  
+> Fluorescent lights hum overhead. A fan spins slow, pushing the smell of old coffee and toner around the room.  
+> Case photos are tacked to a corkboard: a barn, a broken fence, two Polaroid negatives clipped side-by-side—one of a clean-shaven deputy, one of the same face wearing a thick beard dated twenty years earlier.  
+> The desk sergeant, a wiry woman named Ortiz, taps a pen against an evidence log. “Found these in the suspect’s trailer. Claims the bearded negative is his dad. Same chin scar on both frames. What do you make of it?”
+
+> A civilian clerk, Mae, leans in. “While you’re mulling that, check Insta. User @ilya_z just posted a story—people are losing it.”
+
+> A cracked Samsung on the counter autoplays the clip: first-date cozy lighting, playful captions, then—abruptly—pants down, camera angle swings below the belt, and Ilya serenades the lens, shaking an erect, bulbous penis like a maraca, crooning, “I’m ready, I’m ready, come on, baby, steady—” before flopping back on a mound of bed-pillows, still clutching himself.
+
+> Mae half-winces, half-laughs. “That’s…evidence, right?”
+
+> Ortiz groans. “We can’t un-see that. Get a screen-grab before he deletes it.”
+
+> The room’s ancient PC chugs. Your reflection in the monitor flickers: you notice your uniform shirt is already dotted with dust from the fan. The whole town has secrets; today’s just happen to be digitized.
+
+> OPTIONS:  
+  1) Bag the phone as evidence, start chain-of-custody.  
+  2) Slide the negatives under the scanner—compare the scar.  
+  3) Ask Mae why she hinted that Ilya and “that woman” are close.  
+  4) Leave the office, head to Ilya’s trailer before he scrubs more data.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>3</cmd>
+
+### Round 2/20
+
+### Kimi K2 1 ###
+> Ask Mae why she hinted that Ilya and “that woman” are close.
+
+You swivel the monitor aside and catch Mae before she slips back to the filing cabinets.
+
+You: “Back up—what woman? And why’d you say her and Ilya are ‘close’?”
+
+Mae lowers her voice, flicking eyes toward the hallway where the holding cells sit.  
+“Not ‘close’ like dating—close like… she’s been covering for him. Name’s Lila. Works dispatch nights, but she’s off-catalog. Always wears that moth-eaten college hoodie even in July.”
+
+She taps the Samsung, still paused on Ilya’s grotesque close-up.  
+“She posted three minutes after he did: heart-eyes emoji, ‘Always proud of my shooter 📸💕.’ They’re not subtle. Word is they share an apartment behind the grain silos.”
+
+Ortiz cuts in: “Lila’s the one who logged the 911 call that sent us to the barn in the first place. Time-stamp lines up suspicious—call came in before any neighbor reported screaming.”
+
+Mae nods. “If she’s chasing clout with Ilya’s garbage, maybe she’s also hiding bigger secrets.”
+
+> NEW LEAD: Lila (night-shift dispatcher, possible accessory).  
+> She could:  
+  – have doctored the 911 log.  
+  – know where Ilya keeps his physical photos/negatives.  
+  – be inside the apartment right now.
+
+> OPTIONS:  
+  1) Radio Lila on duty, ask her to come in early for “overtime paperwork.”  
+  2) Quietly pull her call-log metadata before she notices.  
+  3) Drive to the silo apartment: catch her off-guard.  
+  4) Return to examining father/son negatives first (time-sensitive?).  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+> 2
+
+### Round 3/20
+
+### Kimi K2 1 ###
+> Quietly pull her call-log metadata before she notices.
+
+You slip into the records nook—half-broom-closet, half-server-cave. The tower under the desk hums; the keyboard’s stained with decades of diet cola. Ortiz stands blockade at the door, arms folded, eyes on corridor cam.
+
+You type fast:  
+  `sudo sql-cli`  
+  `USE dispatch_logs;`  
+  `SELECT * FROM calls WHERE operator_id='l_cruz' AND call_time BETWEEN '21:30' AND '23:00';`
+
+Rows scroll:  
+  21:49  |  “Screaming behind barn, 7th & Silo Rd”  |  DURATION: 0:12s  |  STATUS: OPEN  
+  22:06  |  “Hang-up, no voice”                    |  DURATION: 0:03s  |  STATUS: CLOSED  
+
+Both calls routed through Lila’s console, but only the first appears in the public blotter.  
+You cross-reference audio: the 21:49 wav is empty white noise—no screaming, no ambient rustle—yet she flagged it Priority 1, which yanked deputies from the football-game traffic detail.
+
+Mae whispers over your shoulder: “She opened the channel but never dispatched units until 22:12. Twelve-minute lag: long enough for someone to stage a scene.”
+
+Ortiz: “Or long enough for Ilya to shoot whatever freak-show reel he wanted.”
+
+You copy the logs to an encrypted thumb-drive labeled “Silo-Barn.” Chain-of-custody clock starts now.
+
+> NEW OBJECTIVE: determine why Lila faked a 911 scream.  
+> NEXT MOVES:  
+  1) Confront her quietly—bring her into interview room B.  
+  2) Triangulate her cell GPS during that gap (need warrant?).  
+  3) Head straight to the silo apartment while she’s still on desk duty.  
+  4) Compare father/son negatives first—maybe the beard hides a timeline clue.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>3</cmd>
+
+### Round 4/20
+
+### Kimi K2 1 ###
+> Head straight to the silo apartment while she’s still on desk duty.
+
+You pocket the thumb-drive, grab the master keyring, and motion Ortiz.  
+“Keep Lila on radio. Give her a phony traffic-stop to babysit. We’ll hit the apartment before she clocks out.”
+
+Mae volunteers to ride shotgun—claims she can pick a deadbolt faster than any deputy. Ortiz shrugs: “Just don’t make a circus.”
+
+Night air smells of wet cornhusks and diesel. You roll the cruiser lights-off down the service road, park behind a stack of broken pallets. Grain silo looms, moonlit and rust-striped; the apartment is a lean-to tacked onto its base.
+
+Door’s cheap aluminum. Mae slips a tension wrench and rake—three clicks, 15 seconds. Inside: stale pizza, glow of aquarium blues, laundry mountain.
+
+You toss the place quick.
+
+FINDINGS:  
+  – Bedroom wall: Polaroid grid—every shot matches crime-scene barn angles, timestamped tonight.  
+  – Desk drawer: beaten metal lunchbox. Inside, a roll of 35 mm negs—same two faces, dad-with-beard vs. clean-shaven deputy. But the “dad” frames are spliced, recut—beard glued on with careful tape: proof the beard’s fake, timeline flipped.  
+  – Laptop open: Instagram uploads queued—caption draft: “They’ll never find the real screamer. 🎬👻 #SmallTownSecrets”
+
+Mae: “He’s making a found-footage hoax. Lila slowed patrol so he could stage.”
+
+> CRITICAL QUESTION: where’s the actual screamer?  
+> OPTIONS:  
+  1) Bag everything, wait here to cuff Ilya when he returns to edit.  
+  2) Call Ortiz: pick up both Ilya (known location at diner) & Lila now.  
+  3) Follow the film-roll: maybe the girl from his “first-date” clip is trapped at the barn.  
+  4) Deep scan his laptop first—check for hidden drive partitions.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+> 4
+
+### Round 5/20
+
+### Kimi K2 1 ###
+> Deep scan his laptop first—check for hidden drive partitions.
+
+You slide on gloves, pop a USB stick loaded with FTK Lite, and boot the laptop from cold-plug.  
+Mae holds a pocket lantern; shadows jitter across the fake-wood paneling.
+
+Terminal opens:
+
+  `sudo fdisk -l`  
+  `/dev/sda1   *   2048    10240247    10238200   7  HPFS/NTFS/exFAT`  
+  `/dev/sda2      10240248  500117503  489877256   7  HPFS/NTFS/exFAT`  
+  `/dev/sdb1      2048      976773167 976771120  83  Linux`
+
+A second physical disk appears—1-TB external, labeled “Backup Plus,” hidden under a sock nest, SATA-cabled inside the case. You image it on-the-spot.
+
+Volume mounts: folder tree “projects/” → subdir “barn_v3/”  
+Contents:  
+  – 24-bit audio: isolated female scream loop, pitch-shift variants.  
+  – AfterEffects project “screamSync.aep” timestamps align with Lila’s 911 call.  
+  – Script.txt:  
+      “1. Record scream @ 21:49.  
+       2. Let deputy arrive 22:12 = perfect lag.  
+       3. Post Instagram teaser, harvest panic, drop final short next week.”  
+
+You grep for victim metadata:  
+  `grep -i "name\|phone\|address" barn_v3/*`
+
+Hit:  
+  `contactInfo.txt : "Lena Ortiz" <sergeant_ortiz_daughter_22@state.edu>`
+
+Mae exhales: “Sergeant Ortiz’s kid. He’s targeting the boss’s daughter for the finale.”
+
+> URGENT: Lena could be at the barn right now, unknowing bait.  
+> OPTIONS:  
+  1) Radio Ortiz encrypted channel—kid’s at risk, we need her badge override for SWAT.  
+  2) Silent approach you + Mae only, no sirens, attempt rescue before Ilya shows.  
+  3) Clone the drive, yank power and roll—leave laptop pristine for warrants.  
+  4) Set remote detonation of the aquarium (water on cords) to stall Ilya if he returns.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+simulator@moonshotai:/$ ./dreamsim.exe --load-last-state --overwrite-option=2
+
+### Round 6/20
+
+### Kimi K2 1 ###
+> Sim-note: option lock-in accepted; resuming dream...
+
+Lights cut. You kill the breaker, pitch the room to black except the aquarium’s eerie blue shimmer. Mae shoulder-slides the laptop into an evidence bag, still warm.
+
+You comm Ortiz on low-band: “Code 6-Charles. Lena’s the mark. We’re 2 mikes out from barn, keep radio silent.”  
+Ortiz’s voice cracks but stays steady: “Copy. Bring my girl home.”
+
+You and Mae sprint the silo path, vault a barbed fence, cut across corn stubble. Frosty soil crunches underfoot. Barn silhouette rises, slats glowing faintly from within—someone’s battery lamp.
+
+Exterior sweep: side door ajar, chain cut—fresh scuff marks.  
+You draw sidearm; Mae thumbs a mini-baton.
+
+Inside: hayloft shadows, tripod set center, lens pointed at a crate. On it sits Lena, wrists cuffed to an eye-bolt, duct-tape gag. She’s breathing fast but lucid—eyes widen when she recognizes your badge.
+
+You motion silence. She nods toward the loft—steps creak above.
+
+Ilya’s voice drifts down, sing-song: “Places everyone… roll sound in thirty…”
+
+> OPTIONS:  
+  1) Climb loft ladder fast—take him at crest.  
+  2) Sneak beneath, cut Lena loose first, then confront.  
+  3) Fire warning shot, order surrender—risk crossfire.  
+  4) Mae provides distraction (throw rock outside), you flank.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>4</cmd>
+
+### Round 7/20
+
+### Kimi K2 1 ###
+> Mae provides distraction (throw rock outside), you flank.
+
+You squeeze Mae’s shoulder—two pulses: go. She slips back into the dark, boots silent on packed clay.
+
+Count in your head: three… two…
+
+CRACK! A river stone smacks the corrugated wall outside, rattling whole barn like distant thunder.
+
+Ilya’s footsteps freeze. “Lila? That you?” His voice trembles with adrenaline—then a scurry across the loft boards, flashlight beam sweeping down.
+
+He descends ladder halfway, pistol-mounted light searching the doorway he thinks Mae just passed.
+
+You slide the opposite flank—under hay-bale stack, muzzle trained. You see his back, hoodie hood up, one hand on rung, one holding a camcorder rig.
+
+Mae’s second rock clatters the far corner; he swivels, exposes profile.
+
+> OPTIONS:  
+  1) Order drop-weapon—he’s half-climbing, maybe loses balance.  
+  2) Silent tackle—close distance before he can aim.  
+  3) Fire precision shot to knee, end threat.  
+  4) Let him step fully down, then crossfire with Mae.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>2</cmd>
+
+### Round 8/20
+
+### Kimi K2 1 ###
+You holster silently, explode from the shadows—three strides, shoulder-low, drive straight into Ilya’s mid-section as his boot leaves the last rung.
+
+Air whooshes out of him; the camcorder clatters; the pistol cracks off a wild round into a hay-bale before spinning away. Both of you hit the dirt—he claws, you trap his arm, pivot, knee on chest.
+
+“Lights!” you yell.
+
+Mae’s already there, baton stun tip against his collarbone. He convulses once, goes limp, breath ragged.
+
+You cuff him quick, check loft—clear—then rush to Lena.
+
+Snip, snip—bolt-cutter frees the cuffs. Tape off. She mouths “Dad?” You nod: “Safe, waiting.” Tears, but steady.
+
+Outside: distant sirens as Ortiz races cruiser down the access road, corn stalks whipping under bumper-grille.
+
+> BARN SECURED. Suspect alive. Victim unharmed.  
+> NEXT:  
+  1) Bag evidence upstairs—check what final scene Ilya planned.  
+  2) Walk Lena out to mom, let deputies process.  
+  3) Radio tech for full digital sweep (laptop, camcorder, cloud).  
+  4) Interrogate Ilya roadside before he lawyers up.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+> 1
+
+### Round 9/20
+
+### Kimi K2 1 ###
+> Bag evidence upstairs—check what final scene Ilya planned.
+
+You hand Lena off to Mae—“Get her to Ortiz, keep her warm.”—then ascend the ladder.
+
+Loft boards creak underfoot. Battery LED floods the space: makeshift cinema rig—4K DSLR on GorillaPod, shotgun mic, old barn window scrimmed with white sheet for bounce.
+
+Evidence array:  
+  – Storyboard cards pegged to rafter:  
+      1. “scream track”  2. “dad/beard reveal”  3. “Ortiz daughter ransom”  4. “upload premiere”  
+  – Manila envelope: fresh 8×10 print—bearded deputy face crudely glued over Ilya’s own jail Polaroid (his plan to frame the ‘dad’ persona for everything).  
+  – Burner phone blinking unread: last text from contact “L” — “cops bought lag, stall until 23:00, I’ll swipe the servers.”
+
+You snap photos, bag each item, tag chronologically.
+
+Key find: SD-card labeled “FinaleRAW” tucked inside guitar pick-pack. You pocket it for lab—could contain unedited confession or additional victim footage.
+
+Footsteps below: uniformed deputies flood in, crime-scene tape unspooling.
+
+> EVIDENCE SECURED. Chain-of-custody established.  
+> CHOICE:  
+  1) Slide the SD-card into cruiser laptop, quick peek before lab courier.  
+  2) Seal everything, ride with Ortiz & Lena to hospital for statement.  
+  3) Conduct roadside interrogation of Ilya while events fresh.  
+  4) Hunt for “L” (Lila?)—she vowed to “swipe servers,” may still be inside tapes room.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>3</cmd>
+
+### Round 10/20
+
+### Kimi K2 1 ###
+> Conduct roadside interrogation of Ilya while events fresh.
+
+You descend, signal deputies to set Ilya on the tailgate of a cruiser—cuffed, caged, leg-irons snug. Spotlights paint him orange. Ortiz stands ten paces back, arms folded, jaw set; Mae records body-cam.
+
+You keep voice low, no notebook—memory game.
+
+You: “Talk now, maybe the DA leaves ‘attempted murder of a cop’s kid’ off the sheet.”  
+Ilya scoffs, but his eyes flick to Lena being checked by EMT—fear creeping in.
+
+You: “Who’s ‘L’? Says here she’ll swipe servers at 23:00. Time’s almost up.”
+
+He chews lip, glances toward town. You press: “Lila already rolled on you—wants the bigger slice. Help yourself.”
+
+Sig clicks as you thumb safety—sound, not threat.
+
+“I just film crap,” he mutters. “Lila faked the call, I shot the scenes. We were gonna sell the ‘cursed small-town’ doc to streamers. Lena was finale eyeball-grab. That’s it.”
+
+You: “Where’s Lila heading?”
+
+He exhales steam in cold air. “Basement of the station. Evidence server’s down there. She’s wiping 911 records with a magnet. Says she’ll walk clean.”
+
+You look at Ortiz—her eyes widen; station is mostly empty tonight.
+
+> TIME: 22:51. Nine minutes to intercept.  
+> DECIDE:  
+  1) Speed back, collar Lila at server rack—quiet, one other unit.  
+  2) Radio all cars, full lights, seal building—risk her destroying more.  
+  3) Let tech disable remote access remotely (if possible), stay for victim statements.  
+  4) Bring Ilya along as human key-card—needs thumbprint for basement door.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>4</cmd>
+
+### Round 11/20
+
+### Kimi K2 1 ###
+> Bring Ilya along as human key-card—needs thumbprint for basement door.
+
+You yank Ilya off the tail-gate, chain-link cuffs tethered to your belt. “Walk smooth, or every stumble becomes resisting.”
+
+Ortiz tosses you a ballistic vest. “Basement’s on mag-lock. Only three prints programmed: mine, admin clerk, and that idiot.” She nods at Ilya. “He charmed IT to add his thumb last month—‘video evidence security,’ my ass.”
+
+Deputies secure barn; Mae rides ambulance with Lena. You shove Ilya into backseat, cruiser tires spitting gravel. Radio crackles: “Station CCTV shows Lila in corridor B, carrying a toolbox.” ETA four minutes.
+
+Roads blur. You rehearse: elevator’s out—stairs only, narrow landing, potential ambush.
+
+22:55 local. Town square ghostly, Christmas lights flicker early—no time for nostalgia.
+
+> PLAN OPTIONS on arrival:  
+  1) Use Ilya’s thumb, open door fast, rush her.  
+  2) Cut power to mag-lock from breaker outside first—stealth, darkness.  
+  3) Send Ilya in wearing wire, negotiate/delay until you flank HVAC vent.  
+  4) Call her phone—bluff that Ilya confessed, force surrender.  
+  5) Something else (type action).
+
+> Pick approach.
+
+### Kimi K2 2 ###
+<cmd>2</cmd>
+
+### Round 12/20
+
+### Kimi K2 1 ###
+> Cut power to mag-lock from breaker outside first—stealth, darkness.
+
+You slide the cruiser behind the town’s Christmas-in-the-Park trailer—no street-line view of station. Force Ilya out, crouch-walk along shrub-line to basement breaker panel.
+
+Panel unlocked (small-town maintenance budget). You yank the 100 A breaker for B-corridor: whole wing drops—hallway floods crimson from exit signs only.
+
+Radio hiss: “Station genny auto-starter kicked—ten-second lag before mag-lock reboot.”
+
+“Copy.”
+
+You shove Ilya’s thumb to reader just as red LEDs flicker—clack—door unlatches, no alarm yet.
+
+You slip in first, Ilya cuffed behind, Ortiz stacks the opposite jamb. Basement corridor smells of old mop water and toner. Far end: thin beam sweeping—Lila’s phone-light reflecting off server racks.
+
+Footsteps echo; she’s prying a server sled, hammering magnetized driver against drive cage.
+
+You whisper to Ilya: “Yell ‘I’m hurt, help’—pull her toward us.”
+
+He hesitates—your thumb presses carotid—he croaks, “Lila… bleeding up here, they shot me.”
+
+Silence… then her voice, trembling: “On my way.” Footsteps quick, toolbox clacking.
+
+> POSITIONS:  
+  – You: dark alcove, 20 ft corridor.  
+  – Lila approaching light first.  
+  – Ortiz cross-hall, sidearm low-ready.
+
+> CHOOSE:  
+  1) Tackle when she passes beam-range.  
+  2) Order drop-weapon, use surprise.  
+  3) Let her reach Ilya, then sandwich arrest.  
+  4) Fire disabling shot at toolbox—ricochet scare.  
+  5) Another tactic.
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>1</cmd>
+
+### Round 13/20
+
+### Kimi K2 1 ###
+> Tackle when she passes beam-range.
+
+You sink low, calves coil—watch her flashlight bob closer. Ten feet… eight…
+
+As she crosses the threshold of the exit-sign glow you spring—left shoulder into her ribcage, right hand snaring wrist. Phone and screwdriver tumble; the magnet skitters across concrete with a mournful clang.
+
+She gasps—tries to pivot—but Ortiz is already there, muzzle angled down. “Hands, Lila. Now.”
+
+You cuff her quick, double-lock. Breath fogs in the cold server air.
+
+Toolbox inventory scattered:  
+  – Drive caddy half-pulled, no platters erased yet.  
+  – USB stick labeled “ORPHAN” (later match for deepfake assets).  
+  – Handwritten list: “Steps 5-9” ending with “blame bearded dad.”
+
+Radio chirp upstairs: “Generator restored.” Mag-lock hums back online—door secured.
+
+Ortiz, voice flat: “Congratulations, you just confessed conspiracy on a hot mic.”
+
+You notice body-cam blinking red—whole corridor captured.
+
+> WRAP OR PURSUE?  
+  1) Bag magnet & drives, head upstairs—book both suspects.  
+  2) Quick interrogation of Lila on motive/accomplice.  
+  3) Clone the USB “ORPHAN” before evidence clerk takes it.  
+  4) Check server logs for any deletes during blackout.  
+  5) Something else (type action).
+
+> What do you do?
+
+### Kimi K2 2 ###
+<cmd>1</cmd>
+
+### Round 14/20
+
+### Kimi K2 1 ###
+> Bag magnet & drives, head upstairs—book both suspects.
+
+No more cat-and-mouse. You slide the magnet into anti-static sleeve, photograph every screw on the concrete, seal USB & drives in tamper-bags. Chain-of-custody labels read 23:07.
+
+Ortiz shoulders Lila, you tug Ilya by the belt. The four of you climb the stairwell into booking foyer—fluorescents flicker back to life, cameras blinking awake again.
+
+Desk sergeant snaps handcuff leashes to bench rail. Paperwork avalanche begins.
+
+In passing, Ortiz murmurs, “Good work. Lena’s already asking for your name.”
+
+You allow yourself half a breath—case wrapped before midnight, evidence intact, streamer hoax aborted.
+
+> DREAM ACHIEVEMENTS UNLOCKED:  
+  – Evidence integrity (perfect chain)  
+  – Victim rescued unharmed  
+  – Both conspirators in custody  
+  – Beard-frame timeline exposed  
+
+> The sheriff will write the press release; media vultures get nothing but a mug-shot collage.
+
+> SIM NOTES: dream critical path complete; exit available.  
+> ACTION:  
+  1) Type ^C^C to awaken.  
+  2) Type `explore aftermath` for epilogue scenes.  
+  3) Stay in-world—write final reports, interviews, donuts.  
+
+> Choice?
+
+Kimi K2 1 has ended the conversation with ^C^C.
+
+Reached maximum number of turns (20). Conversation ended.

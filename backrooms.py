@@ -566,7 +566,11 @@ def main():
         global _SAVE_WARNED
         try:
             supabase_url = os.getenv("SUPABASE_URL")
-            supabase_key = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+            supabase_key = (
+                os.getenv("SUPABASE_KEY")
+                or os.getenv("SUPABASE_ANON_KEY")
+                or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+            )
             if not supabase_url or not supabase_key or os.getenv("BACKROOMS_SAVE_DISABLED"):
                 if not _SAVE_WARNED and not os.getenv("BACKROOMS_SAVE_SILENT"):
                     print("[backrooms] Supabase save disabled or missing SUPABASE_URL/KEY; skipping.")
@@ -634,6 +638,15 @@ def main():
     # Create initial row early (empty transcript) so progress is visible immediately
     _save_run_to_supabase(exit_reason="starting")
     while turn < args.max_turns:
+        # Announce round progress in terminal and append to log file
+        try:
+            round_no = turn + 1
+            header = f"\n--- Round {round_no}/{args.max_turns} ---"
+            print(header)
+            with open(filename, "a") as f:
+                f.write(f"\n### Round {round_no}/{args.max_turns}\n")
+        except Exception:
+            pass
         try:
             pass
         except Exception:

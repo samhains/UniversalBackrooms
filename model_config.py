@@ -13,12 +13,17 @@ from typing import Dict, Any, List
 
 # Single source of truth for model definitions
 MODEL_INFO: Dict[str, Dict[str, Any]] = {
-    "sonnet": {
-        "api_name": "claude-3-5-sonnet-20240620",
+    "sonnet4": {
+        "api_name": "anthropic/claude-sonnet-4",
         "display_name": "Claude",
-        "company": "anthropic",
+        "company": "openrouter",
     },
-    "opus": {
+    "sonnet3": {
+        "api_name": "anthropic/claude-3.7-sonnet",
+        "display_name": "Claude",
+        "company": "openrouter",
+    },
+    "opus3": {
         "api_name": "claude-3-opus-20240229",
         "display_name": "Claude",
         "company": "anthropic",

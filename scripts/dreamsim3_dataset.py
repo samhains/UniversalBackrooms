@@ -51,12 +51,25 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+SCRIPTS_DIR = ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 from model_config import get_model_info
 try:
     from dotenv import load_dotenv
 except Exception:
     load_dotenv = None  # optional dependency
+
+# Optional: import sync helpers to upsert each run immediately
+try:
+    from sync_backrooms import env_keys as _sync_env_keys  # type: ignore
+    from sync_backrooms import to_backrooms_rows as _sync_to_rows  # type: ignore
+    from sync_backrooms import upsert_rows as _sync_upsert  # type: ignore
+except Exception:
+    _sync_env_keys = None
+    _sync_to_rows = None
+    _sync_upsert = None
 
 TEMPLATES_DIR = Path("templates/dreamsim3")
 INIT_TEMPLATE = TEMPLATES_DIR / "initiator.history.template.md"
@@ -214,6 +227,31 @@ def run_one(
         return subprocess.run(cmd)
     else:
         return subprocess.run(cmd, capture_output=True, text=True)
+
+
+def _sync_single_meta(meta: dict) -> None:
+    """Best-effort upsert of a single run into Supabase.
+
+    Reuses scripts/sync_backrooms helpers to map JSONL meta -> backrooms row and upsert.
+    Designed to be non-fatal on failure so batch runs keep going.
+    """
+    if not (_sync_env_keys and _sync_to_rows and _sync_upsert):
+        # Sync helpers unavailable (e.g., import error) — skip silently.
+        return
+    try:
+        url, key = _sync_env_keys()
+    except Exception:
+        # Missing env or other issue — skip without interrupting batch
+        return
+    try:
+        rows = _sync_to_rows([meta])
+        if not rows:
+            return
+        _sync_upsert(url, key, rows, dry_run=False)
+        print("  ↳ synced to Supabase (on_conflict=log_file)")
+    except Exception as e:
+        # Do not raise; just note and continue.
+        print(f"  ↳ sync failed: {e}")
 
 
 def parse_pairs(pairs_str: str) -> List[Tuple[str, str]]:
@@ -423,6 +461,9 @@ def main():
             completed += 1
             pair_label = f"{m1}-{m2}"
             print(f"[{completed}/{total_runs}] dream#{idx} pair={pair_label} turns={args.max_turns} exit={exit_reason} time={duration:.1f}s")
+
+            # Always try to sync this single run immediately to Supabase
+            _sync_single_meta(meta)
 
     print(f"Done. Wrote metadata to {out_path}")
 
