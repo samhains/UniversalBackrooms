@@ -22,5 +22,6 @@ simulator@{model2_company}:~/$
 
 ## user
 
-./dreamsim.exe "Fishing where there is a correlation between age and the fish you can catch, fish offer different properties when caught. The largest fish is like the size of a house and I don’t understand how mum has caught it."
+./dreamsim.exe "Swim trials different pizzas different density of water . I chose the densest pizza and the water felt incredibly dense . I tried to tumble turn but instructor told me was impossible . Handsome instructor had weird singlet red rash vest . 
+We all wanted the rash vest , it seemed that's what we were racing for . I , trying to master the dense water find myself out of control and swimming towards the window l"
 

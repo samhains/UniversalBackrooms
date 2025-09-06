@@ -18,5 +18,5 @@ simulator@{model2_company}:~/$
 
 ## user
 
-./dreamsim.exe "DREAM_GOES_HERE"
+./dreamsim.exe "Another dream we made It to the camp site . Startin seeing some girl . She was 19 and was very curious . She liked me a lot of the bat . And when I woke up she had left me all these photos of her with blonde hair pouting (like coco but with long hair) . Im blowing my nose a million times and nothing helps . This girl turns into a guy and we are hanging out on a couch and he shows me this gif of bender blowing his nose , and another of mr burns with stacks of metal plates each smaller than the next with a nasal spray . He looked ultimately sayisfied. Benders mouth moved to illustrate him blowing his nose . I can remember a song . A slow doowop sounding like 'yeahhhh' - maybe joe Bataan . Which went with mr burns. I wished for mr burns to come and deliver me a nasal spray"
 

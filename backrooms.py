@@ -364,6 +364,18 @@ def main():
         help="Maximum number of turns in the conversation (default: infinity)",
     )
     parser.add_argument(
+        "--max-context-frac",
+        type=float,
+        default=0.0,
+        help="Early-stop when estimated prompt tokens exceed this fraction of the context window (0 disables).",
+    )
+    parser.add_argument(
+        "--context-window",
+        type=int,
+        default=128000,
+        help="Assumed context window size in tokens for the limiting model (default: 128000).",
+    )
+    parser.add_argument(
         "--discord",
         type=str,
         default=None,
@@ -501,9 +513,52 @@ def main():
         else:
             return gpt4_conversation("Media Agent", api_model, context, system_prompt)
 
+    # Heuristic token estimation (approx. 4 chars per token)
+    def estimate_tokens_for_agent(i: int) -> int:
+        text_parts = []
+        sp = system_prompts[i] or ""
+        if sp:
+            text_parts.append(sp)
+        for msg in contexts[i]:
+            text_parts.append(str(msg.get("content", "")))
+        chars = sum(len(t) for t in text_parts)
+        # Avoid zero; add small overhead for roles/formatting
+        return max(1, (chars // 4) + 8)
+
+    def next_max_tokens_for_model(api_model: str) -> int:
+        # Mirror provider defaults below
+        if api_model == "o1-preview" or api_model == "o1-mini":
+            return 4000
+        return 1024
+
     turn = 0
     transcript: list[dict[str, str]] = []
     while turn < args.max_turns:
+        # Optional early stop based on estimated context budget
+        if args.max_context_frac and args.context_window and args.context_window > 0:
+            # Ensure the next responses for all agents would fit within the fraction
+            would_exceed = False
+            for i in range(len(models)):
+                used = estimate_tokens_for_agent(i)
+                budget = int(args.max_context_frac * args.context_window)
+                # Determine model string used for generation path
+                api_model = lm_models[i]
+                # Strip any vendor flags like #reasoning
+                if isinstance(api_model, str) and "#" in api_model:
+                    api_model = api_model.split("#", 1)[0]
+                nxt = next_max_tokens_for_model(api_model)
+                if used + nxt >= budget:
+                    would_exceed = True
+                    break
+            if would_exceed:
+                msg = (
+                    f"\nContext budget limit reached (>= {int(args.max_context_frac*100)}% of {args.context_window} tokens). Conversation ended."
+                )
+                print(msg)
+                with open(filename, "a") as f:
+                    f.write(msg + "\n")
+                break
+
         round_entries = []
         for i in range(len(models)):
             if models[i].lower() == "cli":

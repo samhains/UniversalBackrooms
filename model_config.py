@@ -23,6 +23,11 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "Claude",
         "company": "anthropic",
     },
+    "opus4": {
+        "api_name": "anthropic/claude-opus-4.1",
+        "display_name": "Claude",
+        "company": "openrouter",
+    },
     "gpt4o": {
         "api_name": "gpt-4o-2024-08-06",
         "display_name": "GPT4o",
@@ -42,6 +47,11 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
       "25pro": {
         "api_name": "google/gemini-2.5-pro",
         "display_name": "Gemini 2.5-pro",
+        "company": "openrouter",
+    },
+      "v3": {
+        "api_name": "deepseek/deepseek-chat-v3-0324",
+        "display_name": "DeepSeek V3",
         "company": "openrouter",
     },
       "v31": {

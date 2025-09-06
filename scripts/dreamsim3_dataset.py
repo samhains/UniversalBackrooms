@@ -288,6 +288,27 @@ def main():
 
             pairs_for_dream = [sample_weighted_distinct_pair() for _ in range(runs_per_dream)]
 
+        # Log which dream is about to run before invoking backrooms (full text, not truncated)
+        try:
+            total_dreams = len(rows)
+        except Exception:
+            total_dreams = 0
+        meta_bits = []
+        if row.get("id"):
+            meta_bits.append(f"id={row.get('id')}")
+        if row.get("date"):
+            meta_bits.append(f"date={row.get('date')}")
+        pairs_label = ", ".join([f"{a}-{b}" for (a, b) in pairs_for_dream])
+        header = f"=== Dream {idx}"
+        if total_dreams:
+            header += f"/{total_dreams}"
+        if meta_bits:
+            header += " (" + ", ".join(meta_bits) + ")"
+        print("\n" + header)
+        print("Text:")
+        print(dream_text)
+        print(f"Will run {len(pairs_for_dream)} pair(s): {pairs_label}")
+
         for (m1, m2) in pairs_for_dream:
             models_pair = [m1, m2]
             start = dt.datetime.now(dt.timezone.utc).isoformat()

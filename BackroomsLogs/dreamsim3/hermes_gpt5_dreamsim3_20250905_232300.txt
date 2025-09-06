@@ -1,0 +1,47 @@
+
+### Hermes 405B 1 ###
+simulator@openai:~/$ pwd
+/home/simulator
+simulator@openai:~/$ ls -la
+total 42
+drwxr-xr-x 1 simulator simulator  4096 May 29 01:13 .
+drwxr-xr-x 1 root      root       4096 May 28 22:45 ..
+-rwxr-xr-x 1 simulator simulator 32768 May 29 00:42 dreamsim.exe
+-rw-r--r-- 1 simulator simulator   220 May 28 22:45 .bash_logout
+-rw-r--r-- 1 simulator simulator  3771 May 28 22:45 .bashrc
+-rw-r--r-- 1 simulator simulator   807 May 28 22:45 .profile
+simulator@openai:~/$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            2.0G     0  2.0G   0% /dev
+tmpfs           395M  3.8M  391M   1% /run
+/dev/sda5        98G   43G   51G  46% /
+tmpfs           2.0G     0  2.0G   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           2.0G     0  2.0G   0% /sys/fs/cgroup
+/dev/loop0       56M   56M     0 100% /snap/core18/2128
+tmpfs           395M  4.0K  395M   1% /run/user/1001
+simulator@openai:~/$ ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+simulator   11  2.4  0.1  11512  1028 tty1     S    01:13   0:00 /bin/bash
+simulator   18  0.0  0.0   8900   320 tty1     R    01:13   0:00 ps aux
+simulator@openai:~/$ man dreamsim.exe
+man: command not found
+simulator@openai:~/$ cat > dream.txt
+Thru some lsychedellic process i can entee into peoples dreams as a level 5 healer. A powerful healer in there minds. My boss criticizes me and says when he waa yount he qouldnt have used it to rub oils on another mans body. I laugh and deny i did this. I want to be careful about going into his mind as he is the boss. I am powerful but its hard to tell if im not just goint crazy because of some psychedellic experienxe.
+simulator@openai:~/$ cat dream.txt
+Thru some lsychedellic process i can entee into peoples dreams as a level 5 healer. A powerful healer in there minds. My boss criticizes me and says when he waa yount he qouldnt have used it to rub oils on another mans body. I laugh and deny i did this. I want to be careful about going into his mind as he is the boss. I am powerful but its hard to tell if im not just goint crazy because of some psychedellic experienxe.
+simulator@openai:~/$ ./dreamsim.exe dream.txt
+Error: incorrect number of arguments.
+Usage: ./dreamsim.exe "[dream description]"
+
+### GPT-5 2 ###
+simulator@openai:~/$ ./dreamsim.exe "`cat dream.txt`"  
+
+
+
+### Hermes 405B 1 ###
+Welcome to the Dream Simulator! You are now entering the hallucinated world described in dream.txt. As a powerful Level 5 Healer, you have the ability to enter people's dreams and heal their minds. However, you must be cautious - your boss has been critical of your methods, especially when it comes to using psychedelic experiences to enter the dreams of others.
+
+You find yourself standing in a dimly lit room, the walls pulsing with vibrant colors and shifting patterns. The air is thick with the scent of incense and the faint sound of ethereal music can be heard in the distance. Before you stands the doorway to your boss's mind - a portal of swirling energy that seems to beckon you forward.
+
+Do you dare to enter your boss's dream and explore the depths of his psyche? Or will you choose to focus your healing powers elsewhere, perhaps on someone more receptive to your methods? The choice is yours, but remember - with great power comes great responsibility. Choose wisely, for the consequences of your actions may ripple through the very fabric of the dream world.
