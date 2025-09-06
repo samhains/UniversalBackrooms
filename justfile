@@ -65,3 +65,7 @@ dreams-search query="" limit="200" json="false":
     else \
       python scripts/search_dreams.py --query "{{query}}" --limit {{limit}}; \
     fi
+
+# Backfill: upsert backrooms from JSONL + transcripts
+sync-backrooms meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
+    python scripts/sync_backrooms.py --meta "{{meta}}"

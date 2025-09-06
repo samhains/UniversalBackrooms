@@ -9,8 +9,10 @@ import sys
 import colorsys
 import requests
 import re
+import signal
 from pathlib import Path
 from model_config import get_model_choices, get_model_info
+from typing import Optional
 
 # Local imports for optional media agent
 try:
@@ -36,6 +38,12 @@ openai_client = None
 openrouter_client = None
 
 MODEL_INFO = get_model_info()
+
+
+class ManualStop(Exception):
+    pass
+
+_SAVE_WARNED = False  # print missing-env warning once per run
 
 
 def claude_conversation(actor, model, context, system_prompt=None):
@@ -491,6 +499,8 @@ def main():
 
     system_prompts = [config.get("system_prompt", "") for config in configs]
     contexts = [config.get("context", []) for config in configs]
+    # Snapshot initial contexts for metadata (before mutation by conversation)
+    initial_contexts = [list(ctx) for ctx in contexts]
 
     # Validate starting state: if all histories are empty, abort with a helpful error
     if all((not ctx) for ctx in contexts):
@@ -505,6 +515,8 @@ def main():
     if not os.path.exists(template_logs_folder):
         os.makedirs(template_logs_folder, exist_ok=True)
 
+    # Track run start (UTC) for DB metadata
+    run_start = datetime.datetime.now(datetime.timezone.utc)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{template_logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
@@ -548,7 +560,85 @@ def main():
 
     turn = 0
     transcript: list[dict[str, str]] = []
+
+    # Persist run details + transcript into Supabase (best-effort)
+    def _save_run_to_supabase(exit_reason: str = "max_turns") -> None:
+        global _SAVE_WARNED
+        try:
+            supabase_url = os.getenv("SUPABASE_URL")
+            supabase_key = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+            if not supabase_url or not supabase_key or os.getenv("BACKROOMS_SAVE_DISABLED"):
+                if not _SAVE_WARNED and not os.getenv("BACKROOMS_SAVE_SILENT"):
+                    print("[backrooms] Supabase save disabled or missing SUPABASE_URL/KEY; skipping.")
+                    _SAVE_WARNED = True
+                return
+            # Build prompt from initial user messages if present
+            init_user_msgs = []
+            for ctx in initial_contexts:
+                for msg in ctx:
+                    if isinstance(msg, dict) and msg.get("role") == "user":
+                        c = str(msg.get("content", ""))
+                        if c.strip():
+                            init_user_msgs.append(c)
+            prompt_text = "\n\n".join(init_user_msgs) if init_user_msgs else None
+            # Read transcript file content
+            try:
+                with open(filename, "r", encoding="utf-8") as fh:
+                    transcript_text = fh.read()
+            except Exception:
+                transcript_text = ""
+            # End timestamp + duration
+            end_ts = datetime.datetime.now(datetime.timezone.utc)
+            duration = (end_ts - run_start).total_seconds()
+            payload = [{
+                "models": models,
+                "template": args.template,
+                "max_turns": args.max_turns,
+                "created_at": run_start.isoformat(),
+                "duration_sec": duration,
+                "log_file": filename,
+                "exit_reason": exit_reason,
+                "prompt": prompt_text,
+                "transcript": transcript_text,
+            }]
+            headers = {
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}",
+                "Content-Type": "application/json",
+                "Prefer": "resolution=merge-duplicates,return=representation",
+            }
+            url = f"{supabase_url}/rest/v1/backrooms?on_conflict=log_file"
+            try:
+                requests.post(url, headers=headers, json=payload, timeout=10)
+            except Exception:
+                pass
+        except Exception:
+            # Never interrupt the run on analytics failure
+            pass
+
+    # Register signal handlers to persist partial progress on interrupt/terminate
+    def _handle_signal(signum, frame):  # type: ignore[no-redef]
+        try:
+            _save_run_to_supabase(exit_reason="interrupted")
+        finally:
+            # Exit with standard codes: SIGINT -> 130, SIGTERM -> 143
+            code = 130 if signum == signal.SIGINT else 143
+            sys.exit(code)
+
+    try:
+        signal.signal(signal.SIGINT, _handle_signal)
+        signal.signal(signal.SIGTERM, _handle_signal)
+    except Exception:
+        pass
+
+    # Create initial row early (empty transcript) so progress is visible immediately
+    _save_run_to_supabase(exit_reason="starting")
     while turn < args.max_turns:
+        try:
+            pass
+        except Exception:
+            pass
+        # loop body continues below
         # Optional early stop based on estimated context budget
         if args.max_context_frac and args.context_window and args.context_window > 0:
             # Ensure the next responses for all agents would fit within the fraction
@@ -572,9 +662,12 @@ def main():
                 print(msg)
                 with open(filename, "a") as f:
                     f.write(msg + "\n")
+                # Persist early stop
+                _save_run_to_supabase(exit_reason="early_stop")
                 break
 
         round_entries = []
+        manual_stopped = False
         for i in range(len(models)):
             if models[i].lower() == "cli":
                 lm_response = cli_conversation(contexts[i])
@@ -585,14 +678,26 @@ def main():
                     contexts[i],
                     system_prompts[i],
                 )
-            process_and_log_response(
-                lm_response,
-                lm_display_names[i],
-                filename,
-                contexts,
-                i,
-            )
+            try:
+                process_and_log_response(
+                    lm_response,
+                    lm_display_names[i],
+                    filename,
+                    contexts,
+                    i,
+                )
+            except ManualStop:
+                manual_stopped = True
+                # Append the partial entry to transcript before stopping
+                round_entries.append({"actor": lm_display_names[i], "text": lm_response})
+                break
             round_entries.append({"actor": lm_display_names[i], "text": lm_response})
+
+        # If manual stop occurred, persist and end outer loop
+        if manual_stopped:
+            transcript.extend(round_entries)
+            _save_run_to_supabase(exit_reason="manual_stop")
+            break
 
         # After both actors in a round, invoke media agent once
         media_url: Optional[str] = None
@@ -653,12 +758,16 @@ def main():
         # Append this round to running transcript
         transcript.extend(round_entries)
         turn += 1
+        # Checkpoint after each round so partial progress is saved
+        _save_run_to_supabase(exit_reason="in_progress")
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
     with open(filename, "a") as f:
         f.write(
             f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.\n"
         )
+    # Persist run completion
+    _save_run_to_supabase(exit_reason="max_turns")
 
 
 def generate_model_response(model, actor, context, system_prompt):
@@ -721,7 +830,8 @@ def process_and_log_response(response, actor, filename, contexts, current_model_
         print(end_message)
         with open(filename, "a") as f:
             f.write(end_message + "\n")
-        exit()
+        # Signal to main loop to handle graceful termination and persistence
+        raise ManualStop()
 
     # Add the response to all contexts
     for i, context in enumerate(contexts):
