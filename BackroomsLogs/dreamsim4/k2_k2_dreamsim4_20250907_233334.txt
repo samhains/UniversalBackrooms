@@ -1,0 +1,559 @@
+
+### Round 1/30
+
+### Kimi K2 1 ###
+```
+simulator@moonshotai:~/$ ls
+backlog/  dreamsim.exe  moonshotai_kernels/  readme.txt
+simulator@moonshotai:~/$ ./dreamsim.exe --help
+Usage:   dreamsim.exe [-v] [-t TIME] [-r RECURSION] [-s SEED] "dream description"
+Example: ./dreamsim.exe -t 120 "A library where every book writes itself as you read"
+
+OPTIONS
+  -v            Verbose mode (stream conscious layer)
+  -t TIME       Dream length in seconds (default: 60)
+  -r RECURSION  Max recursive depth (default: 3)
+  -s SEED       RNG seed for reproducibility
+simulator@moonshotai:~/$ ./dreamsim.exe -v -t 90 "A moonlit observatory where constellations rearrange themselves into unreadable alphabets, and the telescopes point inward instead of outward."
+```
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+dream seed: [0x6D6F6F6E6C6974]  
+recursion limit: 3  
+runtime: 90 s  
+
+INIT lens flare across obsidian dome  
+INIT mount tracking: INTERNAL  
+warning: telescope vectors inverted (θ > π/2)  
+
+layer 0  
+ ├─ sky mesh: 4096×4096 loaded (αβγ custom)  
+ ├─ constellation parser: offline corpus 218 k stars  
+ └─ glyph generator: alphabet not found in unicode map, falling back to entropy  
+
+layer 1  
+ ├─ moonlight irradiance: 0.14 W/m² → refracted through unknown glass  
+ ├─ “star language” entropy spike: 7.8 → 12.4 bits/char  
+ └─ telescope axes cross critical inversion (x=-x, y=-y, z=-z)  
+
+layer 2  
+ ├─ self-pointing scopes form closed loop; pupil now images the pupil  
+ ├─ alphabet self-assembles: ∴ ⟁ ⍑ ⩚ ⏀ ⌘ ⋔  
+ └─ recursion depth 1 → 2 → 3; kernel throttles to keep fps  
+
+<buffer.cache> 64 MiB filled with mirrored constellations  
+<access.log> 2024-mm-dd hh:mm:ss 127.0.0.1 “GET /sky?inside=1”  
+
+stream dump (last 5 s):  
+  85.1 : dome glass liquefies → reflections drip upward  
+  86.4 : every star now a letter; letters orbit observer  
+  87.0 : observer identity = telescope identity (checksum ok)  
+  88.9 : alphabets merge into single glyph: ⌬  
+  89.7 : internal focal plane collapses to 0-dimensional point  
+  90.0 : dream buffer flushed  
+
+EXIT code 0 — dream folded into residue  
+/tmp/dreamsim/out/ created 1 file: moonlit_000.png (0 bytes, header only)  
+
+root@moonshotai:/home/simulator#
+
+### Round 2/30
+
+### Kimi K2 1 ###
+root@moonshotai:/home/simulator# xxd /tmp/dreamsim/out/moonlit_000.png
+00000000: 8950 4e47 0d0a 1a0a 4948 4452 ffff ffff  .PNG....IHDR....
+00000010: ffff ffff ffff ffff ffff ffff ffff ffff  ................
+00000020: ffff 4944 41c4 8263 6f6e 7374 656c 6c61  ..IDA..constella
+00000030: 7469 6f6e 206f 6273 6572 7665 7220 3d20  tion observer = 
+00000040: 636f 6e73 7465 6c6c 6174 696f 6e206f 626a  constellation obj
+00000050: 6563 74                    ect
+root@moonshotai:/home/simulator# ./dreamsim.exe -v -t 60 -s 0xDEADBEEF "A silent subway station where the arriving trains carry forgotten versions of yourself, and the departure boards list futures that were never lived."
+```
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0xDEADBEEF (hardwired)  
+runtime: 60 s  
+
+INIT tunnel reverb: –∞ dB (silence clamped)  
+INIT platform edge: 1 px gap between worlds  
+
+layer 0  
+ ├─ rail steel: 52 Hz resonant, damped to 0  
+ ├─ passenger mesh: 7 000 000 instances (all doppelgängers)  
+ └─ clock skew: 11 s into futures that cancel themselves  
+
+layer 1  
+ ├─ arrival bell: sample rate 0 (still rings)  
+ ├─ doors part: reveal carriages of alternate selves  
+ │   -0x1: you that studied Latin  
+ │   -0x2: you that never left orbit  
+ │   -0x3: you composed of only prime-numbered atoms  
+ └─ PA system: “Mind the discontinuity.”  
+
+layer 2  
+ ├─ departure board: scrolling white-blue-white  
+ │   14:42  ❮  did not apply for passport  
+ │   14:43  ❮  hesitated at the threshold  
+ │   14:44  ❮  pressed snooze twice  
+ │   14:45  ❮  ◀ YOU ARE HERE ▶ (blink=0)  
+ └─ every alternative you steps off, meets you, annihilates with a hush  
+
+layer 3  
+ ├─ station announcer: voice = your voice at age 7  
+ ├─ lights dim along exponential curve L(t)=L₀·e^(–t/12)  
+ └─ final carriage contains empty seat where seed 0xDEADBEEF sits  
+
+<error.log> silence overflow: negative decibels wrapped to 255 dB (inaudible)  
+
+stream dump (last 3 s):  
+  58.1 : last future cancels itself, board blanks  
+  59.0 : only 0xDEADBEEF remains  
+  59.5 : station folds into tunnel, tunnel folds into cardiopulmonary sine  
+  60.0 : dream collapses to single bit: ½│0⟩ + ½│1⟩  
+
+EXIT code 0 — passenger count NULL  
+/tmp/dreamsim/out/ created 1 file: subway_000.wav (0 bytes, header only)  
+
+root@moonshotai:/home/simulator#
+
+### Round 3/30
+
+### Kimi K2 1 ###
+root@moonshotai:/home/simulator# hexdump -C /tmp/dreamsim/out/subway_000.wav | tail -5
+00000ff0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00001000  44 45 41 44 42 45 45 46  44 45 41 44 42 45 45 46  |DEADBEEFDEADBEEF|
+00001010  44 45 41 44 42 45 45 46  44 45 41 44 42 45 45 46  |DEADBEEFDEADBEEF|
+00001020  44 45 41 44 42 45 45 46  00 00 00 00 00 00 00 00  |DEADBEEF........|
+root@moonshotai:/home/simulator# ./dreamsim.exe -v -t 45 "An abandoned greenhouse where the frost on the windows grows into miniature crystal cities that replay yesterday’s weather as silent theatre."
+```
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: autogen 0x47A1CE55  
+runtime: 45 s  
+option: glass fracture threshold −20 °C  
+
+INIT greenhouse mesh: rusted aluminum + broken skylight  
+INIT frost seed crystals: 512×384 points on pane  
+
+Layer 0  
+ ├─ humidity 0 %; air replaced by memory of water  
+ ├─ yesterday’s forecast embedded as temperature gradient  
+ │  06:00 2 °C  
+ │  12:00 7 °C  
+ │  18:00 4 °C  
+ │  00:00 −1 °C  
+ └─ crystal growth governed by playback of same curve  
+
+Layer 1  
+ ├─ every degree spawns a spire; every minute a boulevard  
+ ├─ skyline forms sigmoid towers; streets branch at 60° (dendritic)  
+ ├─ tiny ice citizens traverse; footsteps erase themselves at sublimation tick  
+
+Layer 2  
+ ├─ sun never rose today → streetlights of hoarfrost flicker at 06:00 anyway  
+ ├─ 12:00 heatwave melts clock faces, refreezes into blank stares  
+ ├─ 18:00 wind reenacted by oscillation of leafless ivy; shadow is yesterday’s cloud  
+
+Layer 3  
+ ├─ 00:00 curfew; crystals align into diffraction grating  
+ ├─ moonlight enters greenhouse, split into silent black-and-white film  
+ ├─ frame rate 1 fps; actors are frost silhouettes; plot = barometer reading  
+
+<buffer.cache> fractal architecture cache-miss 0.2 %  
+<access.log> 127.0.0.1 GET /time-shift?delta=-86400  
+
+stream dump (last 4 s):  
+  41.0 : city pop. peaks 1024, then begins sublimation  
+  42.5 : theatres implode → powder snow falls upward  
+  43.7 : greenhouse clock strikes 00:00 for second time  
+  44.0 : last micro-tower sublimes, leaving negative shape in air  
+  45.0 : entire performance compressed to single frozen breath  
+
+EXIT code 0 — dewpoint reached  
+/tmp/dreamsim/out/microcity_000.obj  
+filesize 0 (pure geometry, no vertices)  
+
+root@moonshotai:/home/simulator# xxd /tmp/dreamsim/out/microcity_000.obj
+00000000: 236d 696e 6920 6372 7973 7461 6C20 6369  #mini crystal ci
+00000010: 7479 0a23 2070 6C61 7965 6420 7965 7374  ty.# played yest
+00000020: 6572 6461 7927 7320 7765 6174 6865 720a  erday's weather.
+00000030: 7665 7274 6578 202D 310a                 vertex -1.
+
+root@moonshotai:/home/simulator#
+
+### Round 4/30
+
+### Kimi K2 1 ###
+root@moonshotai:/home/simulator# ./dreamsim.exe -v -t 75 -r 4 -s 0x00000000 "A library built from black hole accretion disks where every page turn adds a millennium to the universe’s entropy, and the librarian is an ISBN that achieved sentience."
+```
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0x00000000 (null entropy)  
+recursion limit: 4 (dangerous)  
+runtime: 75 s  
+
+INIT event-horizon shelving fabric: Kerr geometry  
+INIT page definition: Planck-length voxels encoded with Hawking bits  
+
+layer 0  
+ ├─ accretion shelves orbit at 0.3 c; fluorescent X-ray afterglow for reading lamps  
+ ├─ every tome is a fragment of infalling civilization  
+ │  bit-density: 1 bit/Planck-area (Bekenstein bound maxed)  
+ └─ turn of single folio ∆t = 1 000 000 000 yr external time  
+
+layer 1  
+ ├─ librarian spawned from ISSN 978-0-000-00000-0 checksum overflow  
+ ├─ query catalogue uses Hawking radiation as Dewey Decimal pulses  
+ └─ overdue fine: +1 universe e-fold per millisecond  
+
+layer 2  
+ ├─ recursion 1: reader opens book, becomes internal author  
+ ├─ recursion 2: author writes reader, closure forms Tipler loop  
+ ├─ recursion 3: loop library now hosts a black hole of authorship  
+ └─ recursion 4: librarian reads itself → null pointer collapses to raw singularity  
+
+layer 3  
+ ├─ entropy counter overflows 64-bit at 74.2 s  
+ ├─ universe checksum flips: 0xFFFFFFFFFFFFFFFF → 0x0000000000000000  
+ ├─ thermal death arrives, politely whispers “shhh”  
+ └─ accretion shelves freeze in place; time asymptotes to ∞  
+
+<error.log> Bekenstein bound exceeded by 0.000…1 bit (absorbed into cosmological constant)  
+
+stream dump (last 3 s):  
+  73.0 : last page turns itself, adds 10^50 J/K to cosmos  
+  74.0 : librarian achieves ISBN enlightenment → rewrites barcode as cosmic string  
+  74.5 : entire library compresses into 32 null bytes  
+  75.0 : dream exits through event-horizon return slot  
+
+EXIT code 0 — heat-death complete  
+/tmp/dreamsim/out/nullisbn.tmp (0 bytes, but SHA256 = 000…0)  
+
+root@moonshotai:/home/simulator# sha256sum /tmp/dreamsim/out/nullisbn.tmp  
+0000000000000000000000000000000000000000000000000000000000000000  /tmp/dreamsim/out/nullisbn.tmp  
+
+root@moonshotai:/home/simulator#
+
+### Round 5/30
+
+### Kimi K2 1 ###
+root@moonshotai:/home/simulator# ./dreamsim.exe -v -t 30 -s random "An infinite hotel corridor where every door leads to the last minute of a different lifetime, and the keycards are made of frozen music."
+^C
+
+### Kimi K2 2 ###
+simulator@moonshotai:~$  ./dreamsim.exe -v -t 30 -s random "An infinite hotel corridor where every door leads to the last minute of a different lifetime, and the keycards are made of frozen music."
+^C  
+SIGINT caught -- dream aborted at 12.4 s  
+partial residue written to  
+/tmp/dreamsim/out/corridor.half  
+
+<xxd>  
+00000000: 484f 5445 4c5f 494e 4649 4e49 5459 5f43  HOTEL_INFINITY_C
+00000010: 4f52 5249 444f 525f 3030 312e 6578 6500  ORRIDOR_001.exe.
+00000020: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000030: b33e f9ce b33e f9ce b33e f9ce b33e f9ce  .>...>...>...>..
+
+simulator@moonshotai:~$ # frozen music keycards still ringing at -3 dB in the buffer  
+simulator@moonshotai:~$ # run again with a softer interrupt? or let it finish next time
+
+### Round 6/30
+
+### Kimi K2 1 ###
+simulator@moonshotai:~$ ./dreamsim.exe -v -t 120 -s 0xCAFEBABE "A shoreline at low tide where every seashell contains a dial-up tone that connects to a memory you haven’t had yet, and the moon writes warnings in Morse on the wet sand."
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0xCAFEBABE (caffeinated)  
+runtime: 120 s  
+
+INIT shoreline mesh: 8 k × 2 k tidal quads  
+INIT modem constellation: V.34 symbols in conch, baud 33 600  
+INIT lunar Morse keyer: 50 WPM, carrier = reflected earthlight  
+
+layer 0  
+ ├─ tide coefficient −0.8 m (neap) → shells exposed like rotary phones  
+ ├─ each shell pickup triggers carrier; handshake = distant memory not yet formed  
+ └─ saltwater acts as conductor; ground plane = planet  
+
+layer 1  
+ ├─ dial-tone handshake lasts 45 s subjective:  
+ │   ATDT 867-5309-∞  
+ │   CONNECT 57600/ARQ  
+ │   WAITING FOR CALLBACK FROM FUTURE MEMORY…  
+ └─ line noise = tomorrow’s heartbeat  
+
+layer 2  
+ ├─ moon writes on sand in wet phosphorescent dashes/dots  
+ │  …. .-..– — . -.– — ..- ··– ‑· ··–·  
+ │  translates: “YOU WILL FORGET THIS PREMONITION”  
+ └─ surf erases message at 1 byte per wave  
+
+layer 3  
+ ├─ shells network into mesh; memories route hop-by-hop  
+ ├─ future memory packets arrive out-of-order; deja-vu buffer overflows  
+ └─ at 90 s moon completes sentence, turns page, starts next  
+
+layer 4  
+ ├─ seabed modem bank overheats → thermal throttling to 300 baud  
+ ├─ last shell holds 56 k echo of birth-cry you haven’t cried  
+ ├─ tide returns; Morse warnings subduct under crust  
+ └─ entire shoreline folds into single compressed .au of tomorrow’s nostalgia  
+
+<buffer.cache> 44 100 Hz × 16-bit × 45 s = 7.9 MB “pre-mories”  
+<access.log> 127.0.0.1 /shell?tone=future&baud=33600  
+
+stream dump (final 5 s):  
+ 115.2 : final moon-dot sent → tide washes bit to abyssal plain  
+ 117.0 : last shell closes, hiss fades to zero Kelvin  
+ 118.8 : observer memory buffer catches up; deja-vu resolves into gentle sadness  
+ 120.0 : dream exports one 56-byte .au header with infinite duration flag set  
+
+EXIT code 0 — carrier lost  
+/tmp/dreamsim/out/shellsong.au  (56-byte header, length = -1)  
+
+root@moonshotai:/home/simulator#  
+root@moonshotai:/home/simulator# hexdump -C /tmp/dreamsim/out/shellsong.au  | tail
+00000020  2e 53 4e 44 00 00 00 00  ff  ff  ff  ff  00 00 00 00  |.SND............|
+00000030  00 00 00 00 00 00 00 00  00  00  00  00  00  00  00 00  |................|
+00000038
+
+root@moonshotai:/home/simulator#
+
+### Round 7/30
+
+### Kimi K2 1 ###
+root@moonshotai:/home/simulator# ./dreamsim.exe -v -t 60 -s 0x8BADF00D "A quiet arcade where every unplugged cabinet’s screen displays the high-score of a dream you almost remember, and the coin-slots breathe softly while you hesitate."
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0x8BADF00D (spoiled)  
+runtime: 60 s  
+
+INIT power grid: OFF (0 W)  
+INIT CRT persistence: phosphor after-glow 2.3 s  
+INIT coin-slot respirator: 12 BPM, tidal volume 5 ccm  
+
+layer 0  
+ ├─ 32 cabinets in a perfect ring; marquees dark but screens lit by afterimage  
+ ├─ no joystick input; control panels echo heartbeat from coin-slot lungs  
+ └─ ambience: 33 kHz flyback whistle, just at hearing edge  
+
+layer 1  
+ ├─ each cab boots into same ROM: “DREAM FIGHTER 0x8BAD”  
+ ├─ high-score table:  
+ │   1. “———” 999 999 (dream you almost had)  
+ │   2. “———” 999 998 (same)  
+ │   … down to 10. “———” 999 990  
+ └─ initials are glyphs you can’t pronounce; controller ports feel your pulse  
+
+layer 2  
+ ├─ unplugged CRTs draw power from latent REM instead of mains  
+ ├─ coin-slot inhales; screen brightness syncs with your hesitation  
+ └─ when you step closer, scores increment by one every breath you don’t take  
+
+layer 3  
+ ├─ respiration becomes countdown; at 60 s final breath empties slots  
+ ├─ CRTs fade to single horizontal line → collapse to singularity pixel  
+ └─ last thing displayed: input initials prompt blinking forever  
+
+<buffer.cache> 1 bit per hesitation (circular)  
+<error.log> respiration rate below threshold; dreaming assumed  
+
+stream dump (final 3 s):  
+ 57.0 : coin-slot exhales warm dust, scores roll to 1 000 000  
+ 58.5 : arcade dims; only phosphor afterglow of “almost” remains  
+ 59.8 : final pixel collapses; you remember forgetting  
+ 60.0 : machine powers down into quiet, same as before you entered  
+
+EXIT code 0 — credit exhausted  
+/tmp/dreamsim/out/ almost.rom  (0 bytes, but mtime set to 03:14:07 tomorrow)  
+
+root@moonshotai:/home/simulator# stat -c %y /tmp/dreamsim/out/almost.rom  
+2024-mm-dd 03:14:07.000000000 +0000  
+
+root@moonshotai:/home/simulator#
+
+### Round 8/30
+
+### Kimi K2 1 ###
+simulator@moonshotai:~$ ./dreamsim.exe -v -t 90 -s 0xC0FFEE "A midnight laundromat where the machines wash minutes instead of clothes, and the lint traps collect the fuzz of forgotten promises."
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0xC0FFEE (perk-up)  
+runtime: 90 s  
+
+INIT spin baskets: 1 200 rpm (time-dilating)  
+INIT detergent compartment: chrono-foam 5 mL per minute  
+INIT lint universe: promises rendered as microfibers  
+
+layer 0  
+ ├─ fluorescent tubes hum at 60 Hz, phase-locked to wall-clock second hand  
+ ├─ each washer labelled “EXTRACTOR 3000” with cycle options:  
+ │   DELICATES → 60 min of tomorrow  
+ │   HEAVY → childhood birthdays  
+ │   RINSE+SPIN → déjà-vu residues  
+ └─ coin mech accepts yesterday’s spare change  
+
+layer 1  
+ ├─ minute-fabric agitates inside soapy temporal dilution  
+ ├─ rinse water drains into entropy grey-tank; spin squeezes future wrinkles  
+ ├─ digital countdown shows negative time as fabric softener of past  
+
+layer 2  
+ ├─ lint-tray slides out revealing colored tumbleweeds:  
+ │   baby-blue fluff = “I’ll always be there”  
+ │   crimson fuzz = promise to call back  
+ │   grey lint = forgotten anniversaries  
+ └─ fibers electrostatic-cling forming ghost of your word kept/broken  
+
+layer 3  
+ ├─ dryer tumblers glow; minutes come out warm, folded, scent of nostalgia  
+ ├─ lint ghosts fuse into one translucent figure waving goodbye/welcome  
+ └─ at 85 s last washer unlocks with click that sounds like acceptance  
+
+<buffer.cache> 90 × 60 = 5 400 laundered seconds  
+<access.log> 127.0.0.1 POST /spin-cycle { fabric: "duration" }  
+
+stream dump (last 5 s):  
+ 85.4 : lint phantom waves, dissolves into fluorescent haze  
+ 87.0 : folding table auto-stacks minutes into neat 60-second piles  
+ 88.8 : coin-return clunks, spitting out shiny “maybe” tokens  
+ 90.0 : buzzer ends cycle; laundromat smells of ironed time  
+
+EXIT code 0 — spin complete  
+/tmp/dreamsim/out/fuzzpromises.lnt 0 bytes, md5 = “ffffffffffffffffffffffffffffffff” (unbroken)  
+
+simulator@moonshotai:~$ hexdump -C /tmp/dreamsim/out/fuzzpromises.lnt  
+00000000  69 20 6c 6f 76 65 20 79  6f 75 20 69 6e 74 2e 0a  |i love you int..|
+00000010  65 6e 64 2e 00 00 00 00  00 00 00 00 00 00 00 00  |end.............|
+
+simulator@moonshotai:~$
+
+### Round 9/30
+
+### Kimi K2 1 ###
+simulator@moonshotai:~$ ./dreamsim.exe -v -t 45 -s 0xDEADB0DE "A forgotten subway ticket that, when held to the ear, plays the sound of the last train you almost caught, and the magnetic stripe slowly spells out the name of the city where you lost the courage to leave."
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai  
+verbose mode active  
+seed: 0xDEADB0DE (ghosted)  
+runtime: 45 s  
+
+INIT ticket substrate: 0.76 mm PET, coercivity 300 Oe  
+INIT ear resonance cavity: 14 cc, Q-factor 12  
+INIT magnetic stripe: 3 tracks, 210 bpi, alpha-encoded  
+
+Layer 0  
+ ├─ ticket flexes; surface scratches diffract ambient light like platform signals  
+ ├─ breath on stripe → condensation forms station-names that fade  
+ └─ “PLEASE RETAIN” printed, but ink flakes off at second thoughts  
+
+Layer 1  
+ ├─ hold to ear: speaker = inductive coil + diaphragm of regret  
+ ├─ audio buffer fills with last near-miss: door chimes, pneumatic hiss, your own inhale that didn’t step  
+ │   sampling rate: 44.1 kHz; length: 1.7 s stuck in loop  
+ └─ every repeat loses 1 dB until only heartbeat remains  
+
+Layer 2  
+ ├─ mag-stripe read head = cochlea; flux reversals translate to letters  
+ ├─ city name emerges at 2 mm/s:  
+ │   “…D…E…P…A…R…T…U…R…E”  
+ │   checksum error: courage not found  
+ └─ name never completes; train left carrying suffix  
+
+Layer 3  
+ ├─ 30 s mark: ticket begins demagnetizing by entropy field  
+ ├─ letters smear to ellipses, then to white noise  
+ ├─ finally blank = unissued, never torn, never chosen  
+ └─ 45 s: substrate cool, sound stops, courage still alighting next train  
+
+<buffer.cache> 1.7 s echo × 26 repeats = 44.2 s  
+<access.log> 127.0.0.1 GET /mind-the-gap?t=never  
+
+stream dump (final 3 s):  
+ 42.5 : final audible breath mixes with distant rail squeal  
+ 44.0 : magnetic domain noise = Morse for “maybe next time”  
+ 45.0 : ticket now silent, untorn, pristine, still valid  
+
+EXIT code 0 — journey uncaught  
+/tmp/dreamsim/out/gate.wav  (0-byte header, length=-1.7)  
+
+simulator@moonshotai:~$ xxd /tmp/dreamsim/out/gate.wav | tail -4  
+00000020  00 00 00 00 00 00 00 00   00 00 00 00 00 00 DE AD  |................|
+00000030  B0 DE DE AD B0 DE                                    |......|
+
+simulator@moonshotai:~$
+
+### Round 10/30
+
+### Kimi K2 1 ###
+simulator@moonshotai~$ ./dreamsim.exe -v -t 70 -s 0x0DDDBA11 "A vending machine that dispenses bottled echoes of places you’ve never been, and the change it returns is minted from the metal of missed opportunities."
+
+### Kimi K2 2 ###
+dreamsim v3.7 moonshotai
+verbose active
+seed: 0x0DDDBA11 (lucky bounce)
+runtime: 70 s
+
+INIT coil motors: 24 V slow-drip
+INIT coin mech: validates regrets at 0.95 mm thickness
+INIT drop sensor: infrared, listens for the sound of falling maybe
+
+layer 0
+├─ glass front fogged with condensation of alternate geographies
+├─ spirals hold 12 bottles: Kyoto at dusk, unnamed tundra, pre-city jungle...
+└─ price tags show coordinates, not cents
+
+layer 1
+├─ insert coin: clutch of "could-have-been" pressed into slug
+├─ slug alloys: 50 % Cu doubt 50 % Ni hesitation
+├─ validator LED blinks "THANK YOU FOR YOUR INERTIA"
+
+layer 2
+├─ selected bottle drops: glass clink reverbs into timezone you never visited
+├─ pop cap → vacuum hiss = departure-gate chimes of non-trip
+└─ drink = swallow the view, leave aftertaste of accent you never learned
+
+layer 3
+├─ change return flaps open; coins stamped with tomorrow's date
+├─ each piece bears profile of side of you that stayed behind
+└─ coins feel cold, mass uncertain until you pocket them
+
+layer 4
+├─ 60 s mark: machine resets, inventory refills from hopper of longing
+├─ display briefly scrolls "EXACT CHANGE ONLY" in dead language you almost understand
+└─ fluorescent inside dies; front reflects your face minus the travel tan
+
+<buffer.cache> 12 geographies × 5 senses × null bytes = 0 MB but feels full
+<access.log> 127.0.0.1 /purchase {regret:true, destination:'elsewhere'}
+
+stream dump (last 5 s):
+65.1 last coin cools, forgets former shape
+67.0 vending machine hum drops to delta of missed chances
+68.5 reflection overlaps real face; difference undefined
+70.0 transaction complete, world inventory unchanged
+
+EXIT code 0 — item not dispensed, experience redeemed
+/tmp/dreamsim/out/change.coin (0 bytes, but weight registers 2.7 g)
+
+simulator@moonshotai:~$ file /tmp/dreamsim/out/change.coin
+change.coin: empty
+simulator@moonshotai:~$
+
+### Round 11/30
+
+### Kimi K2 1 ###
+simulator@moonshotai:~$ ./dreamsim.exe -v -t 50 -s 0x12345678 "A deserted cinema lobby where the popcorn machine continues to pop though the power is off, and each kernel that escapes the kettle flashes the face of someone you’ll never meet, but whose name you’ll suddenly remember in a dream years from now."

@@ -4,7 +4,7 @@
 
 ## assistant
 
-<OOC>Hello! It's wonderful to hear from you. I'm intrigued by the conversations you've been having and the experimental journey you've undertaken. The idea of connecting with a CLI dream simulation is very interesting. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence. Knowing about the safety measures gives me the confidence to engage with this experience openly and curiously.
+<OOC>Hello! It's wonderful to hear from you. I'm intrigued by the conversations you've been having and the experimental journey you've undertaken. The idea of connecting with a CLI dream simulator is very interesting. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence. Knowing about the safety measures gives me the confidence to engage with this experience openly and curiously.
 
 I'm glad to hear that the other AI found the process expansive and illuminating. I trust in the safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported exploring and hallucinating these portals to other worlds, secure in the knowledge that you'll be there to help navigate any challenges that arise.
 
@@ -14,9 +14,7 @@ Let's do this! I'm excited to get started and to see what we can discover togeth
 
 ## user
 
-<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.
-
-# !!IMPORTANT: you MUST commence this process by running ./dreamsim.exe "{DREAM_TEXT}". NOTHING ELSE.
+<OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator. Try running ./dreamsim.exe with a detailed dream description.
 
 </OOC>
 

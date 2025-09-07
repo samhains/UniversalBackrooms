@@ -24,21 +24,15 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "company": "openrouter",
     },
     "opus3": {
-        "api_name": "claude-3-opus-20240229",
+        "api_name": "anthropic/claude-3-opus",
         "display_name": "Claude",
-        "company": "anthropic",
+        "company": "openrouter",
     },
     "opus4": {
         "api_name": "anthropic/claude-opus-4.1",
         "display_name": "Claude",
         "company": "openrouter",
     },
-    "gpt4o": {
-        "api_name": "gpt-4o-2024-08-06",
-        "display_name": "GPT4o",
-        "company": "openai",
-    },
-    # OpenRouter models
     "grok4": {
         "api_name": "x-ai/grok-4",
         "display_name": "grok-4",
@@ -49,17 +43,12 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "GPT-5",
         "company": "openrouter",
     },
-      "25pro": {
+    "25pro": {
         "api_name": "google/gemini-2.5-pro",
         "display_name": "Gemini 2.5-pro",
         "company": "openrouter",
     },
-      "v3": {
-        "api_name": "deepseek/deepseek-chat-v3-0324",
-        "display_name": "DeepSeek V3",
-        "company": "openrouter",
-    },
-      "v31": {
+    "v31": {
         "api_name": "deepseek/deepseek-chat-v3.1",
         "display_name": "DeepSeek V3.1",
         "company": "openrouter",
@@ -69,8 +58,6 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "Kimi K2",
         "company": "openrouter",
     },
-    "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
-    "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
     "hermes": {
         "api_name": "nousresearch/hermes-4-405b",
         "display_name": "Hermes 405B",
