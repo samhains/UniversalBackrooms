@@ -472,8 +472,9 @@ def main():
             pair_label = f"{m1}-{m2}"
             print(f"[{completed}/{total_runs}] dream#{idx} pair={pair_label} turns={args.max_turns} exit={exit_reason} time={duration:.1f}s")
 
-            # Always try to sync this single run immediately to Supabase
-            _sync_single_meta(meta)
+            # Manual sync preferred: set BACKROOMS_AUTO_SYNC=1 to enable immediate upsert
+            if os.getenv("BACKROOMS_AUTO_SYNC") == "1":
+                _sync_single_meta(meta)
 
     print(f"Done. Wrote metadata to {out_path}")
 

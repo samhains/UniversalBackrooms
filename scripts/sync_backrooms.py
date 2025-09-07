@@ -26,9 +26,34 @@ from typing import List, Dict
 import requests
 
 try:
-    from dotenv import load_dotenv
+    from dotenv import load_dotenv  # type: ignore
 except Exception:  # optional
     load_dotenv = None
+
+
+def _load_env_from_file(path: Path) -> None:
+    """Lightweight .env loader that doesn't require python-dotenv.
+
+    Only parses simple KEY=VALUE lines; ignores blanks and comments.
+    Does not overwrite existing environment variables.
+    """
+    try:
+        if not path.exists():
+            return
+        for line in path.read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            if "=" not in s:
+                continue
+            key, val = s.split("=", 1)
+            key = key.strip()
+            # Strip optional surrounding quotes
+            v = val.strip().strip("'\"")
+            if key and key not in os.environ:
+                os.environ[key] = v
+    except Exception:
+        pass
 
 
 def env_keys() -> tuple[str, str]:
@@ -62,6 +87,52 @@ def read_jsonl(path: Path) -> List[Dict]:
                 continue
             out.append(obj)
     return out
+
+
+def _is_tiny_log(p: Path, min_bytes: int) -> bool:
+    try:
+        return p.exists() and p.is_file() and p.stat().st_size < max(1, min_bytes)
+    except Exception:
+        return True
+
+
+def clean_meta_inplace(meta_path: Path, *, min_bytes: int = 128, delete_logs: bool = True) -> None:
+    """Remove entries with missing or tiny log files; de-duplicate by log_file.
+
+    Rewrites the JSONL in-place and writes a .bak backup when changes occur.
+    """
+    items = read_jsonl(meta_path)
+    keep: List[Dict] = []
+    seen: set[str] = set()
+    removed_any = False
+    for it in items:
+        lf = it.get("log_file")
+        if not lf:
+            removed_any = True
+            continue
+        p = Path(lf)
+        if not p.exists() or _is_tiny_log(p, min_bytes):
+            removed_any = True
+            if delete_logs and p.exists():
+                try:
+                    p.unlink(missing_ok=True)
+                except Exception:
+                    pass
+            continue
+        if lf in seen:
+            removed_any = True
+            continue
+        seen.add(lf)
+        keep.append(it)
+    if removed_any:
+        backup = meta_path.with_suffix(meta_path.suffix + ".bak")
+        try:
+            backup.write_text(meta_path.read_text(encoding="utf-8"), encoding="utf-8")
+        except Exception:
+            pass
+        with meta_path.open("w", encoding="utf-8") as f:
+            for row in keep:
+                f.write(json.dumps(row) + "\n")
 
 
 def chunked(seq, n):
@@ -129,21 +200,31 @@ def upsert_rows(url: str, key: str, rows: List[Dict], dry_run: bool = False) -> 
 
 
 def main():
-    if load_dotenv:
+    # Best-effort load .env from repository root
+    env_path = Path(__file__).resolve().parents[1] / ".env"
+    if load_dotenv is not None:
         try:
-            load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+            load_dotenv(env_path)
         except Exception:
             pass
+    # Fallback tiny parser if python-dotenv is unavailable
+    _load_env_from_file(env_path)
 
     ap = argparse.ArgumentParser(description="Sync Backrooms runs into Supabase")
     ap.add_argument("--meta", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Path to JSONL metadata file")
     ap.add_argument("--dry-run", action="store_true", help="Print actions without writing to Supabase")
+    ap.add_argument("--no-clean", action="store_true", help="Skip tiny/missing log cleanup before syncing")
+    ap.add_argument("--min-bytes", type=int, default=128, help="Minimum size threshold for logs when cleaning (default: 128)")
     args = ap.parse_args()
 
     url, key = env_keys()
     meta_path = Path(args.meta)
     if not meta_path.exists():
         raise SystemExit(f"Metadata file not found: {meta_path}")
+
+    # Clean tiny/missing logs and de-duplicate JSONL by default
+    if not args.no_clean:
+        clean_meta_inplace(meta_path, min_bytes=int(args.min_bytes), delete_logs=True)
 
     items = read_jsonl(meta_path)
     rows = to_backrooms_rows(items)

@@ -71,7 +71,12 @@ dreams-search query="" limit="200" json="false":
 
 # Backfill: upsert backrooms from JSONL + transcripts
 sync-backrooms meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
+    # Cleans tiny/missing logs, rewrites JSONL, then upserts to Supabase
     python scripts/sync_backrooms.py --meta "{{meta}}"
+
+# Prune DB rows for template not present in cleaned metadata
+prune-backrooms template="dreamsim3" meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
+    python scripts/prune_backrooms_db.py --template "{{template}}" --meta "{{meta}}" --delete-not-in-meta
 
 # Export Supabase backrooms to Obsidian folder
 # Usage:
@@ -80,15 +85,16 @@ sync-backrooms meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
 #   just obsidian-export vault="/path/to/Vault"      # custom vault path
 #   just obsidian-export dream_id="<uuid>"           # filter by prompt id
 #   just obsidian-export contains="substring"        # filter by prompt text
-obsidian-export vault="/Users/samhains/Documents/Backrooms" since="" dream_id="" contains="" limit="1000" index="true":
+obsidian-export vault="/Users/samhains/Documents/Backrooms" since="" dream_id="" contains="" limit="1000" index="true" overwrite="true":
     cmd="python scripts/export_obsidian.py --vault \"{{vault}}\" --limit {{limit}}"; \
     if [ -n "{{since}}" ]; then cmd="$cmd --since \"{{since}}\""; fi; \
     if [ -n "{{dream_id}}" ]; then cmd="$cmd --dream-id \"{{dream_id}}\""; fi; \
     if [ -n "{{contains}}" ]; then cmd="$cmd --prompt-contains \"{{contains}}\""; fi; \
     if [ "{{index}}" = "true" ]; then cmd="$cmd --write-index"; fi; \
+    if [ "{{overwrite}}" = "true" ]; then cmd="$cmd --overwrite"; fi; \
     eval "$cmd"
 
 # Run the database sync and Obsidian export together
 # Usage:
 #   just sync
-sync: sync-backrooms obsidian-export
+sync: sync-backrooms prune-backrooms obsidian-export

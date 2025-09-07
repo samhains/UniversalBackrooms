@@ -562,7 +562,12 @@ def main():
     transcript: list[dict[str, str]] = []
 
     # Persist run details + transcript into Supabase (best-effort)
+    # Disabled by default. Set BACKROOMS_SAVE_ENABLED=1 to re-enable.
     def _save_run_to_supabase(exit_reason: str = "max_turns") -> None:
+        # Respect explicit opt-in only; default is no-op so transcripts are
+        # pushed via scripts/sync_backrooms.py after runs complete.
+        if os.getenv("BACKROOMS_SAVE_ENABLED") != "1":
+            return
         global _SAVE_WARNED
         try:
             supabase_url = os.getenv("SUPABASE_URL")
@@ -635,8 +640,7 @@ def main():
     except Exception:
         pass
 
-    # Create initial row early (empty transcript) so progress is visible immediately
-    _save_run_to_supabase(exit_reason="starting")
+    # Database save disabled by default; no early row creation.
     while turn < args.max_turns:
         # Announce round progress in terminal and append to log file
         try:
@@ -675,7 +679,7 @@ def main():
                 print(msg)
                 with open(filename, "a") as f:
                     f.write(msg + "\n")
-                # Persist early stop
+                # Persist early stop (no-op unless BACKROOMS_SAVE_ENABLED=1)
                 _save_run_to_supabase(exit_reason="early_stop")
                 break
 
@@ -771,7 +775,7 @@ def main():
         # Append this round to running transcript
         transcript.extend(round_entries)
         turn += 1
-        # Checkpoint after each round so partial progress is saved
+        # Checkpoint after each round (no-op unless BACKROOMS_SAVE_ENABLED=1)
         _save_run_to_supabase(exit_reason="in_progress")
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
@@ -779,7 +783,7 @@ def main():
         f.write(
             f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.\n"
         )
-    # Persist run completion
+    # Persist run completion (no-op unless BACKROOMS_SAVE_ENABLED=1)
     _save_run_to_supabase(exit_reason="max_turns")
 
 
