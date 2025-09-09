@@ -21,7 +21,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import requests
 
@@ -89,6 +89,25 @@ def read_jsonl(path: Path) -> List[Dict]:
     return out
 
 
+def _clean_string(s: str) -> str:
+    """Remove characters not accepted by Postgres text (e.g., NUL bytes).
+
+    - Strips '\x00' (NUL) which Postgres rejects
+    - Removes other non-printable C0 control chars except tab/newline/carriage-return
+    """
+    if not isinstance(s, str):
+        return s  # type: ignore[return-value]
+    s = s.replace("\x00", "")
+    return "".join(ch for ch in s if (ch >= " " or ch in "\t\n\r"))
+
+
+def _sanitize_row_strings(row: Dict) -> Dict:
+    for k, v in list(row.items()):
+        if isinstance(v, str):
+            row[k] = _clean_string(v)
+    return row
+
+
 def _is_tiny_log(p: Path, min_bytes: int) -> bool:
     try:
         return p.exists() and p.is_file() and p.stat().st_size < max(1, min_bytes)
@@ -141,8 +160,46 @@ def chunked(seq, n):
 
 
 def to_backrooms_rows(items: List[Dict]) -> List[Dict]:
+    """Map JSONL items to backrooms table rows.
+
+    Also ensures the `source` is populated:
+      - prefer `item['source']` from metadata
+      - else fetch from Supabase `dreams` by `dream_id` (cached per run)
+    """
     rows: List[Dict] = []
     seen = set()
+
+    # Lazy env and cache for dream -> source lookups
+    _env: Optional[tuple[str, str]] = None
+    dream_source_cache: dict[str, Optional[str]] = {}
+
+    def _get_env() -> tuple[str, str]:
+        nonlocal _env
+        if _env is None:
+            _env = env_keys()
+        return _env
+
+    def _fetch_source_for_dream(dream_id: str) -> Optional[str]:
+        if not dream_id:
+            return None
+        if dream_id in dream_source_cache:
+            return dream_source_cache[dream_id]
+        try:
+            url, key = _get_env()
+            endpoint = f"{url}/rest/v1/dreams"
+            params = {"select": "source", "id": f"eq.{dream_id}", "limit": "1"}
+            r = requests.get(endpoint, headers=headers(key), params=params, timeout=20)
+            r.raise_for_status()
+            data = r.json()
+            src: Optional[str] = None
+            if isinstance(data, list) and data:
+                src = data[0].get("source")
+            dream_source_cache[dream_id] = src
+            return src
+        except Exception:
+            dream_source_cache[dream_id] = None
+            return None
+
     for it in items:
         lf = it.get("log_file")
         if not lf or lf in seen:
@@ -155,25 +212,52 @@ def to_backrooms_rows(items: List[Dict]) -> List[Dict]:
         try:
             p = Path(lf)
             if p.exists():
-                transcript = p.read_text(encoding="utf-8")
+                # Replace undecodable bytes and then strip NUL/control chars
+                transcript = _clean_string(p.read_text(encoding="utf-8", errors="replace"))
         except Exception:
             transcript = None
-        rows.append(
-            {
-                "dream_index": it.get("dream_index"),
-                "dream_id": it.get("dream_id") or it.get("id"),
-                "prompt": it.get("prompt"),
-                "models": it.get("models"),
-                "template": it.get("template"),
-                "max_turns": it.get("max_turns"),
-                "created_at": created_at,
-                "duration_sec": it.get("duration_sec"),
-                "log_file": lf,
-                "exit_reason": it.get("exit_reason"),
-                "transcript": transcript,
-            }
-        )
+
+        dream_id = it.get("dream_id") or it.get("id")
+        # Resolve source with fallback to dreams table
+        src = it.get("source")
+        if not src and dream_id:
+            src = _fetch_source_for_dream(str(dream_id))
+
+        row = {
+            "dream_index": it.get("dream_index"),
+            "dream_id": dream_id,
+            "prompt": it.get("prompt"),
+            "models": it.get("models"),
+            "template": it.get("template"),
+            "max_turns": it.get("max_turns"),
+            "created_at": created_at,
+            "duration_sec": it.get("duration_sec"),
+            "log_file": lf,
+            "exit_reason": it.get("exit_reason"),
+            "transcript": transcript,
+            # Always include 'source' key (None when unknown) to ensure
+            # all objects in a batch share identical keys for PostgREST.
+            "source": src if src is not None else None,
+        }
+        rows.append(_sanitize_row_strings(row))
     return rows
+
+
+def _normalize_rows(rows: List[Dict], drop_keys: Optional[set[str]] = None) -> List[Dict]:
+    """Ensure all objects share identical keys (fill missing with None).
+
+    Optionally drop specific keys across the whole batch.
+    """
+    drop_keys = drop_keys or set()
+    # Union of keys across rows
+    keys: set[str] = set()
+    for r in rows:
+        keys.update(r.keys())
+    keys -= drop_keys
+    norm: List[Dict] = []
+    for r in rows:
+        norm.append({k: r.get(k, None) for k in keys})
+    return norm
 
 
 def upsert_rows(url: str, key: str, rows: List[Dict], dry_run: bool = False) -> int:
@@ -183,13 +267,40 @@ def upsert_rows(url: str, key: str, rows: List[Dict], dry_run: bool = False) -> 
     endpoint = f"{url}/rest/v1/backrooms?on_conflict=log_file"
     total = 0
     for batch in chunked(rows, 50):
-        r = requests.post(endpoint, headers=headers(key), json=batch, timeout=60)
+        # Normalize keys to avoid PGRST102 (all object keys must match)
+        norm_batch = _normalize_rows(batch)
+        r = requests.post(endpoint, headers=headers(key), json=norm_batch, timeout=60)
         if not r.ok:
+            # If the failure looks like an unknown column (e.g., 'source' missing), retry without it
+            detail_text = None
             try:
                 detail = r.json()
+                detail_text = json.dumps(detail)
             except Exception:
-                detail = r.text
-            raise SystemExit(f"Upsert failed: HTTP {r.status_code}: {detail}")
+                detail_text = r.text
+            if detail_text and ("source" in detail_text.lower() and ("column" in detail_text.lower() or "unknown" in detail_text.lower() or "schema cache" in detail_text.lower())):
+                try:
+                    alt_batch = _normalize_rows(norm_batch, drop_keys={"source"})
+                    r2 = requests.post(endpoint, headers=headers(key), json=alt_batch, timeout=60)
+                    if r2.ok:
+                        try:
+                            payload = r2.json()
+                            total += len(payload) if isinstance(payload, list) else len(alt_batch)
+                        except Exception:
+                            total += len(alt_batch)
+                        continue
+                    else:
+                        # Raise error from retry to surface the real blocker
+                        try:
+                            alt_detail = r2.json()
+                            alt_detail_text = json.dumps(alt_detail)
+                        except Exception:
+                            alt_detail_text = r2.text
+                        raise SystemExit(f"Upsert failed after dropping 'source': HTTP {r2.status_code}: {alt_detail_text}")
+                except Exception:
+                    pass
+            # If we reach here, either no fallback or fallback failed
+            raise SystemExit(f"Upsert failed: HTTP {r.status_code}: {detail_text}")
         try:
             payload = r.json()
             total += len(payload) if isinstance(payload, list) else 0

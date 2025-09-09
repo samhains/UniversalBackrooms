@@ -163,6 +163,7 @@ def to_frontmatter(row: Dict[str, Any]) -> Dict[str, Any]:
     fm: Dict[str, Any] = {
         "type": "transcript",
         "dream_id": row.get("dream_id"),
+        "source": row.get("source"),
         "template": row.get("template"),
         "models": models,
         "model_pair": model_pair,

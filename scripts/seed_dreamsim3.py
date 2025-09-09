@@ -48,7 +48,7 @@ def _headers(key: str):
     }
 
 
-def fetch_recent(url: str, key: str, limit: int = 50):
+def fetch_recent(url: str, key: str, limit: int = 50, source: str | None = None):
     """Fetch recent dreams directly from the dreams table via PostgREST.
 
     Uses a minimal column set that matches our CSV and dataset expectations.
@@ -59,18 +59,39 @@ def fetch_recent(url: str, key: str, limit: int = 50):
         "order": "date.desc",
         "limit": str(limit),
     }
+    if source and source != "all":
+        params["source"] = f"eq.{source}"
     r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def search_dreams(url: str, key: str, q: str, limit: int = 50):
+def search_dreams(url: str, key: str, q: str, limit: int = 50, source: str | None = None):
     """Search dreams by content.
 
-    Prefers RPC `dreams_search` if available (for true fuzzy/trigram ranking).
-    Falls back to PostgREST `ilike` filters with OR across tokens.
+    - If a specific source is requested, use PostgREST ilike with source filter.
+    - Otherwise, prefer RPC `dreams_search` (if available) for better fuzzy ranking.
     """
-    # 1) Try RPC if present (best fuzziness if pg_trgm-backed)
+    terms = [t for t in (q or "").split() if t]
+    if not terms:
+        return []
+
+    # If source constrained, go straight to PostgREST to guarantee proper filtering
+    if source and source != "all":
+        endpoint = f"{url}/rest/v1/dreams"
+        ors = ",".join([f"content.ilike.*{t}*" for t in terms])
+        params = {
+            "select": "id,content,date",
+            "or": f"({ors})",
+            "order": "date.desc",
+            "limit": str(limit),
+            "source": f"eq.{source}",
+        }
+        r = requests.get(endpoint, headers=_headers(key), params=params, timeout=20)
+        r.raise_for_status()
+        return r.json()
+
+    # Try RPC first (unconstrained source)
     try:
         endpoint = f"{url}/rest/v1/rpc/dreams_search"
         payload = {"q": q, "limit": limit, "offset": 0}
@@ -80,12 +101,8 @@ def search_dreams(url: str, key: str, q: str, limit: int = 50):
         r.raise_for_status()
         return r.json()
     except Exception:
-        # 2) Fallback: PostgREST ilike OR across whitespace-separated tokens
+        # Fallback: PostgREST ilike OR across whitespace-separated tokens
         endpoint = f"{url}/rest/v1/dreams"
-        terms = [t for t in (q or "").split() if t]
-        if not terms:
-            return []
-        # Build an or=(content.ilike.*foo*,content.ilike.*bar*) clause
         ors = ",".join([f"content.ilike.*{t}*" for t in terms])
         params = {
             "select": "id,content,date",
@@ -114,6 +131,7 @@ def main():
     ap = argparse.ArgumentParser(description="Seed dreamsim3 initiator with a dream from Supabase")
     ap.add_argument("--query", "-q", help="Fuzzy search query (uses RPC dreams_search)")
     ap.add_argument("--limit", type=int, default=50, help="Limit for recent/search fetch (default: 50)")
+    ap.add_argument("--source", choices=["mine", "rsos", "all"], default="mine", help="Source filter for dreams (default: mine)")
     ap.add_argument("--print", dest="do_print", action="store_true", help="Print chosen dream text to stdout")
     args = ap.parse_args()
 
@@ -121,9 +139,9 @@ def main():
 
     try:
         if args.query:
-            rows = search_dreams(url, key, args.query, args.limit)
+            rows = search_dreams(url, key, args.query, args.limit, args.source)
         else:
-            rows = fetch_recent(url, key, args.limit)
+            rows = fetch_recent(url, key, args.limit, args.source)
     except requests.HTTPError as e:
         # Surface useful server error details if present
         try:

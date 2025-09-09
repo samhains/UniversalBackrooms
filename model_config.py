@@ -29,9 +29,10 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "company": "openrouter",
     },
     "opus4": {
-        "api_name": "anthropic/claude-opus-4.1",
+        # Use Anthropic's current Opus 4.1 identifier
+        "api_name": "claude-opus-4-1-20250805",
         "display_name": "Claude",
-        "company": "openrouter",
+        "company": "anthropic",
     },
     "grok4": {
         "api_name": "x-ai/grok-4",
@@ -88,4 +89,3 @@ def get_model_choices(include_cli: bool = True) -> List[str]:
 def get_model_info() -> Dict[str, Dict[str, Any]]:
     """Expose the model information mapping."""
     return MODEL_INFO
-
