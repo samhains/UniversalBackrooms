@@ -125,7 +125,7 @@ class MediaAgentState:
 def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
     # Best-effort extraction from MCP result formats
     # 1) Direct fields commonly returned by bespoke servers
-    for key in ("image_url", "video_url", "url", "uri", "path"):
+    for key in ("image_url", "video_url", "audio_url", "url", "uri", "path"):
         val = result.get(key)
         if isinstance(val, str) and val:
             return val
@@ -139,11 +139,11 @@ def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
                 return uri
             txt = item.get("text")
             if isinstance(txt, str):
-                m = re.search(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif)", txt, re.I)
+                m = re.search(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif|mp4|webm|mov|m4v|mp3|wav|flac|ogg)", txt, re.I)
                 if m:
                     return m.group(0)
     if isinstance(content, str):
-        m = re.search(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif)", content, re.I)
+        m = re.search(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif|mp4|webm|mov|m4v|mp3|wav|flac|ogg)", content, re.I)
         if m:
             return m.group(0)
     return None
@@ -181,7 +181,7 @@ def run_media_agent(
     try:
         api_model = resolve_media_model_api(media_cfg, selected_models, model_info)
     except Exception as e:
-        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
         body = f"Configuration error: {e}"
         log_media_result(filename, header, body)
         return {"isError": True, "content": [{"type": "text", "text": str(e)}]}
@@ -246,7 +246,7 @@ def run_media_agent(
     tool = media_cfg.get("tool")
     if not isinstance(tool, dict):
         err = "Media config must declare a 'tool' with 'server' and 'name'. No defaults are assumed."
-        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
         body = f"Error: {err}"
         log_media_result(filename, header, body)
         return {"isError": True, "content": [{"type": "text", "text": err}]}
@@ -301,7 +301,7 @@ def run_media_agent(
     result = call_tool(server_cfg, tool_name, payload)
 
     # 4) Log
-    header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+    header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
     body = f"Mode: {mode}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
     log_media_result(filename, header, body)
 
