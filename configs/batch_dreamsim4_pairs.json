@@ -1,0 +1,9 @@
+{
+  "type": "batch",
+  "template": "dreamsim4",
+  "max_turns": 30,
+  "pairs": ["opus4:sonnet4", "k2:gpt5"],
+  "data_source": { "kind": "none" },
+  "output": { "meta_jsonl": "BackroomsLogs/dreamsim4/dreamsim4_meta.jsonl" }
+}
+

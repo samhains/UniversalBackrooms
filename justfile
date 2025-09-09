@@ -141,6 +141,10 @@ obsidian-export vault="/Users/samhains/Documents/Backrooms" since="" dream_id=""
     if [ "{{overwrite}}" = "true" ]; then cmd="$cmd --overwrite"; fi; \
     eval "$cmd"
 
+# Run from a JSON config (see ./configs for examples)
+run config="configs/single_roleplay_hermes.json":
+    python scripts/run_config.py --config "{{config}}"
+
 # Sync DreamSim3 and DreamSim4 to Supabase
 # Usage:
 #   just sync

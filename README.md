@@ -179,6 +179,7 @@ Quick checks using the included MCP CLI:
 Media preset:
 - Use `media/kieai.json` to route prompts to Kie.ai (`generate_nano_banana`). It disables FastMCP-style param wrapping and sends arguments directly.
 - Select this preset anywhere you choose a media template (e.g., template name `kieai`).
+ - Control Discord image attachment via `post_image_to_discord` (default true). Set to false to post only text summaries to Discord.
 
 Notes:
 - The Kie.ai server returns URLs (no local files). For editing, provide HTTP/HTTPS image URLs only.
@@ -466,3 +467,21 @@ Examples:
 
 - `python backrooms.py --lm k2 k2 --template dreamsim3 --query "A dim hallway that hums like a refrigerator"`
 - `python backrooms.py --lm gpt5 hermes --template roleplay --var TOPIC=alchemy --var TONE=serious`
+
+## Config Runner (experimental)
+
+Define runs in JSON under `configs/` and execute them with a single command:
+
+- Single run: `just run config=configs/single_roleplay_hermes.json`
+- Batch from Supabase (DreamSim3): `just run config=configs/batch_dreamsim3_query_kie.json`
+
+Key fields:
+- `type`: `single` or `batch`
+- `template`: Backrooms template (e.g., `dreamsim3`, `roleplay`)
+- `models`/`pairs`/`mixed`: choose model selection plan
+- `integrations`: optional `{ "discord": name, "media": name }`
+- `data_source`: for batch (currently `{ kind: "supabase", query, limit, source }`)
+- `template_vars_from_item`: mapping for per-item variables (default `DREAM_TEXT <- content`)
+- `output.meta_jsonl`: metadata JSONL path for batch runs
+
+See `configs/` and `scripts/run_config.py` for examples and details.

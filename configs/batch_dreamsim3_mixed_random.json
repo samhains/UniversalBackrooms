@@ -1,0 +1,17 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 30,
+  "models": ["gpt5", "gpt5", "gpt5", "hermes"],
+  "mixed": { "mode": "random", "runs_per_item": 2 },
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": { "discord": null, "media": null },
+  "data_source": { "kind": "supabase", "query": "", "limit": 100, "source": "mine" },
+  "template_vars_from_item": { "DREAM_TEXT": "content" },
+  "shuffle": true,
+  "seed": 42,
+  "output": { "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl" },
+  "auto_sync": false
+}
+

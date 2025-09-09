@@ -1,0 +1,13 @@
+{
+  "type": "single",
+  "template": "roleplay",
+  "models": ["hermes", "hermes"],
+  "max_turns": 30,
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "discord": "chronicle_fp",
+  "media": "chronicle_fp",
+  "vars": {},
+  "query": null
+}
+

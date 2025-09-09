@@ -1,0 +1,14 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 30,
+  "models": ["gpt5", "hermes", "k2"],
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": { "discord": null, "media": null },
+  "data_source": { "kind": "supabase", "query": "", "limit": 200, "source": "mine" },
+  "template_vars_from_item": { "DREAM_TEXT": "content" },
+  "max_items": 200,
+  "output": { "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl" }
+}
+
