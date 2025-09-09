@@ -153,9 +153,15 @@ This repo includes a minimal MCP client to connect to any MCP-compliant server (
 The dataset runner `scripts/dreamsim3_dataset.py` batches DreamSim3 runs and now ensures:
 - `backrooms.py` runs from the repo root so relative paths (e.g., `discord/<name>.json`, `media/<name>.json`) resolve.
 - `MCP_SERVERS_CONFIG` points to the project `mcp.config.json` so MCP servers (Discord, ComfyUI, Kie.ai) load consistently.
+- By default, fetched dreams are shuffled (randomized) before processing to avoid biasing toward recent rows. Use `--no-shuffle` to preserve the Supabase order, and `--seed <int>` for reproducible shuffles.
 
 Example (Discord posts enabled):
 - `python scripts/dreamsim3_dataset.py --query "static" --limit 200 --source all --models sonnet3 --max-turns 30 --discord dreamsim`
+
+Notes on randomization
+- Default behavior randomizes the order of returned dreams for both recent and search queries.
+- Disable with: `--no-shuffle`
+- Reproduce a specific run with: `--seed 42` (or any integer)
 
 See `docs/dataset_runner.md` for more.
 
