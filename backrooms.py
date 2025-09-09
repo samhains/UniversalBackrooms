@@ -237,7 +237,7 @@ def _parse_folder_template(template_name: str):
     return configs
 
 
-def load_template(template_name, models):
+def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = None):
     try:
         # Prefer folder-based template: templates/<name>/template.json
         folder_spec = Path("templates") / template_name / "template.json"
@@ -280,6 +280,14 @@ def load_template(template_name, models):
                         }
         except Exception:
             extra_vars = {}
+
+        # Merge CLI-provided vars, with CLI taking precedence
+        if cli_vars:
+            for k, v in cli_vars.items():
+                if isinstance(v, str):
+                    extra_vars[k] = v.replace("{", "{{").replace("}", "}}")
+                else:
+                    extra_vars[k] = v
 
         for i, model in enumerate(models):
             if model.lower() == "cli":
@@ -410,7 +418,38 @@ def main():
         default=None,
         help="Enable media agent with a preset name from ./media or templates; if omitted, no media agent runs.",
     )
+    parser.add_argument(
+        "--var",
+        action="append",
+        default=[],
+        help="Template variable override NAME=VALUE. Repeatable.",
+    )
+    parser.add_argument(
+        "--query",
+        type=str,
+        default=None,
+        help="Convenience text variable. Sets both QUERY and DREAM_TEXT for templates.",
+    )
     args = parser.parse_args()
+
+    # Build CLI vars map from --var NAME=VALUE and --query
+    cli_vars: dict[str, str] = {}
+    # --var can be repeated
+    if isinstance(args.var, list):
+        for item in args.var:
+            if not isinstance(item, str):
+                continue
+            if "=" in item:
+                name, value = item.split("=", 1)
+                name = name.strip()
+                if name:
+                    cli_vars[name] = value
+    # --query sets both QUERY and DREAM_TEXT for convenience
+    if args.query:
+        if "QUERY" not in cli_vars:
+            cli_vars["QUERY"] = args.query
+        if "DREAM_TEXT" not in cli_vars:
+            cli_vars["DREAM_TEXT"] = args.query
 
     models = args.lm
     lm_models = []
@@ -491,23 +530,7 @@ def main():
             base_url="https://openrouter.ai/api/v1",
         )
 
-    configs = load_template(args.template, models)
-
-    assert len(models) == len(
-        configs
-    ), f"Number of LMs ({len(models)}) does not match the number of elements in the template ({len(configs)})"
-
-    system_prompts = [config.get("system_prompt", "") for config in configs]
-    contexts = [config.get("context", []) for config in configs]
-    # Snapshot initial contexts for metadata (before mutation by conversation)
-    initial_contexts = [list(ctx) for ctx in contexts]
-
-    # Validate starting state: if all histories are empty, abort with a helpful error
-    if all((not ctx) for ctx in contexts):
-        print(
-            "Error: All agents have empty chat_history. Provide a conversation starter (e.g., a user message) in at least one agent's history file."
-        )
-        sys.exit(1)
+    # (moved) Template loading and context setup occurs later to allow CLI var overlays
 
     logs_folder = "BackroomsLogs"
     # Group logs by template for easier organization
@@ -524,6 +547,19 @@ def main():
     media_cfg = (
         load_media_config(args.media) if (args.media and load_media_config) else None
     )
+    if args.media and not media_cfg:
+        try:
+            media_dir = Path("media")
+            choices = []
+            if media_dir.exists():
+                for p in media_dir.iterdir():
+                    if p.is_file() and p.suffix == ".json":
+                        choices.append(p.stem)
+            print(
+                f"Warning: media preset '{args.media}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+            )
+        except Exception:
+            print(f"Warning: media preset '{args.media}' not found.")
 
     # Optional discord agent config
     discord_cfg = load_discord_config(args.discord) if load_discord_config else None
@@ -557,6 +593,25 @@ def main():
         if api_model == "o1-preview" or api_model == "o1-mini":
             return 4000
         return 1024
+
+    # Load template with CLI vars overlays
+    configs = load_template(args.template, models, cli_vars=cli_vars)
+
+    assert len(models) == len(
+        configs
+    ), f"Number of LMs ({len(models)}) does not match the number of elements in the template ({len(configs)})"
+
+    system_prompts = [config.get("system_prompt", "") for config in configs]
+    contexts = [config.get("context", []) for config in configs]
+    # Snapshot initial contexts for metadata (before mutation by conversation)
+    initial_contexts = [list(ctx) for ctx in contexts]
+
+    # Validate starting state: if all histories are empty, abort with a helpful error
+    if all((not ctx) for ctx in contexts):
+        print(
+            "Error: All agents have empty chat_history. Provide a conversation starter (e.g., a user message) in at least one agent's history file."
+        )
+        sys.exit(1)
 
     turn = 0
     transcript: list[dict[str, str]] = []
@@ -610,6 +665,8 @@ def main():
                 "prompt": prompt_text,
                 "transcript": transcript_text,
             }]
+            # Additional fields like dream_id/source are attached during sync
+            # via scripts/sync_backrooms.py to avoid coupling runtime to env vars.
             headers = {
                 "apikey": supabase_key,
                 "Authorization": f"Bearer {supabase_key}",
@@ -739,6 +796,13 @@ def main():
         # After the round, optionally post a Discord update
         if discord_cfg and run_discord_agent:
             try:
+                # Respect media preset toggle for attaching images to Discord
+                media_url_to_pass = media_url
+                try:
+                    if media_cfg and media_cfg.get("post_image_to_discord") is False:
+                        media_url_to_pass = None
+                except Exception:
+                    pass
                 discord_result = run_discord_agent(
                     discord_cfg=discord_cfg,
                     selected_models=models,
@@ -746,27 +810,44 @@ def main():
                     transcript=transcript,
                     generate_text_fn=media_generate_text_fn,
                     model_info=MODEL_INFO,
-                    media_url=media_url,
+                    media_url=media_url_to_pass,
                 )
                 # Helpful terminal + file logs of what was posted
-                if isinstance(discord_result, dict) and "posted" in discord_result:
-                    posted = discord_result.get("posted", {})
-                    ch = posted.get("channel", "?")
-                    sv = posted.get("server") or "default"
-                    msg = posted.get("message", "")
-                    murl = posted.get("mediaUrl")
-                    header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
-                    print(header)
-                    print(f"Channel: {ch} (server: {sv})")
-                    print(f"Message: {msg}")
-                    if murl:
-                        print(f"Media:   {murl}")
-                    with open(filename, "a") as f:
-                        f.write("\n### Discord Agent ###\n")
-                        f.write(f"Channel: {ch} (server: {sv})\n")
-                        f.write(f"Message: {msg}\n")
+                if isinstance(discord_result, dict):
+                    # Summary post logging
+                    if "posted" in discord_result:
+                        posted = discord_result.get("posted", {})
+                        ch = posted.get("channel", "?")
+                        sv = posted.get("server") or "default"
+                        msg = posted.get("message", "")
+                        murl = posted.get("mediaUrl")
+                        header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
+                        print(header)
+                        print(f"Channel: {ch} (server: {sv})")
+                        print(f"Message: {msg}")
                         if murl:
-                            f.write(f"Media: {murl}\n")
+                            print(f"Media:   {murl}")
+                        with open(filename, "a") as f:
+                            f.write("\n### Discord Agent ###\n")
+                            f.write(f"Channel: {ch} (server: {sv})\n")
+                            f.write(f"Message: {msg}\n")
+                            if murl:
+                                f.write(f"Media: {murl}\n")
+                    # Transcript post logging
+                    if "posted_transcript" in discord_result:
+                        entries = discord_result.get("posted_transcript") or []
+                        if entries:
+                            print("\033[1m\033[38;2;120;180;255mDiscord Agent (Transcript)\033[0m")
+                            with open(filename, "a") as f:
+                                f.write("\n### Discord Agent (Transcript) ###\n")
+                            for e in entries:
+                                tch = e.get("channel", "?")
+                                tsv = e.get("server") or "default"
+                                part = e.get("part")
+                                parts = e.get("parts")
+                                print(f"Channel: {tch} (server: {tsv}) part {part}/{parts}")
+                                with open(filename, "a") as f:
+                                    f.write(f"Transcript channel: {tch} (server: {tsv}) part {part}/{parts}\n")
             except Exception as e:
                 err = f"\nDiscord Agent error: {e}"
                 print(err)
