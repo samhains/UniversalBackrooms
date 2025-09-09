@@ -57,6 +57,9 @@ dreamsim3-query-kie-nopost:
 dreamsim3-query-multi-media:
     python scripts/run_config.py --config configs/batch_dreamsim3_query_multi_media.json
 
+dreamsim3-query-multi-discord:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query_multi_discord.json
+
 # Import RSOS TSV into Supabase (date + content only)
 # Usage:
 #   just import-rsos                           # imports default file with no limit

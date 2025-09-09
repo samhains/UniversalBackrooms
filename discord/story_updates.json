@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "use_llm": true,
+  "model": "same-as-lm1",
+  "system_prompt": "You are an evocative storyteller. Post a short, vivid update that keeps narrative continuity without spoilers.",
+  "user_template": "Narrative update (2 sentences max):\n{round_bullets}",
+  "transcript_window": 10,
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": { "channel": "story-updates" }
+  },
+  "post_transcript": false
+}
+
