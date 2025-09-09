@@ -238,11 +238,18 @@ def run_one(
         cmd += ["--discord", str(discord_profile)]
     if media_preset:
         cmd += ["--media", str(media_preset)]
+    # Ensure relative configs resolve consistently (discord/, media/, mcp.config.json)
+    # by running backrooms.py from the repository root and pointing MCP config explicitly.
+    env = os.environ.copy()
+    mcp_cfg_path = str(ROOT / "mcp.config.json")
+    if os.path.exists(mcp_cfg_path):
+        env.setdefault("MCP_SERVERS_CONFIG", mcp_cfg_path)
+    run_kwargs = {"cwd": str(ROOT), "env": env}
     if stream:
         # Inherit stdout/stderr so logs stream live to the console
-        return subprocess.run(cmd)
+        return subprocess.run(cmd, **run_kwargs)
     else:
-        return subprocess.run(cmd, capture_output=True, text=True)
+        return subprocess.run(cmd, capture_output=True, text=True, **run_kwargs)
 
 
 def _sync_single_meta(meta: dict) -> None:

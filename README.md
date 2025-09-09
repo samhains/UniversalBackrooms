@@ -148,6 +148,17 @@ Older CLI-interface templates have been removed from the default set. If you nee
 
 This repo includes a minimal MCP client to connect to any MCP-compliant server (e.g., your ComfyUI MCP server) over stdio.
 
+### Batch Runner (DreamSim3)
+
+The dataset runner `scripts/dreamsim3_dataset.py` batches DreamSim3 runs and now ensures:
+- `backrooms.py` runs from the repo root so relative paths (e.g., `discord/<name>.json`, `media/<name>.json`) resolve.
+- `MCP_SERVERS_CONFIG` points to the project `mcp.config.json` so MCP servers (Discord, ComfyUI, Kie.ai) load consistently.
+
+Example (Discord posts enabled):
+- `python scripts/dreamsim3_dataset.py --query "static" --limit 200 --source all --models sonnet3 --max-turns 30 --discord dreamsim`
+
+See `docs/dataset_runner.md` for more.
+
 ### Kie.ai Image Generation (MCP)
 
 You can generate images via the Kie.ai MCP server in addition to ComfyUI.
