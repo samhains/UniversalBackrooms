@@ -788,12 +788,11 @@ def main():
             _save_run_to_supabase(exit_reason="manual_stop")
             break
 
-        # After both actors in a round, invoke media agents (one or many)
-        media_results: list[tuple[dict, Optional[str]]] = []
+        # After the round, invoke media agents (one or many); media posts images on its own
         if media_cfgs and run_media_agent:
             for mcfg in media_cfgs:
                 try:
-                    media_result = run_media_agent(
+                    run_media_agent(
                         media_cfg=mcfg,
                         selected_models=models,
                         round_entries=round_entries,
@@ -802,51 +801,23 @@ def main():
                         generate_text_fn=media_generate_text_fn,
                         model_info=MODEL_INFO,
                     )
-                    murl = None
-                    if parse_result_for_image_ref and isinstance(media_result, dict):
-                        murl = parse_result_for_image_ref(media_result)
-                    media_results.append((mcfg, murl))
                 except Exception as e:
                     err = f"\nMedia Agent error: {e}"
                     print(err)
                     with open(filename, "a") as f:
                         f.write(err + "\n")
-        # After the round, optionally post Discord updates
+        # After the round, post a Discord update (text-only summary)
         if discord_cfg and run_discord_agent:
             try:
-                posted_any = False
-                if media_results:
-                    for (mcfg, murl) in media_results:
-                        if not murl:
-                            continue
-                        if mcfg.get("post_image_to_discord") is False:
-                            continue
-                        override_channel = mcfg.get("discord_channel")
-                        override_server = mcfg.get("discord_server")
-                        discord_result = run_discord_agent(
-                            discord_cfg=discord_cfg,
-                            selected_models=models,
-                            round_entries=round_entries,
-                            transcript=transcript,
-                            generate_text_fn=media_generate_text_fn,
-                            model_info=MODEL_INFO,
-                            media_url=murl,
-                            override_channel=override_channel,
-                            override_server=override_server,
-                        )
-                        posted_any = True
-                        # Helpful terminal + file logs handled inside run_discord_agent logging block
-                if not posted_any:
-                    # Post a summary-only update once
-                    run_discord_agent(
-                        discord_cfg=discord_cfg,
-                        selected_models=models,
-                        round_entries=round_entries,
-                        transcript=transcript,
-                        generate_text_fn=media_generate_text_fn,
-                        model_info=MODEL_INFO,
-                        media_url=None,
-                    )
+                run_discord_agent(
+                    discord_cfg=discord_cfg,
+                    selected_models=models,
+                    round_entries=round_entries,
+                    transcript=transcript,
+                    generate_text_fn=media_generate_text_fn,
+                    model_info=MODEL_INFO,
+                    media_url=None,
+                )
             except Exception as e:
                 err = f"\nDiscord Agent error: {e}"
                 print(err)

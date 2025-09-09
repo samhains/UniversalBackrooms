@@ -399,5 +399,38 @@ def run_media_agent(
         state.last_image_ref = ref
     state.save()
 
+    # 7) Optionally post image directly to Discord (media-only responsibility)
+    try:
+        if ref and media_cfg.get("post_image_to_discord", True):
+            # Resolve Discord server config and channel
+            dserver = media_cfg.get("discord_server", "discord")
+            dtool = media_cfg.get("discord_tool", {"name": "send-message"})
+            dtool_name = dtool.get("name", "send-message")
+            ddefaults = dtool.get("defaults", {})
+            channel = media_cfg.get("discord_channel") or ddefaults.get("channel", "media")
+            # Optional caption
+            caption = media_cfg.get("discord_caption", "")
+            dargs = {"channel": channel, "message": caption, "mediaUrl": ref}
+            if "server" in ddefaults:
+                dargs["server"] = ddefaults["server"]
+            # Load discord MCP server config
+            mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+            if not os.path.exists(mcp_config_path):
+                alt = "mcp_servers.json"
+                if os.path.exists(alt):
+                    mcp_config_path = alt
+            d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
+            # Fire and log minimal outcome
+            d_res = call_tool(d_server_cfg, dtool_name, dargs)
+            with open(filename, "a") as f:
+                f.write("\n### Media Agent (Discord Post) ###\n")
+                f.write(f"Channel: {channel}\n")
+                f.write(f"Media: {ref}\n")
+                f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+    except Exception as _e:
+        # Non-fatal: keep the media result even if posting fails
+        with open(filename, "a") as f:
+            f.write(f"\nMedia Agent (Discord Post) error: {_e}\n")
+
     # Return the (possibly enriched) result
     return result
