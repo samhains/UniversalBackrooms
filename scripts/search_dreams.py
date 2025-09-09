@@ -84,16 +84,21 @@ def main():
     ap.add_argument("--query", "-q", required=True, help="Search query (RPC if available, else OR ilike on tokens)")
     ap.add_argument("--limit", type=int, default=200, help="Fetch limit (default: 200)")
     ap.add_argument("--offset", type=int, default=0, help="Fetch offset (default: 0)")
+    ap.add_argument("--source", choices=["mine", "rsos", "all"], default="mine", help="Source filter (default: mine)")
     ap.add_argument("--jsonl", action="store_true", help="Output JSONL rows (id,date,content)")
     args = ap.parse_args()
 
     url, key = _env_keys()
 
     try:
-        try:
-            rows = search_rpc(url, key, args.query, args.limit, args.offset)
-        except Exception:
+        # If a specific source is requested, prefer ilike with a server-side source filter
+        if args.source and args.source != "all":
             rows = search_ilike(url, key, args.query, args.limit, args.offset)
+        else:
+            try:
+                rows = search_rpc(url, key, args.query, args.limit, args.offset)
+            except Exception:
+                rows = search_ilike(url, key, args.query, args.limit, args.offset)
     except requests.HTTPError as e:
         try:
             detail = e.response.json()
@@ -108,7 +113,7 @@ def main():
             print(json.dumps(r, ensure_ascii=False))
         return
 
-    print(f"Found {len(out)} rows for query: '{args.query}'\n")
+    print(f"Found {len(out)} rows for query: '{args.query}' (source={args.source})\n")
     for r in out:
         content = " ".join(r["content"].split())
         snippet = content if len(content) <= 180 else content[:177] + "..."
@@ -117,4 +122,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

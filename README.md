@@ -65,6 +65,36 @@ Notes:
 - A template’s `agents` list must match the number of `--lm` models.
 - History files are optional; an empty file means no initial history. If all agents have empty history, the program exits with a helpful message.
 
+## DreamSim3 Batch (from Supabase)
+
+Run DreamSim3 over all dreams matching a query in your Supabase DB.
+
+- Script: `scripts/dreamsim3_dataset.py`
+- Logs: `BackroomsLogs/dreamsim3/*.txt` (and `BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl` metadata)
+
+Examples:
+
+- Query “static” across all sources, using Sonnet 3 via OpenRouter, 30 turns:
+  `python scripts/dreamsim3_dataset.py --query "static" --source all --limit 1000 --models sonnet3 --max-turns 30`
+
+- Force a specific pairing (LM1 vs LM2):
+  `python scripts/dreamsim3_dataset.py --query "static" --pairs gpt5:hermes --max-turns 30`
+
+- Try all unique pairs from a set:
+  `python scripts/dreamsim3_dataset.py --query "static" --models gpt5,hermes,k2 --mixed --mixed-mode=all --max-turns 30`
+
+Troubleshooting:
+
+- Zero results is usually a source filter: the script defaults to `--source mine`. If your rows aren’t labeled `source = 'mine'`, use `--source all`.
+- Sanity-check before a batch:
+  `python scripts/search_dreams.py --query "static" --limit 200 --source all`
+- Model keys: `sonnet3` is routed via OpenRouter, so set `OPENROUTER_API_KEY`. For Anthropic direct, use `opus4` with `ANTHROPIC_API_KEY`.
+
+Optional: sync accumulated runs back to Supabase (table `backrooms`):
+
+- After runs: `python scripts/sync_backrooms.py --meta BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl`
+- Or set `BACKROOMS_AUTO_SYNC=1` to upsert each run as it completes.
+
 ## Logging
 The script now logs conversations to folders within a main "BackroomsLogs" directory:
 - BackroomsLogs/
@@ -117,6 +147,24 @@ Older CLI-interface templates have been removed from the default set. If you nee
 ## MCP Client (connect to existing MCP servers)
 
 This repo includes a minimal MCP client to connect to any MCP-compliant server (e.g., your ComfyUI MCP server) over stdio.
+
+### Kie.ai Image Generation (MCP)
+
+You can generate images via the Kie.ai MCP server in addition to ComfyUI.
+
+- Configure `mcp.config.json` entry `kie-ai-mcp-server`. The repo includes a ready entry that runs via `npx` and sets `cwd` to this folder, so the server’s SQLite DB (`tasks.db`) is created here. Replace `KIE_AI_API_KEY` with your key.
+- Alternative: omit `cwd` and set `KIE_AI_DB_PATH` to an absolute path pointing into this repo if you prefer.
+
+Quick checks using the included MCP CLI:
+- List tools: `python mcp_cli.py --config mcp.config.json --server kie-ai-mcp-server list-tools`
+- Call image generation: `python mcp_cli.py --config mcp.config.json --server kie-ai-mcp-server call-tool generate_nano_banana --json '{"prompt":"A surreal liminal hallway lit by buzzing fluorescents"}'`
+
+Media preset:
+- Use `media/kieai.json` to route prompts to Kie.ai (`generate_nano_banana`). It disables FastMCP-style param wrapping and sends arguments directly.
+- Select this preset anywhere you choose a media template (e.g., template name `kieai`).
+
+Notes:
+- The Kie.ai server returns URLs (no local files). For editing, provide HTTP/HTTPS image URLs only.
 
 - File: `mcp_client.py` (library)
 - CLI: `mcp_cli.py`
@@ -333,3 +381,59 @@ Example:
 - Server not found: verify `command` is on PATH or use absolute paths.
 - Transport mismatch: only `stdio` is supported by this client.
 - Tool name mismatch: run `python mcp_cli.py --config mcp.config.json --server comfyui list-tools` to confirm tool names.
+## Discord Posting
+
+The project can optionally post round-by-round updates to a Discord channel using an MCP-compatible Discord server. Profiles live under `./discord/*.json` and can be selected with `--discord <profile>`.
+
+- Set `enabled: true` in the chosen profile to turn it on.
+- The tool defaults control where messages go. Example:
+
+```json
+{
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": { "channel": "backrooms" }
+  }
+}
+```
+
+### Transcript Posting
+
+You can also mirror the conversation verbatim to a separate channel (e.g., `#transcripts`).
+
+- Add the following keys to your `./discord/<profile>.json`:
+
+```json
+{
+  "post_transcript": true,
+  "transcript_channel": "transcripts",
+  "transcript_max_length": 1900
+}
+```
+
+- Optional: provide a separate tool config for transcript posts if you want a different MCP server or tool:
+
+```json
+{
+  "transcript_tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": { "channel": "transcripts" }
+  }
+}
+```
+
+When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript, with model names as headers, to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
+
+## Template Variables via CLI
+
+You can override template variables without editing `vars.json`:
+
+- `--var NAME=VALUE` (repeatable): sets template variables before formatting.
+- `--query "text"`: convenience alias that sets both `QUERY` and `DREAM_TEXT` to the provided text.
+
+Examples:
+
+- `python backrooms.py --lm k2 k2 --template dreamsim3 --query "A dim hallway that hums like a refrigerator"`
+- `python backrooms.py --lm gpt5 hermes --template roleplay --var TOPIC=alchemy --var TONE=serious`

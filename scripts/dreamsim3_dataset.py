@@ -106,20 +106,22 @@ def _headers(key: str):
     }
 
 
-def fetch_recent(url: str, key: str, limit: int = 50):
+def fetch_recent(url: str, key: str, limit: int = 50, source: str | None = None):
     endpoint = f"{url}/rest/v1/dreams"
     params = {
-        # Minimal columns matching CSV export shape
-        "select": "id,content,date",
+        # Include source so we can persist it to meta JSONL
+        "select": "id,content,date,source",
         "order": "date.desc",
         "limit": str(limit),
     }
+    if source and source != "all":
+        params["source"] = f"eq.{source}"
     r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def search_dreams(url: str, key: str, q: str, limit: int = 50):
+def search_dreams(url: str, key: str, q: str, limit: int = 50, source: str | None = None):
     """Search dreams via PostgREST filters (no RPC required).
 
     Uses ilike on content. Adjust this if you want to include other fields.
@@ -128,20 +130,23 @@ def search_dreams(url: str, key: str, q: str, limit: int = 50):
     # PostgREST ilike requires wrapping with *
     q_pat = f"*{q}*"
     params = {
-        "select": "id,content,date",
+        # Include source so we can persist it to meta JSONL
+        "select": "id,content,date,source",
         "content": f"ilike.{q_pat}",
         "order": "date.desc",
         "limit": str(limit),
     }
+    if source and source != "all":
+        params["source"] = f"eq.{source}"
     r = requests.get(endpoint, headers=_headers(key), params=params, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def read_dreams_from_supabase(query: Optional[str], limit: int) -> List[dict]:
+def read_dreams_from_supabase(query: Optional[str], limit: int, source: str = "mine") -> List[dict]:
     url, key = _env_keys()
     try:
-        rows = search_dreams(url, key, query, limit) if query else fetch_recent(url, key, limit)
+        rows = search_dreams(url, key, query, limit, source) if query else fetch_recent(url, key, limit, source)
     except requests.HTTPError as e:
         try:
             detail = e.response.json()
@@ -296,6 +301,7 @@ def main():
     ap = argparse.ArgumentParser(description="Batch runner for DreamSim3 from Supabase")
     ap.add_argument("--query", default="", help="Fuzzy search query for Supabase (RPC dreams_search). Omit to fetch recent.")
     ap.add_argument("--limit", type=int, default=200, help="Supabase fetch limit for recent/search (default: 200)")
+    ap.add_argument("--source", choices=["mine", "rsos", "all"], default="mine", help="Which source of dreams to use (default: mine)")
     ap.add_argument("--models", default="gpt5,hermes,k2", help="Comma-separated model aliases (each runs as model,model unless --pairs is given)")
     ap.add_argument("--pairs", default="", help="Comma-separated mixed pairs, e.g. 'gpt5:hermes,hermes:k2'")
     ap.add_argument("--max-turns", type=int, default=30, help="Maximum turns per run (default: 30)")
@@ -360,7 +366,20 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     q = (args.query or "").strip() or None
-    rows = read_dreams_from_supabase(q, int(args.limit))
+    rows = read_dreams_from_supabase(q, int(args.limit), args.source)
+    # Guardrail: common pitfall is zero results due to source filter.
+    if not rows:
+        hint = [
+            "No dreams returned for the given parameters.",
+            f"query={q!r} limit={args.limit} source={args.source!r}",
+            "\nTroubleshooting:",
+            "- If you expected matches, try a broader source filter: --source all",
+            "  Example: python scripts/dreamsim3_dataset.py --query \"static\" --source all --limit 1000 --models sonnet3 --max-turns 30",
+            "- Sanity check your query first: python scripts/search_dreams.py --query \"static\" --limit 200 --source all",
+            "- If using OpenRouter models (e.g., sonnet3), ensure OPENROUTER_API_KEY is set.",
+        ]
+        print("\n".join(hint))
+        sys.exit(1)
     # Shuffle dreams by default to avoid oversampling early rows
     if not args.no_shuffle:
         # Reuse rng from mixed logic for reproducibility
@@ -416,6 +435,10 @@ def main():
             meta_bits.append(f"id={row.get('id')}")
         if row.get("date"):
             meta_bits.append(f"date={row.get('date')}")
+        # Determine source: prefer database value; else fall back to run-level filter (except 'all')
+        src_val = row.get("source") or (None if args.source == "all" else args.source)
+        if src_val:
+            meta_bits.append(f"source={src_val}")
         pairs_label = ", ".join([f"{a}-{b}" for (a, b) in pairs_for_dream])
         header = f"=== Dream {idx}"
         if total_dreams:
@@ -454,6 +477,8 @@ def main():
                 "dream_id": row.get("id"),
                 "date": row.get("date"),
                 "prompt": dream_text,
+                # Persist source (db -> run-level)
+                "source": src_val,
                 "models": models_pair,
                 "template": args.template,
                 "max_turns": args.max_turns,
