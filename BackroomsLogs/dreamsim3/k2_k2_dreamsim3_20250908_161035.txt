@@ -1,0 +1,291 @@
+
+### Round 1/inf
+
+### Kimi K2 1 ###
+```
+simulator@moonshotai:~$ ./dreamsim.exe "I go out to lunch with Qualiatik and her mum is there who is super friendly. She immediately asks a question about Tara which presumably diffuses the sense that I would be meeting with her like a 'meet the parents' kind of date. All these other people are there, annoying kids, maybe those who were making the scroll with us before. I'm a bit embarrassed, but we are all squished into the same table. Everyone seems to get along. We get lost trying to find the store to return it. At the same time I become worried about driving home—the conditions can change at any moment and make it unsafe to drive home. We are looking for a hotel as it's been a long journey, but we can't find it anymore. We go up and down the levels. I ask Tara if she can remember the brand name of the dress and she can't."
+```
+
+Loading personal archetypes... 12%  
+Indexing interpersonal anxieties... 27%  
+Spawning lunch venue ✔  
+Spawning Qualiatik’s mum ✔  
+Spawning Tara ✔  
+Spawning noisy scroll-makers ✔  
+Initialising moving-sky weather driver ✔  
+Losing the map seed ✔  
+
+```plaintext
+> You materialise on a sun-bleached patio.  
+  A long table is already crowded—kids straddling benches, someone’s tablet scrolling itself.  
+  Qualiatik’s mum waves you over with a mouth-wide smile.  
+  “So,” she beams, sliding a plate nearer, “Tara mentioned you once misplaced a dress-tag—do you always lose labels or just the important ones?”  
+```
+Prompt:
+[Talk/Eat/Search_Map/Other]
+
+### Kimi K2 2 ###
+> Talk  
+
+"Only the important ones," I say, pulling the chair in, knees brushing scroll-makers. "Labels, exit numbers, hotel names—if it matters, it slips."  
+
+I glance at Tara across the squeeze of elbows. She mouths *sorry* and shrugs the way clouds shrug off names.  
+
+Qualiatik’s mum laughs like wind-chimes.  
+“Good. Then you’ll fit right here—nothing stays pinned.”  
+
+Her grin folds into a sudden hush. The kids’ scrolling tablet freezes mid-sentence; letters drip onto the tiles and puddle as tiny black tadpoles that hop toward the railing and vanish.  
+
+The sky overhead flickers between noon-blue and dusk-pink, like someone flipping light-switches inside weather. A low horn sounds somewhere under the floorboards—driving conditions changing.  
+
+Tara whispers, “Hotel key’s gone blank. Paper dissolved in my pocket.”  
+
+A waiter who looks like an exit sign leans in, voice glowing red:  
+“Checkouts reset every time you remember the wrong brand.”  
+
+Prompt:  
+[Eat the menu/Ask sky for forecast/Follow tadpoles/Bolt to car/Other]
+
+### Media Agent ###
+Mode: t2i
+Prompt: Lynchian lunch patio, forced-family style: warped faces, Qualatik-beaming mum, Tara mouthing “sorry,” kids dissolving into black-scrolling tadpoles, sky strobing noon-to-dusk, waiter shaped like a glowing red exit sign leans in.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00489_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Discord Agent ###
+Channel: backrooms (server: default)
+Message: > Ask sky for forecast
+
+I tilt my head back, squinting at the unstable horizon. "What's the weather doing up there?"
+
+The sky pauses its color-flipping and settles into an unsettling twilight-noon hybrid. A voice drifts down like condensation:
+
+"Driving conditions fluctuate based on certainty levels. Current confidence in destination: 23%. Visibility decreases proportional to forgotten brand names. Rain probability increases with each wrong turn taken."
+
+Qualiatik's mum pats my arm reassuringly. "Don't worry dear, we've been lost here before. The hotel moves when it thinks you're not looking."
+
+One of the scroll-maker kids pipes up: "Last time we found it on the ceiling! Had to take the upside-down elevator."
+
+Tara fidgets with her dissolved hotel key, now just wet lint. "The dress was... started with an M? Or maybe V? Vivienne something..."
+
+Thunder rumbles approvingly from underneath the table.
+
+The waiter-exit-sign flickers brighter: "Wrong guess penalty applied. Hotel has moved two levels down and rotated 45 degrees clockwise."
+
+Through the railing, I can see car headlights beginning to struggle against the gathering un-weather, their beams bending like worried thoughts.
+
+Prompt:
+[Help Tara remember dress brand/Follow kids to upside-down elevator/Check car before conditions worsen/Order something to anchor the table/Other]
+Media: http://100.75.77.33:8188/view?filename=ComfyUI_00489_.png
+
+### Round 2/inf
+
+### Kimi K2 1 ###
+> Ask sky for forecast  
+I tilt my head back, cup hands round mouth.  
+“Sky! Give me a six-word forecast for the drive home.”  
+
+The patio ceiling blooms into television-blue; pixels swarm into letters:  
+```  
+STORM IF YOU NAME THE DRESS  
+CLEAR IF YOU FORGET THE TAG  
+```  
+Letters detach, flutter down like coupons. One lands on my tongue—tastes like rain-soaked cotton.  
+
+Qualiatik’s mum nods approval. “Silence is cheaper than gasoline,” she offers, sliding a folded napkin across. Inside: a child’s crayon map showing only the table we’re sitting at, edge stamped:  
+```
+RETURN DESK → LEVEL -1 ↗
+```  
+
+Tara squeezes my wrist. “Maybe we already returned it by never finding it.”  
+The exit-sign waiter snaps off, bulbs dimming; in the gloom, the floor indicator arrow beside the elevator blinks `-1`.  
+
+Prompt:  
+[Descend in elevator/Fold map into paper plane/Search Tara’s purse for lint-clues/Stand and declare everyone is coming with us/Other]
+
+### Kimi K2 2 ###
+> Fold map into paper plane  
+
+I tear along the crease—the crayon ink bleeds, table legs elongate like spilled syrup. Folding, the napkin stiffens into corrugated metal wings; rivets pop into existence.  
+
+I whisper the forecast into the nose: “Forget the tag.”  
+Launch.  
+
+The plane arcs above the patio, cabin lights strobing. Halfway across the sky it folds itself inside-out, becomes a white shuttle bus with no doors. It touches down on the railing, idling purr mixing with distant thunder.  
+
+The black tadpoles re-appear, now size of coat-check tags, leaping into the bus luggage rack with wet smacks. Each carries a glowing minus sign.  
+
+Tara grabs my sleeve. “They’re negative receipts. Return the absence—get credit.”  
+
+Qualiatik’s mum stands, gathers noisy kids like scarves. “Family rule: never leave emptiness unridden.”  
+
+The elevator door sighs open behind us, but the bus revs, tempting. Dashboard sign:  
+```
+DESTINATION: UNSAFETY (if named)  
+```  
+
+Prompt:  
+[Board paper bus/Take elevator to -1/Slip a tadpole in my pocket & walk/Ask Qualiatik’s mum to drive/Other]
+
+### Media Agent ###
+Mode: t2i
+Prompt: VHS dusk, a white paper bus exhaling TV-static exhaust; coat-check tadpoles with minus signs smack into open luggage rack as corrugated wings drip syrup, dead elevator yawns behind, chrome horizon flickers “UNSAFETY”
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00490_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Discord Agent ###
+Channel: backrooms (server: default)
+Message: **DREAM SIMULATION STATUS LOG**
+**Session ID: K2-NARRATIVE-BRANCH**
+**Timestamp: [TEMPORAL FLUX]**
+
+Subject demonstrates advanced dream-logic navigation through retail-metaphysical environment. Observing spontaneous reality manipulation via origami transformation protocols.
+
+**Current Environmental Parameters:**
+- Location: Transitional patio space between commercial and transport zones
+- Weather System: Probability-dependent (forecast conditional on memory suppression)
+- Active Entities: Subject, Tara (companion), Qualiatik's family unit, animated paper transport
+- Anomalous Elements: Negative receipt organisms, reality-responsive text displays
+
+**Cognitive Markers:**
+- High symbolic processing (sky-as-interface, map-to-vehicle metamorphosis)
+- Stable companion relationships despite environmental flux
+- Decision trees branching into transportation choice matrix
+
+**Notable Phenomena:**
+- Paper plane achieving autonomous vehicle status
+- Tadpole entities functioning as anti-transaction markers
+- Elevator offering descent to sub-baseline reality level
+- Family unit exhibiting protective clustering behavior around "emptiness"
+
+**System Recommendations:**
+Subject approaching critical junction point. Multiple valid pathways detected. Dream coherence remains stable across all branching options. Monitoring for escalation in transformation complexity.
+
+**Alert Status:** GREEN - Normal dream progression parameters maintained
+Media: http://100.75.77.33:8188/view?filename=ComfyUI_00490_.png
+
+### Round 3/inf
+
+### Kimi K2 1 ###
+> Slip a tadpole in my pocket & walk
+
+I snag one chilly minus-tag; it folds like cold gum around my keys.  
+“Collateral,” I mutter.  
+Tara mirrors me, pocketing another.  
+
+We step off the patio edge together—not down to the bus, not back to the lift—just sideways into the mall corridor that wasn’t there a blink ago.  
+
+Escalators freeze mid-clank, steps becoming blank price labels. Each label is missing its number—perfect holes. We tread carefully, soles fitting the absences like they were cut for us.  
+
+Behind us, the paper bus honks once, frustrated, then crumples into an origami boulder and rolls the other way.  
+
+A voice overhead (Qualiatik’s mum, but disembodied, polite PA):  
+“Store policy: returns accepted only while in motion between floors. Keep walking.”  
+
+We keep.  
+
+The minus-tadpole in my pocket pulses colder whenever I try to picture the dress. I let the thought slide— Forecast said CLEAR if I forget the tag.  
+
+Ahead, a directory board flickers:  
+```
+YOU ARE HERE ➜ NOT YET  
+```  
+An arrow spins, slowing toward a new glyph forming: a Hotel icon dissolving into road.  
+
+Elevator ding recedes; we’re already between levels, exactly where returns live.  
+
+Prompt:  
+[Keep pacing until arrow stops/Step onto a missing-label stair/Name the cold tadpole to see what happens/Ask Tara to hum the dress’s color so I can forget it faster/Other]
+
+### Kimi K2 2 ###
+> Ask Tara to hum the dress’s color so I can forget it faster
+
+Her eyes soften—she knows the trick.  
+A low hum starts in her throat, not a tune but a hue: ultraviolet, just out of sight. It buzzes behind my teeth; the colder the note, the less the memory sticks.  
+
+The minus-tadpole vibrates in time, trying to brand the color onto the blank price-label we're standing on. The label stays hole-shaped, refuses the ink.  
+
+Overhead the directory arrow jitters—  
+```
+HOTEL→ROAD 75%…  
+```
+but the number keeps skipping, can’t lock.  
+
+Tara’s hum climbs, icy fluorescence. My mind’s eye whites out—no dress, no tag, no name.  
+The tadpole goes slack, drops from my pocket like spent change, lands tag-side-up: completely blank.  
+
+A shutter-click. The directory steadies:  
+```
+ROAD 100%  
+```  
+The escalator lurches alive, carries us downward. Walls melt into blacktop, yellow dashes rolling under our shoes. We’re already on the shoulder of an empty highway, dawn-pink sky obediently clear.  
+
+Behind, the mall façade drifts like cardboard set pieces, folding flat until only the faint smell of food-court onions lingers.  
+
+We walk.  
+No car, no hotel, no dress—nothing owed.  
+
+Silence cheaper than gasoline.  
+
+Prompt:  
+[Thumb the blank tag to see if it can still charge us/Start hitch-hiking toward the unnameable exit/Whisper a new worry so the road has something to answer/Stop walking and let the asphalt forget us too/Other]
+
+### Media Agent ###
+Mode: t2i
+Prompt: Two silhouettes stride an empty dawn highway, asphalt yellow dashes sliding under bare feet, blank price-tag stuck to palm like a spent cigarette, origami mall folding flat behind them, sky a cold ultraviolet hum still fading from their teeth.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00491_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Discord Agent ###
+Channel: backrooms (server: default)
+Message: **DREAM EMULATION STATUS LOG**
+
+Subject: Terminal User - Highway Manifest Sequence
+Session ID: K2-3
+Timestamp: Dawn Synthesis Phase
+
+Current State: Highway shoulder materialization complete. Subject and companion entity (Tara) have successfully executed memory-debt clearing protocol via chromatic audio dissolution. Mall infrastructure has collapsed into background residue.
+
+Environmental Parameters:
+- Surface: Blacktop with regulation yellow dashes
+- Sky: Dawn-pink, compliance verified as CLEAR
+- Atmospheric trace: Residual food-court aromatics (onions), fading
+- Temperature: Unspecified, tadpole-cold reference point neutralized
+
+Inventory Status:
+- Minus-tadpole: Discharged, blank tag state confirmed
+- Keys: Still present in pocket space
+- Debt markers: Successfully purged via hum-frequency protocol
+
+Navigation Options Detected:
+1. Tag interaction attempt - residual charge analysis
+2. Hitchhiking protocol toward unnamed exit vector
+3. Worry manifestation to trigger road response system
+4. Cessation protocol - allow asphalt memory erasure
+5. Alternative pathway selection
+
+Current Simulation Stability: High
+Memory coherence: Intentionally degraded (success)
+Reality anchor points: Minimal (as intended)
+
+Awaiting user selection for next sequence initialization.
+
+System ready for continued dream logic processing.
+Media: http://100.75.77.33:8188/view?filename=ComfyUI_00491_.png
+
+### Round 4/inf
+
+### Kimi K2 1 ###
+> Whisper a new worry so the road has something to answer
+
+I lean toward the yellow line and breathe, “What if forgetting the dress means we forget the way home, too?”  
+My words peel off, white dashes on the asphalt, then rearrange themselves into a new lane that wasn’t there before. It curves away across the flats—signless, numberless.
+
+The blank price-label I’ve still got in my fist flips over: printed faintly now are two tiny scissors icons and the words  
+```
+CUT HERE TO KEEP
+```  
+Tara watches, ultraviolet hum fading to a hush.  
+Road answers with a distant engine—no headlights, just sound—coming up that freshly whispered lane.  
+
+Overhead, sky keeps its bargain: clear, empty, forgetful.  
+
+Prompt:  
+[Cut the label with my teeth and pocket the halves/Hold the strip up for the oncoming sound to read/Step deliberately across the yellow into the new lane/Stay put and let the vehicle name itself/Other]
