@@ -216,6 +216,8 @@ def run_one(
     max_context_frac: float,
     context_window: int,
     stream: bool = True,
+    discord_profile: Optional[str] = None,
+    media_preset: Optional[str] = None,
 ) -> subprocess.CompletedProcess:
     # backrooms requires as many models as agents in template (2)
     cmd = [
@@ -232,6 +234,10 @@ def run_one(
         cmd += ["--max-context-frac", str(max_context_frac)]
         if context_window and context_window > 0:
             cmd += ["--context-window", str(context_window)]
+    if discord_profile:
+        cmd += ["--discord", str(discord_profile)]
+    if media_preset:
+        cmd += ["--media", str(media_preset)]
     if stream:
         # Inherit stdout/stderr so logs stream live to the console
         return subprocess.run(cmd)
@@ -322,6 +328,8 @@ def main():
     ap.add_argument("--seed", type=int, default=None, help="Random seed for mixed shuffling/sampling")
     ap.add_argument("--no-shuffle", action="store_true", help="Do not shuffle dream order (default: shuffled)")
     ap.add_argument("--no-stream", action="store_true", help="Do not stream logs; capture output silently (default: stream)")
+    ap.add_argument("--discord", default="", help="Discord preset/profile name (./discord/<name>.json) passed to backrooms.py")
+    ap.add_argument("--media", default="", help="Media preset name (./media/<name>.json) passed to backrooms.py")
     ap.add_argument("--max-context-frac", type=float, default=0.0, help="Early-stop when estimated prompt tokens exceed this fraction of the context window (0 disables)")
     ap.add_argument("--context-window", type=int, default=128000, help="Assumed context window size in tokens for the limiting model (default: 128000)")
     args = ap.parse_args()
@@ -463,6 +471,8 @@ def main():
                 args.max_context_frac,
                 args.context_window,
                 stream=(not args.no_stream),
+                discord_profile=(args.discord or None),
+                media_preset=(args.media or None),
             )
 
             # Best-effort locate the log file created by backrooms
