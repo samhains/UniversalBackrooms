@@ -414,9 +414,9 @@ def main():
     )
     parser.add_argument(
         "--media",
-        type=str,
+        action="append",
         default=None,
-        help="Enable media agent with a preset name from ./media or templates; if omitted, no media agent runs.",
+        help="Enable one or more media presets (repeatable or comma-separated). If omitted, no media agent runs.",
     )
     parser.add_argument(
         "--var",
@@ -543,23 +543,38 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{template_logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
 
-    # Optional media agent config: only load when explicitly requested
-    media_cfg = (
-        load_media_config(args.media) if (args.media and load_media_config) else None
-    )
-    if args.media and not media_cfg:
-        try:
-            media_dir = Path("media")
-            choices = []
-            if media_dir.exists():
-                for p in media_dir.iterdir():
-                    if p.is_file() and p.suffix == ".json":
-                        choices.append(p.stem)
-            print(
-                f"Warning: media preset '{args.media}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
-            )
-        except Exception:
-            print(f"Warning: media preset '{args.media}' not found.")
+    # Optional media agent configs: support multiple presets
+    media_cfgs = []
+    if args.media and load_media_config:
+        # Flatten possible comma-separated values across repeated flags
+        raw_media: list[str] = []
+        for m in (args.media or []):
+            if isinstance(m, str) and "," in m:
+                raw_media.extend([x.strip() for x in m.split(",") if x.strip()])
+            elif isinstance(m, str):
+                raw_media.append(m.strip())
+        seen = set()
+        for name in raw_media:
+            if not name or name in seen:
+                continue
+            seen.add(name)
+            cfg = load_media_config(name)
+            if cfg:
+                cfg.setdefault("__name__", name)
+                media_cfgs.append(cfg)
+            else:
+                try:
+                    media_dir = Path("media")
+                    choices = []
+                    if media_dir.exists():
+                        for p in media_dir.iterdir():
+                            if p.is_file() and p.suffix == ".json":
+                                choices.append(p.stem)
+                    print(
+                        f"Warning: media preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                    )
+                except Exception:
+                    print(f"Warning: media preset '{name}' not found.")
 
     # Optional discord agent config
     discord_cfg = load_discord_config(args.discord) if load_discord_config else None
@@ -773,81 +788,65 @@ def main():
             _save_run_to_supabase(exit_reason="manual_stop")
             break
 
-        # After both actors in a round, invoke media agent once
-        media_url: Optional[str] = None
-        if media_cfg and run_media_agent:
-            try:
-                media_result = run_media_agent(
-                    media_cfg=media_cfg,
-                    selected_models=models,
-                    round_entries=round_entries,
-                    transcript=transcript,
-                    filename=filename,
-                    generate_text_fn=media_generate_text_fn,
-                    model_info=MODEL_INFO,
-                )
-                if parse_result_for_image_ref and isinstance(media_result, dict):
-                    media_url = parse_result_for_image_ref(media_result)
-            except Exception as e:
-                err = f"\nMedia Agent error: {e}"
-                print(err)
-                with open(filename, "a") as f:
-                    f.write(err + "\n")
-        # After the round, optionally post a Discord update
+        # After both actors in a round, invoke media agents (one or many)
+        media_results: list[tuple[dict, Optional[str]]] = []
+        if media_cfgs and run_media_agent:
+            for mcfg in media_cfgs:
+                try:
+                    media_result = run_media_agent(
+                        media_cfg=mcfg,
+                        selected_models=models,
+                        round_entries=round_entries,
+                        transcript=transcript,
+                        filename=filename,
+                        generate_text_fn=media_generate_text_fn,
+                        model_info=MODEL_INFO,
+                    )
+                    murl = None
+                    if parse_result_for_image_ref and isinstance(media_result, dict):
+                        murl = parse_result_for_image_ref(media_result)
+                    media_results.append((mcfg, murl))
+                except Exception as e:
+                    err = f"\nMedia Agent error: {e}"
+                    print(err)
+                    with open(filename, "a") as f:
+                        f.write(err + "\n")
+        # After the round, optionally post Discord updates
         if discord_cfg and run_discord_agent:
             try:
-                # Respect media preset toggle for attaching images to Discord
-                media_url_to_pass = media_url
-                try:
-                    if media_cfg and media_cfg.get("post_image_to_discord") is False:
-                        media_url_to_pass = None
-                except Exception:
-                    pass
-                discord_result = run_discord_agent(
-                    discord_cfg=discord_cfg,
-                    selected_models=models,
-                    round_entries=round_entries,
-                    transcript=transcript,
-                    generate_text_fn=media_generate_text_fn,
-                    model_info=MODEL_INFO,
-                    media_url=media_url_to_pass,
-                )
-                # Helpful terminal + file logs of what was posted
-                if isinstance(discord_result, dict):
-                    # Summary post logging
-                    if "posted" in discord_result:
-                        posted = discord_result.get("posted", {})
-                        ch = posted.get("channel", "?")
-                        sv = posted.get("server") or "default"
-                        msg = posted.get("message", "")
-                        murl = posted.get("mediaUrl")
-                        header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
-                        print(header)
-                        print(f"Channel: {ch} (server: {sv})")
-                        print(f"Message: {msg}")
-                        if murl:
-                            print(f"Media:   {murl}")
-                        with open(filename, "a") as f:
-                            f.write("\n### Discord Agent ###\n")
-                            f.write(f"Channel: {ch} (server: {sv})\n")
-                            f.write(f"Message: {msg}\n")
-                            if murl:
-                                f.write(f"Media: {murl}\n")
-                    # Transcript post logging
-                    if "posted_transcript" in discord_result:
-                        entries = discord_result.get("posted_transcript") or []
-                        if entries:
-                            print("\033[1m\033[38;2;120;180;255mDiscord Agent (Transcript)\033[0m")
-                            with open(filename, "a") as f:
-                                f.write("\n### Discord Agent (Transcript) ###\n")
-                            for e in entries:
-                                tch = e.get("channel", "?")
-                                tsv = e.get("server") or "default"
-                                part = e.get("part")
-                                parts = e.get("parts")
-                                print(f"Channel: {tch} (server: {tsv}) part {part}/{parts}")
-                                with open(filename, "a") as f:
-                                    f.write(f"Transcript channel: {tch} (server: {tsv}) part {part}/{parts}\n")
+                posted_any = False
+                if media_results:
+                    for (mcfg, murl) in media_results:
+                        if not murl:
+                            continue
+                        if mcfg.get("post_image_to_discord") is False:
+                            continue
+                        override_channel = mcfg.get("discord_channel")
+                        override_server = mcfg.get("discord_server")
+                        discord_result = run_discord_agent(
+                            discord_cfg=discord_cfg,
+                            selected_models=models,
+                            round_entries=round_entries,
+                            transcript=transcript,
+                            generate_text_fn=media_generate_text_fn,
+                            model_info=MODEL_INFO,
+                            media_url=murl,
+                            override_channel=override_channel,
+                            override_server=override_server,
+                        )
+                        posted_any = True
+                        # Helpful terminal + file logs handled inside run_discord_agent logging block
+                if not posted_any:
+                    # Post a summary-only update once
+                    run_discord_agent(
+                        discord_cfg=discord_cfg,
+                        selected_models=models,
+                        round_entries=round_entries,
+                        transcript=transcript,
+                        generate_text_fn=media_generate_text_fn,
+                        model_info=MODEL_INFO,
+                        media_url=None,
+                    )
             except Exception as e:
                 err = f"\nDiscord Agent error: {e}"
                 print(err)

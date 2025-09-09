@@ -25,7 +25,7 @@ import sys
 import time
 import datetime as dt
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # Ensure repository root is importable when running as a script from scripts/
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,7 +101,7 @@ def _run_backrooms(
     max_context_frac: float = 0.0,
     context_window: int = 128000,
     discord_profile: Optional[str] = None,
-    media_preset: Optional[str] = None,
+    media_preset: Optional[Union[str, List[str]]] = None,
     vars_inline: Optional[Dict[str, str]] = None,
     query_value: Optional[str] = None,
     stream: bool = True,
@@ -123,7 +123,11 @@ def _run_backrooms(
     if discord_profile:
         cmd += ["--discord", str(discord_profile)]
     if media_preset:
-        cmd += ["--media", str(media_preset)]
+        if isinstance(media_preset, list):
+            for mp in media_preset:
+                cmd += ["--media", str(mp)]
+        else:
+            cmd += ["--media", str(media_preset)]
     if vars_inline:
         for k, v in vars_inline.items():
             if v is None:
@@ -197,6 +201,13 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     integrations = cfg.get("integrations") or {}
     discord_profile = integrations.get("discord")
     media_preset = integrations.get("media")
+    # Allow list of media presets
+    if isinstance(media_preset, list):
+        media_val: Optional[Union[str, List[str]]] = [str(x) for x in media_preset]
+    elif isinstance(media_preset, str) and "," in media_preset:
+        media_val = [x.strip() for x in media_preset.split(",") if x.strip()]
+    else:
+        media_val = media_preset
 
     # Data source
     ds = cfg.get("data_source") or {}
@@ -320,7 +331,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 max_context_frac=max_context_frac,
                 context_window=context_window,
                 discord_profile=discord_profile,
-                media_preset=media_preset,
+                media_preset=media_val,
                 vars_inline=None,
                 query_value=None,
                 stream=True,
