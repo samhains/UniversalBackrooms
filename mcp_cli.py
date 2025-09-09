@@ -15,7 +15,7 @@ def load_server_config(config_path: str, server_name: str) -> MCPServerConfig:
     for s in servers_list:
         if s.get("name") == server_name:
             return MCPServerConfig(
-                command=s["command"], args=s.get("args", []), env=s.get("env", {})
+                command=s["command"], args=s.get("args", []), env=s.get("env", {}), cwd=s.get("cwd")
             )
 
     # Shape 2: { "mcpServers": { key: { type, command, args, env } } }
@@ -29,7 +29,7 @@ def load_server_config(config_path: str, server_name: str) -> MCPServerConfig:
                 f"Unsupported server type '{server_type}' for '{server_name}'; only 'stdio' supported."
             )
         return MCPServerConfig(
-            command=s["command"], args=s.get("args", []), env=s.get("env", {})
+            command=s["command"], args=s.get("args", []), env=s.get("env", {}), cwd=s.get("cwd")
         )
 
     raise KeyError(f"Server '{server_name}' not found in {config_path}")

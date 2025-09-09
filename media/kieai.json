@@ -1,0 +1,12 @@
+{
+  "model": "k2",
+  "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator. Avoid meta text and text-in-image. Keep under 200 chars unless necessary.",
+  "mode": "t2i",
+  "tool": {
+    "server": "kie-ai-mcp-server",
+    "name": "generate_nano_banana",
+    "wrap_params": false,
+    "defaults": {}
+  }
+}
+

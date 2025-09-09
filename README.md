@@ -426,6 +426,18 @@ You can also mirror the conversation verbatim to a separate channel (e.g., `#tra
 
 When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript, with model names as headers, to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
 
+### Included Presets
+
+- `chronicle`: third‑person, concise atmospheric updates.
+- `chronicle_fp`: first‑person field notes from inside the world.
+- `cctv`: terse surveillance‑style captions.
+- `dreamsim`: terminal‑style status logs of current simulation state.
+- `narrative_terminal`: terminal‑style, cohesive narrative arc of events.
+
+Use a preset by passing its filename stem:
+
+`python backrooms.py --lm sonnet3 sonnet3 --template dreamsim3 --discord narrative_terminal`
+
 ## Template Variables via CLI
 
 You can override template variables without editing `vars.json`:

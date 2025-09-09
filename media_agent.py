@@ -263,8 +263,13 @@ def run_media_agent(
     defaults = tool.get("defaults", {})
     args = {"prompt": prompt_text, **defaults}
 
-    # Load MCP server config
-    mcp_config_path = os.getenv("MCP_CONFIG", "mcp.config.json")
+    # Load MCP server config (support multiple common envs/filenames)
+    mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+    if not os.path.exists(mcp_config_path):
+        # Fallback to alternate default commonly used by CLI
+        alt = "mcp_servers.json"
+        if os.path.exists(alt):
+            mcp_config_path = alt
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
 
     # 3) Validate tool exists and call
@@ -291,7 +296,9 @@ def run_media_agent(
 
     # Many FastMCP servers define a single parameter named 'params'.
     # Wrap arguments accordingly for compatibility.
-    result = call_tool(server_cfg, tool_name, {"params": args})
+    wrap_params = tool.get("wrap_params", True)
+    payload = {"params": args} if wrap_params else args
+    result = call_tool(server_cfg, tool_name, payload)
 
     # 4) Log
     header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
