@@ -100,7 +100,7 @@ def _run_backrooms(
     *,
     max_context_frac: float = 0.0,
     context_window: int = 128000,
-    discord_profile: Optional[str] = None,
+    discord_profile: Optional[Union[str, List[str]]] = None,
     media_preset: Optional[Union[str, List[str]]] = None,
     vars_inline: Optional[Dict[str, str]] = None,
     query_value: Optional[str] = None,
@@ -121,7 +121,11 @@ def _run_backrooms(
         if context_window and context_window > 0:
             cmd += ["--context-window", str(context_window)]
     if discord_profile:
-        cmd += ["--discord", str(discord_profile)]
+        if isinstance(discord_profile, list):
+            for dp in discord_profile:
+                cmd += ["--discord", str(dp)]
+        else:
+            cmd += ["--discord", str(discord_profile)]
     if media_preset:
         if isinstance(media_preset, list):
             for mp in media_preset:
@@ -200,6 +204,13 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     # Integrations
     integrations = cfg.get("integrations") or {}
     discord_profile = integrations.get("discord")
+    # Allow list or comma-separated profiles
+    if isinstance(discord_profile, list):
+        discord_val: Optional[Union[str, List[str]]] = [str(x) for x in discord_profile]
+    elif isinstance(discord_profile, str) and "," in discord_profile:
+        discord_val = [x.strip() for x in discord_profile.split(",") if x.strip()]
+    else:
+        discord_val = discord_profile
     media_preset = integrations.get("media")
     # Allow list of media presets
     if isinstance(media_preset, list):
@@ -330,7 +341,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 max_turns,
                 max_context_frac=max_context_frac,
                 context_window=context_window,
-                discord_profile=discord_profile,
+                discord_profile=discord_val,
                 media_preset=media_val,
                 vars_inline=None,
                 query_value=None,

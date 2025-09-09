@@ -150,7 +150,9 @@ You can generate and post media via MCP servers (e.g., ComfyUI, Kie.ai).
 
 - Configure servers in `mcp.config.json` and verify with `mcp_cli.py`.
 - Select a media preset via `--media <name>` or `integrations.media` in configs.
-- Multiple presets per round are supported; they execute sequentially.
+- Multiple media presets per round are supported; they execute sequentially.
+  - CLI: repeat `--media <name>` or comma-separate values.
+  - Config: set `integrations.media` to a list.
 
 Media presets (`media/<name>.json`) define:
 - `tool`: `{ server, name, wrap_params, status_tool, poll, defaults{...} }`
@@ -161,6 +163,10 @@ Media presets (`media/<name>.json`) define:
 Examples:
 - `media/kieai.json` routes to the Kie.ai MCP tool; `media/cli.json` to a ComfyUI-like tool.
 - To avoid image attachment but still post summaries, set `post_image_to_discord: false` (see `media/kieai_no_discord.json`).
+
+Discord profiles
+- You can enable multiple Discord profiles at once; each posts a text update to its configured channel/server.
+- CLI: repeat `--discord <profile>` or comma-separate; Config: set `integrations.discord` to a list.
 
 - File: `mcp_client.py` (library)
 - CLI: `mcp_cli.py`

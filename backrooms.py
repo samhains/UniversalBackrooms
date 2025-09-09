@@ -408,9 +408,9 @@ def main():
     )
     parser.add_argument(
         "--discord",
-        type=str,
+        action="append",
         default=None,
-        help="Enable Discord posting with a profile name from ./discord (e.g., 'chronicle').",
+        help="Enable one or more Discord profiles (repeatable or comma-separated), from ./discord/<name>.json.",
     )
     parser.add_argument(
         "--media",
@@ -576,8 +576,24 @@ def main():
                 except Exception:
                     print(f"Warning: media preset '{name}' not found.")
 
-    # Optional discord agent config
-    discord_cfg = load_discord_config(args.discord) if load_discord_config else None
+    # Optional Discord agent configs: support multiple profiles
+    discord_cfgs = []
+    if args.discord and load_discord_config:
+        raw_dc: list[str] = []
+        for d in (args.discord or []):
+            if isinstance(d, str) and "," in d:
+                raw_dc.extend([x.strip() for x in d.split(",") if x.strip()])
+            elif isinstance(d, str):
+                raw_dc.append(d.strip())
+        seen_dc = set()
+        for name in raw_dc:
+            if not name or name in seen_dc:
+                continue
+            seen_dc.add(name)
+            cfg = load_discord_config(name)
+            if cfg:
+                cfg.setdefault("__name__", name)
+                discord_cfgs.append(cfg)
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
@@ -806,23 +822,24 @@ def main():
                     print(err)
                     with open(filename, "a") as f:
                         f.write(err + "\n")
-        # After the round, post a Discord update (text-only summary)
-        if discord_cfg and run_discord_agent:
-            try:
-                run_discord_agent(
-                    discord_cfg=discord_cfg,
-                    selected_models=models,
-                    round_entries=round_entries,
-                    transcript=transcript,
-                    generate_text_fn=media_generate_text_fn,
-                    model_info=MODEL_INFO,
-                    media_url=None,
-                )
-            except Exception as e:
-                err = f"\nDiscord Agent error: {e}"
-                print(err)
-                with open(filename, "a") as f:
-                    f.write(err + "\n")
+        # After the round, post Discord updates (text-only) for each profile
+        if discord_cfgs and run_discord_agent:
+            for dcfg in discord_cfgs:
+                try:
+                    run_discord_agent(
+                        discord_cfg=dcfg,
+                        selected_models=models,
+                        round_entries=round_entries,
+                        transcript=transcript,
+                        generate_text_fn=media_generate_text_fn,
+                        model_info=MODEL_INFO,
+                        media_url=None,
+                    )
+                except Exception as e:
+                    err = f"\nDiscord Agent error: {e}"
+                    print(err)
+                    with open(filename, "a") as f:
+                        f.write(err + "\n")
         # Append this round to running transcript
         transcript.extend(round_entries)
         turn += 1
