@@ -305,11 +305,99 @@ def run_media_agent(
     body = f"Mode: {mode}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
     log_media_result(filename, header, body)
 
-    # 5) Update state with newest image reference if present
+    # 5) Try to extract an image ref; if missing, poll status tool when task_id is present
     ref = parse_result_for_image_ref(result)
+    task_id: Optional[str] = None
+    if not ref:
+        # Attempt to parse JSON-encoded text content to find taskId
+        content = result.get("content")
+        texts: list[str] = []
+        if isinstance(content, list):
+            for item in content:
+                t = item.get("text")
+                if isinstance(t, str):
+                    texts.append(t)
+        elif isinstance(content, str):
+            texts.append(content)
+        for t in texts:
+            try:
+                data = json.loads(t)
+            except Exception:
+                continue
+            # Common shapes
+            task_id = (
+                (data.get("response", {}).get("data", {}) or {}).get("taskId")
+                or data.get("task_id")
+                or data.get("taskId")
+            )
+            if task_id:
+                break
+
+    if not ref and task_id:
+        status_cfg = tool.get("status_tool") or {"name": "get_task_status"}
+        status_name = status_cfg.get("name")
+        poll_cfg = tool.get("poll", {})
+        max_seconds = int(poll_cfg.get("max_seconds", 60))
+        interval = max(1, int(poll_cfg.get("interval", 3)))
+        elapsed = 0
+        # Poll until an image URL appears or timeout
+        while elapsed < max_seconds:
+            try:
+                status_args = {"task_id": task_id}
+                status_result = call_tool(server_cfg, status_name, status_args)
+                # Log heartbeat in file for transparency (truncate to keep logs tidy)
+                hb = f"Status({task_id}) -> {json.dumps(status_result, ensure_ascii=False)[:300]}..."
+                with open(filename, "a") as f:
+                    f.write("\n" + hb + "\n")
+                ref = parse_result_for_image_ref(status_result)
+                if not ref:
+                    # Also attempt to parse JSON text for 'imageUrl' fields
+                    c2 = status_result.get("content")
+                    texts2: list[str] = []
+                    if isinstance(c2, list):
+                        for it in c2:
+                            tt = it.get("text")
+                            if isinstance(tt, str):
+                                texts2.append(tt)
+                    elif isinstance(c2, str):
+                        texts2.append(c2)
+                    for t in texts2:
+                        try:
+                            d = json.loads(t)
+                            cand = (
+                                (d.get("response", {}).get("data", {}) or {}).get("imageUrl")
+                                or d.get("imageUrl")
+                                or (d.get("local_task", {}) or {}).get("result_url")
+                            )
+                            if isinstance(cand, str) and cand:
+                                ref = cand
+                                break
+                        except Exception:
+                            continue
+                if ref:
+                    # Prepend a standard content element so callers can extract easily
+                    try:
+                        if isinstance(status_result.get("content"), list):
+                            status_result["content"].insert(0, {"type": "image", "uri": ref})
+                        else:
+                            status_result["content"] = [{"type": "image", "uri": ref}]
+                    except Exception:
+                        pass
+                    result = status_result
+                    break
+            except Exception:
+                pass
+            try:
+                import time as _time
+                _time.sleep(interval)
+            except Exception:
+                break
+            elapsed += interval
+
+    # 6) Update state with newest image reference if present
     if ref:
         state.last_image_ref = ref
     state.save()
 
-    # Optionally inject a short note into contexts in the caller if desired later
+    # Return the (possibly enriched) result
     return result

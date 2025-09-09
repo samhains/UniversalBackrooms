@@ -6,7 +6,8 @@
     "server": "kie-ai-mcp-server",
     "name": "generate_nano_banana",
     "wrap_params": false,
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "interval": 3, "max_seconds": 90 },
     "defaults": {}
   }
 }
-

@@ -39,6 +39,7 @@ Configuration (mcp.config.json)
 
 Media preset
 - Use `media/kieai.json` to route prompts to Kie.ai’s `generate_nano_banana` tool. It sends arguments directly (no FastMCP param wrapper).
+- The server is asynchronous. The preset includes a status tool (`get_task_status`) and polling config so the Media Agent waits briefly for a resulting URL and injects it into the result for Discord posting.
 
 Testing via the included MCP client
 - List tools:
@@ -54,4 +55,3 @@ Using in a run
 Notes
 - Kie.ai endpoints require HTTP/HTTPS URLs for editing (no local file paths).
 - If you prefer to run a local build instead of npx, set `command: node` and `args: ["/path/to/kie-ai-mcp-server/dist/index.js"]` with the same env and (optional) cwd.
-
