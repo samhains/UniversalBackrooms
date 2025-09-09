@@ -43,13 +43,13 @@ except Exception:
 
 # Reuse helpers from dreamsim3_dataset where possible
 try:
-    from scripts.dreamsim3_dataset import (
+    from scripts.batch_utils import (
         read_dreams_from_supabase,
         parse_pairs,
         validate_models,
         latest_log_for,
         determine_exit_reason,
-        _sync_single_meta,
+        sync_single_meta as _sync_single_meta,
     )
 except Exception:
     # Fallback stubs for type hints; batch mode will fail if actually used without these
