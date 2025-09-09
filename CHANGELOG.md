@@ -1,5 +1,16 @@
 ## 2025-09-10
 
+## 2025-09-09
+
+- Kie.ai MCP integration and Discord improvements (branch: feature/discord-transcripts):
+  - Media Agent handles async Kie.ai tasks by polling `get_task_status` until an image URL is available; enriches results with a standard image content element and logs concise heartbeats.
+  - Batch dataset runner executes `backrooms.py` from the repo root and sets `MCP_SERVERS_CONFIG` so MCP servers (Discord, ComfyUI, Kie.ai) load reliably.
+  - Added Kie.ai media preset (`media/kieai.json`) with polling config, and documentation (`docs/kie_ai_mcp.md`).
+  - Documentation updates: `docs/dataset_runner.md`, README notes for batch usage and MCP servers.
+- MCP client/CLI enhancements:
+  - `mcp_client.py` supports `cwd` in server config; `mcp_cli.py` reads optional `cwd`.
+  - Media Agent supports `wrap_params` for servers that expect either direct args or `{params: ...}` envelopes.
+
 - Added config-based runner (`scripts/run_config.py`) supporting:
   - Single runs mapping to `backrooms.py`
   - Batch runs (DreamSim3 via Supabase, DreamSim4 sequences) with metadata JSONL
@@ -15,4 +26,3 @@
 - Refactor: made `scripts/dreamsim3_dataset.py` use shared helpers
 - Justfile cleanup: added config-based presets and a `run` target
 - README: updated with Quickstart, config runner usage, and media agent improvements
-
