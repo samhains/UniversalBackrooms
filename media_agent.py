@@ -37,8 +37,8 @@ def resolve_media_model_api(media_cfg: Dict[str, Any], selected_models: List[str
         for m in selected_models:
             if m in model_info:
                 return model_info[m]["api_name"]
-        # fallback to sonnet if nothing suitable
-        return model_info["sonnet"]["api_name"]
+        # No implicit fallback; require explicit declaration
+        raise ValueError("Unable to resolve media model from selected models; declare 'model' explicitly in media config.")
     if model_key in model_info:
         return model_info[model_key]["api_name"]
     return model_key
@@ -178,7 +178,13 @@ def run_media_agent(
     system_prompt: str = media_cfg.get("system_prompt", "You create concise, vivid prompts.")
     if model_info is None:
         model_info = {}
-    api_model = resolve_media_model_api(media_cfg, selected_models, model_info)
+    try:
+        api_model = resolve_media_model_api(media_cfg, selected_models, model_info)
+    except Exception as e:
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        body = f"Configuration error: {e}"
+        log_media_result(filename, header, body)
+        return {"isError": True, "content": [{"type": "text", "text": str(e)}]}
     mode = media_cfg.get("mode", "t2i")  # 't2i' or 'edit'
 
     if mode == "edit":
@@ -237,10 +243,24 @@ def run_media_agent(
     prompt_text = generate_text_fn(system_prompt, api_model, user_content).strip()
 
     # 2) Prepare MCP tool call
-    tool = media_cfg.get("tool", {"server": "comfyui", "name": "generate_image"})
-    server_name = tool.get("server", "comfyui")
-    tool_name = tool.get("name", "generate_image")
-    defaults = tool.get("defaults", {"width": 768, "height": 768})
+    tool = media_cfg.get("tool")
+    if not isinstance(tool, dict):
+        err = "Media config must declare a 'tool' with 'server' and 'name'. No defaults are assumed."
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        body = f"Error: {err}"
+        log_media_result(filename, header, body)
+        return {"isError": True, "content": [{"type": "text", "text": err}]}
+
+    server_name = tool.get("server")
+    tool_name = tool.get("name")
+    if not server_name or not tool_name:
+        err = "Media tool must include both 'server' and 'name'."
+        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+        body = f"Error: {err}"
+        log_media_result(filename, header, body)
+        return {"isError": True, "content": [{"type": "text", "text": err}]}
+
+    defaults = tool.get("defaults", {})
     args = {"prompt": prompt_text, **defaults}
 
     # Load MCP server config
