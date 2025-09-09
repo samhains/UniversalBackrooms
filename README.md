@@ -30,40 +30,19 @@ I removed references to the fact that the user will be guiding the conversation 
 - Add your Anthropic and/or OpenAI API keys to the .env file, depending on which models you plan to use. Optionally add an OpenRouter API key to try Hermes 405B.
 - Install packages.  ```pip install -r requirements.txt```
 
-## To Run
-For a default conversation using Opus for both roles:
-```
-python backrooms.py
-```
+## Quickstart
 
-For a conversation between different models:
-```
-python backrooms.py --lm opus gpt4o
-```
+- Direct run (still supported):
+  - `python backrooms.py` (defaults from the template)
+  - `python backrooms.py --lm opus gpt4o --template roleplay`
 
-You can mix and match any combination of models for the LM roles:
-- opus
-- sonnet
-- gpt4o
-- o1-preview
-- o1-mini
-- hermes (via OpenRouter)
-- hermes_reasoning (Hermes with reasoning enabled)
-
-If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
+- Config runner (recommended):
+  - `just run config=configs/single_roleplay_hermes.json`
+  - DreamSim3 batches from Supabase: `just dreamsim3-default`, `just dreamsim3-query`, etc.
+  - DreamSim4 sequences: `just dreamsim4-cycle`, `just dreamsim4-pairs`
 
 ## Templates
-Templates are JSON specs pointing to Markdown files for reusable prompts and per‑agent chat history.
-
-- Spec: `templates/<name>.json`
-- Prompts: `prompts/.../*.md` (Markdown)
-- Chat history: `chat_history/.../*.md` (Markdown)
-
-Pick a template with `--template <name>`. The CLI auto-discovers available templates from `templates/*.json`.
-
-Notes:
-- A template’s `agents` list must match the number of `--lm` models.
-- History files are optional; an empty file means no initial history. If all agents have empty history, the program exits with a helpful message.
+Templates live under `templates/<name>/template.json` referencing Markdown files for system prompts and history. Use `--template <name>`. The number of agents must match `--lm` models. History is optional, but if all agents have empty histories the program exits with a helpful message.
 
 ## DreamSim3 Batch (from Supabase)
 
@@ -165,24 +144,23 @@ Notes on randomization
 
 See `docs/dataset_runner.md` for more.
 
-### Kie.ai Image Generation (MCP)
+### Media Agents (MCP)
 
-You can generate images via the Kie.ai MCP server in addition to ComfyUI.
+You can generate and post media via MCP servers (e.g., ComfyUI, Kie.ai).
 
-- Configure `mcp.config.json` entry `kie-ai-mcp-server`. The repo includes a ready entry that runs via `npx` and sets `cwd` to this folder, so the server’s SQLite DB (`tasks.db`) is created here. Replace `KIE_AI_API_KEY` with your key.
-- Alternative: omit `cwd` and set `KIE_AI_DB_PATH` to an absolute path pointing into this repo if you prefer.
+- Configure servers in `mcp.config.json` and verify with `mcp_cli.py`.
+- Select a media preset via `--media <name>` or `integrations.media` in configs.
+- Multiple presets per round are supported; they execute sequentially.
 
-Quick checks using the included MCP CLI:
-- List tools: `python mcp_cli.py --config mcp.config.json --server kie-ai-mcp-server list-tools`
-- Call image generation: `python mcp_cli.py --config mcp.config.json --server kie-ai-mcp-server call-tool generate_nano_banana --json '{"prompt":"A surreal liminal hallway lit by buzzing fluorescents"}'`
+Media presets (`media/<name>.json`) define:
+- `tool`: `{ server, name, wrap_params, status_tool, poll, defaults{...} }`
+- `model`, `system_prompt`, `mode`: t2i or edit
+- `post_image_to_discord`: attach image in Discord posts (default true)
+- `discord_channel` / `discord_server`: per-media override for where image posts go
 
-Media preset:
-- Use `media/kieai.json` to route prompts to Kie.ai (`generate_nano_banana`). It disables FastMCP-style param wrapping and sends arguments directly.
-- Select this preset anywhere you choose a media template (e.g., template name `kieai`).
- - Control Discord image attachment via `post_image_to_discord` (default true). Set to false to post only text summaries to Discord.
-
-Notes:
-- The Kie.ai server returns URLs (no local files). For editing, provide HTTP/HTTPS image URLs only.
+Examples:
+- `media/kieai.json` routes to the Kie.ai MCP tool; `media/cli.json` to a ComfyUI-like tool.
+- To avoid image attachment but still post summaries, set `post_image_to_discord: false` (see `media/kieai_no_discord.json`).
 
 - File: `mcp_client.py` (library)
 - CLI: `mcp_cli.py`
@@ -456,17 +434,19 @@ Use a preset by passing its filename stem:
 
 `python backrooms.py --lm sonnet3 sonnet3 --template dreamsim3 --discord narrative_terminal`
 
-## Template Variables via CLI
+## Template Variables
 
-You can override template variables without editing `vars.json`:
+Override variables without editing `vars.json`:
 
 - `--var NAME=VALUE` (repeatable): sets template variables before formatting.
-- `--query "text"`: convenience alias that sets both `QUERY` and `DREAM_TEXT` to the provided text.
+- `--query "text"`: convenience alias that sets both `QUERY` and `DREAM_TEXT`.
 
 Examples:
 
 - `python backrooms.py --lm k2 k2 --template dreamsim3 --query "A dim hallway that hums like a refrigerator"`
 - `python backrooms.py --lm gpt5 hermes --template roleplay --var TOPIC=alchemy --var TONE=serious`
+
+In batch configs, map per-item fields to variables using `template_vars_from_item` (defaults to `DREAM_TEXT <- content`).
 
 ## Config Runner (experimental)
 

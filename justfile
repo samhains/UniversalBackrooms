@@ -7,11 +7,9 @@ default:
 # Current working directory from environment (if needed)
 pwd := env_var('PWD')
 
-# DreamSim2: simple two-turn template
+## Quick direct Backrooms (still supported)
 dreamsim2 q="":
     python backrooms.py --lm "{{q}}" "{{q}}" --template dreamsim2
-
-# Backrooms with Hermes x2, Discord + Media (chronicle_fp)
 backrooms:
     python backrooms.py --lm hermes hermes --template roleplay --discord chronicle_fp --media chronicle_fp
 
@@ -24,7 +22,6 @@ seed-dreamsim3 query="":
 seed-dreamsim3-rsos query="":
     python scripts/seed_dreamsim3.py --source rsos --query "{{query}}" --print
 
-# Run dreamsim3 with a single model x2 (no media/discord)
 run-dreamsim3:
     python backrooms.py --lm hermes hermes --template dreamsim3
 
@@ -34,62 +31,31 @@ dreamsim3-one query="" model="gpt5":
     python scripts/seed_dreamsim3.py --query "{{query}}" --print
     python backrooms.py --lm {{model}} {{model}} --template dreamsim3
 
-# Batch: run dreamsim3 across Supabase dreams (single count param)
-# Usage:
-#   just dreamsim3                                  # defaults: max=30, models=gpt5,hermes,k2, source=mine, limit=200
-#   just dreamsim3 limit=500                         # fetch and process up to 500 dreams
-#   just dreamsim3 max=30 models="gpt5,k2"           # override models
-#   just dreamsim3 max=30 source=rsos limit=50000    # many RSOS dreams
-dreamsim3 max="30" models="gpt5,hermes,k2" source="mine" limit="200":
-    python scripts/dreamsim3_dataset.py --models "{{models}}" --max-turns {{max}} --source {{source}} --limit {{limit}} --max-dreams {{limit}}
-
-# Source-scoped wrappers (limit controls both fetch and processed count)
-dreamsim3-mine max="30" models="gpt5,hermes,k2" limit="200":
-    python scripts/dreamsim3_dataset.py --source mine --models "{{models}}" --max-turns {{max}} --limit {{limit}} --max-dreams {{limit}}
-dreamsim3-rsos max="30" models="gpt5,hermes,k2" limit="200":
-    python scripts/dreamsim3_dataset.py --source rsos --models "{{models}}" --max-turns {{max}} --limit {{limit}} --max-dreams {{limit}}
-dreamsim3-all max="30" models="gpt5,hermes,k2" limit="200":
-    python scripts/dreamsim3_dataset.py --source all --models "{{models}}" --max-turns {{max}} --limit {{limit}} --max-dreams {{limit}}
-
-# Batch with explicit mixed pairs (model1:model2 entries)
-#   just dreamsim3-pairs 30 pairs="gpt5:hermes,hermes:k2"
-dreamsim3-pairs max="30" pairs="gpt5:hermes,k2:hermes":
-    python scripts/dreamsim3_dataset.py --pairs "{{pairs}}" --max-turns {{max}}
-
-# Batch with mixed pairs generated from --models (unique pairs, shuffled)
-#   just dreamsim3-mixed 30 models="gpt5,hermes,k2"
-dreamsim3-mixed max="30" models="gpt5,hermes,k2":
-    python scripts/dreamsim3_dataset.py --models "{{models}}" --mixed --max-turns {{max}}
-
-# Batch with random mixed pairs per dream (N random pairs each)
-#   just dreamsim3-mixed-random 30 2 models="gpt5,hermes,k2"
-dreamsim3-mixed-random max="30" runs="1" models="gpt5,hermes,k2":
-    python scripts/dreamsim3_dataset.py --models "{{models}}" --mixed --mixed-mode random --runs-per-dream {{runs}} --max-turns {{max}}
-
-# Run dreamsim3 over all dreams matching a query (Supabase)
-# Usage:
-#   just dreamsim3-query query="rollercoaster"          # with defaults
-#   just dreamsim3-query  max=20 query="kanye ship"     # override turns
-#   just dreamsim3-query  limit=500 models="gpt5,hermes" # control fetch size
-dreamsim3-query query="" max="30" models="gpt5,hermes,k2" limit="200":
-    python scripts/dreamsim3_dataset.py --query "{{query}}" --limit {{limit}} --models "{{models}}" --max-turns {{max}}
-dreamsim3-query-rsos query="" max="30" models="gpt5,hermes,k2" limit="200":
-    python scripts/dreamsim3_dataset.py --source rsos --query "{{query}}" --limit {{limit}} --models "{{models}}" --max-turns {{max}}
-
-# DreamSim3 query with Discord + Media (Kie.ai nano banana)
-# Usage:
-#   just dreamsim3-query-kie query="static"                        # defaults shown below
-#   just dreamsim3-query-kie query="rollercoaster" max=30 limit=500 source=all
-#   just dreamsim3-query-kie query="monitors" discord="narrative_terminal" media="kieai"
-dreamsim3-query-kie query="" max="30" limit="200" source="all" models="sonnet3" discord="narrative_terminal" media="kieai":
-    python scripts/dreamsim3_dataset.py \
-      --query "{{query}}" \
-      --limit {{limit}} \
-      --source {{source}} \
-      --models "{{models}}" \
-      --max-turns {{max}} \
-      --discord "{{discord}}" \
-      --media "{{media}}"
+## DreamSim3 presets via config runner
+dreamsim3-default:
+    python scripts/run_config.py --config configs/batch_dreamsim3_default.json
+dreamsim3-mine:
+    python scripts/run_config.py --config configs/batch_dreamsim3_default.json
+dreamsim3-rsos:
+    python scripts/run_config.py --config configs/batch_dreamsim3_rsos.json
+dreamsim3-all:
+    python scripts/run_config.py --config configs/batch_dreamsim3_all.json
+dreamsim3-pairs:
+    python scripts/run_config.py --config configs/batch_dreamsim3_pairs_example.json
+dreamsim3-mixed:
+    python scripts/run_config.py --config configs/batch_dreamsim3_mixed_all.json
+dreamsim3-mixed-random:
+    python scripts/run_config.py --config configs/batch_dreamsim3_mixed_random.json
+dreamsim3-query:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query.json
+dreamsim3-query-rsos:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query_rsos.json
+dreamsim3-query-kie:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query_kie.json
+dreamsim3-query-kie-nopost:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query_kie_nopost.json
+dreamsim3-query-multi-media:
+    python scripts/run_config.py --config configs/batch_dreamsim3_query_multi_media.json
 
 # Import RSOS TSV into Supabase (date + content only)
 # Usage:
