@@ -9,6 +9,7 @@
   - Added `discord/dream_header.json`: one-shot, maximalist ASCII banner posted at the start of each dream (infers short title + embeds 2–3 poetic lines). Defaults to `#logs` channel.
   - `backrooms.py`: supports `post_once_at_start: true` and `run_on: "first"|"start"` in Discord profiles to post only in the first round; logs loaded Discord profiles and warns when a preset is missing.
   - `configs/posting_dreams.json`: enabled `dream_header` alongside `simple_director` and `transcripts` so each dream opens with the header.
+  - Discord agent: added `pre_message` support in profiles/presets to post a banner/separator before any content (useful between dreams). Text is chunked to respect Discord limits and posted with the same channel/server defaults.
 
 - Media (ComfyUI edit chain)
   - `configs/posting_dreams.json`: added `"media": "comfyui_edit_chain"` to pair the ComfyUI chain (initial T2I then iterative edits) with posting runs.

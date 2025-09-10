@@ -219,6 +219,35 @@ def run_discord_agent(
         if os.path.exists(alt):
             mcp_config_path = alt
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
+    # Optionally post a pre-message separator before any content (e.g., between dreams)
+    # This uses the same tool/channel/server defaults.
+    posted_premessage: List[Dict[str, Any]] = []
+    pre_message = discord_cfg.get("pre_message")
+    if isinstance(pre_message, str) and pre_message.strip():
+        pre_parts = _chunk_text(pre_message.strip(), chunk_limit)
+        for part in pre_parts:
+            p_args = {
+                k: v
+                for k, v in {
+                    "channel": args.get("channel"),
+                    "server": args.get("server"),
+                    "message": part,
+                }.items()
+                if v is not None
+            }
+            try:
+                _ = call_tool(server_cfg, tool_name, p_args)
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": part,
+                })
+            except Exception:
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": "<failed to post pre_message>",
+                })
     # Post summary (chunked if needed) unless disabled
     posted_summary: List[Dict[str, Any]] = []
     if not disable_summary:

@@ -19,7 +19,9 @@ Changes
 - Logging
   - BackroomsLogs updated with latest runs confirming edit posting.
 
+- Discord
+  - Added `pre_message` banner/separator to `discord/dream_header.json` and profile handling so a header can post before any content each dream. Uses the same channel/server defaults and respects chunking limits.
+
 Notes
 - Kie MCP server relies on a persistent SQLite DB for task tracking. Using KIE_AI_DB_PATH ensures get_task_status can observe completion within ~5–20s.
 - If desired, we can add an early_post_after_seconds option to post best-available media after a fixed time.
-
