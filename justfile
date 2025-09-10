@@ -86,9 +86,9 @@ dreams-search query="" limit="200" json="false":
     fi
 
 # Backfill: upsert backrooms from JSONL + transcripts
-sync-backrooms meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
-    # Cleans tiny/missing logs, rewrites JSONL, then upserts to Supabase
-    python scripts/sync_backrooms.py --meta "{{meta}}"
+sync-backrooms:
+    # Scan all BackroomsLogs/*/_meta.jsonl, skip runs with <3 replies (size filter off), then upsert to Supabase
+    python scripts/sync_backrooms.py
 
 # Prune DB rows for template not present in cleaned metadata
 prune-backrooms template="dreamsim3" meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
@@ -117,7 +117,7 @@ run config="single_roleplay_hermes":
 # Sync DreamSim3 and DreamSim4 to Supabase
 # Usage:
 #   just sync
-sync: sync-backrooms sync-dreamsim4
+sync: sync-backrooms
 
 # DreamSim4: cycle through models for N runs (self-dialogue)
 # Usage:

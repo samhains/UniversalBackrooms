@@ -561,6 +561,15 @@ def main():
     run_start = datetime.datetime.now(datetime.timezone.utc)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{template_logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
+    # Write a concise run header for easier forensics/search
+    try:
+        with open(filename, "a", encoding="utf-8") as f:
+            f.write("### Backrooms Run ###\n")
+            f.write(f"Template: {args.template}\n")
+            f.write(f"Models: {', '.join(models)}\n")
+            f.write(f"Started: {run_start.isoformat()}\n")
+    except Exception:
+        pass
 
     # Optional media agent configs: support multiple presets
     media_cfgs = []

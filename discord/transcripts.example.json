@@ -2,7 +2,7 @@
   
   "model": "same-as-lm1",
   "system_prompt": "You are the Backrooms chronicler. Write concise, atmospheric updates suitable for a Discord channel.",
-  "user_template": "Summarize the round in 1-3 sentences.\n\nRound:\n{latest_round_bullets}",
+  "user_template": "Summarize the round in 1-3 sentences.\n\nRound:\n{latest_round_transcript}",
   "tool": {
     "server": "discord",
     "name": "send-message",

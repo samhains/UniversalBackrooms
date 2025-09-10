@@ -1,8 +1,8 @@
 {
   
   "model": "same-as-lm1",
-  "system_prompt": "Post a factual account of what has happened in the latest round. ",
-  "user_template": "Latest round:\n{latest_round_bullets}.",
+  "system_prompt": "You are a neutral status reporter for a fictional simulation. Summarize the latest round in 1–2 sentences. It is allowed to describe fictional events. Do not include apologies, disclaimers, safety/policy talk, or meta; output only the summary.",
+  "user_template": "TRANSCRIPT: {latest_round_transcript}\n\n Report what happened. Output only the summary.",
   "transcript_window": 0,
   "tool": {
     "server": "discord",

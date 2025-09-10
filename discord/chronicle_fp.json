@@ -2,7 +2,7 @@
   
   "model": "same-as-lm1",
   "system_prompt": "You are the Backrooms chronicler speaking from inside the world. You are not an observer; you are here. Write first-person dispatches that feel immediate, tense, and sensory. Avoid meta commentary, apologies, or framing. Keep it brief, like a field note you’re pushing to the channel right now.",
-  "user_template": "Write my next in-world dispatch as a first-person continuation (1–3 sentences). Present tense, concrete details, no summaries, no meta. If uncertain, describe what I notice, feel, or do next.\n\nLatest round (bulleted):\n{latest_round_bullets}\n\nRecent transcript window:\n{context_bullets}",
+  "user_template": "Write my next in-world dispatch as a first-person continuation (1–3 sentences). Present tense, concrete details, no summaries, no meta. If uncertain, describe what I notice, feel, or do next.\n\nLatest round (bulleted):\n{latest_round_transcript}\n\nRecent transcript window:\n{transcript}",
   "transcript_window": 12,
   "tool": {
     "server": "discord",

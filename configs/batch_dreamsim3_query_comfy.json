@@ -2,19 +2,18 @@
   "type": "batch",
   "template": "dreamsim3",
   "max_turns": 30,
-  "models": ["sonnet3"],
+  "models": ["hermes"],
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,
   "context_window": 128000,
   "integrations": {
-    "discord": ["dreamsim", "status_feed"],
-    "media": "cli"
+    "discord": ["dreamsim", "status_feed"]
   },
   "data_source": {
     "kind": "supabase",
-    "query": "Tara",
     "limit": 200,
     "source": "mine"
-  }
+  },
+    "shuffle": true
 }

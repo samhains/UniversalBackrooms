@@ -77,10 +77,10 @@ Provide a profile name under `discord/` via `integrations.discord`. Each profile
 - `model`: API model preference, e.g., `"same-as-lm1"` or a known alias.
 - `system_prompt`: System prompt for the summarizer.
 - `user_template`: May reference:
-  - `{latest_round_bullets}`: last round as "- actor: text" lines.
-  - `{context_bullets}`: recent transcript window as "- actor: text" lines.
+  - `{latest_round_transcript}`: last round as "- actor: text" lines.
+  - `{transcript}`: recent transcript window as "- actor: text" lines.
   - `{last_actor}`, `{last_text}`: convenience values.
-- `transcript_window`: integer; number of recent messages to include in `{context_bullets}` (0 disables).
+- `transcript_window`: integer; number of recent messages to include in `{transcript}` (0 disables).
 - `tool`: where to post the summary
   - `server`: usually `"discord"`
   - `name`: usually `"send-message"`
@@ -105,6 +105,9 @@ Presets should not contain transcript toggles. Instead, configure per-run at the
 ```
 
 Advanced: You may also use `integrations.discord_overrides` to pass any additional fields directly into the Discord profile(s) for that run.
+
+Backwards compatibility:
+- `{latest_round_bullets}` and `{context_bullets}` are still supported but deprecated in favor of `{latest_round_transcript}` and `{transcript}`.
 
 ### Media (images)
 

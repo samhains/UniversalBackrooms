@@ -2,7 +2,7 @@
   
   "model": "same-as-lm1",
   "system_prompt": "You providing an annotation of the most recent CCTV footage. You are writing this from perspective of CCTV system annotating the content of the stream.",
-  "user_template": "\n\nLatest round (bulleted):\n{latest_round_bullets}\n\nRecent transcript window:\n{context_bullets}",
+  "user_template": "\n\nLatest round (bulleted):\n{latest_round_transcript}\n\nRecent transcript window:\n{transcript}",
   "transcript_window": 12,
   "tool": {
     "server": "discord",

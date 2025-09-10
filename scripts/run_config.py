@@ -225,7 +225,9 @@ def run_single(cfg: Dict[str, Any]) -> None:
     max_tokens = cfg.get("max_tokens")
 
     print(f"Running single: template='{template}', models={models}, turns={max_turns}")
-    _run_backrooms(
+    start = dt.datetime.now(dt.timezone.utc).isoformat()
+    t0 = time.time()
+    proc = _run_backrooms(
         models,
         template,
         max_turns,
@@ -239,6 +241,42 @@ def run_single(cfg: Dict[str, Any]) -> None:
         stream=True,
         discord_overrides=discord_overrides if isinstance(discord_overrides, dict) else None,
     )
+    duration = time.time() - t0
+    end = dt.datetime.now(dt.timezone.utc).isoformat()
+
+    # Determine latest log file for this run
+    log_path = latest_log_for(models, template)
+    exit_reason = determine_exit_reason(log_path) if log_path else "unknown"
+
+    # Where to write meta JSONL (default per-template path)
+    out_cfg = cfg.get("output") or {}
+    out_path = Path(out_cfg.get("meta_jsonl") or f"BackroomsLogs/{template}/{template}_meta.jsonl")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    meta = {
+        "models": models,
+        "template": template,
+        "max_turns": max_turns,
+        "start": start,
+        "end": end,
+        "duration_sec": round(duration, 3),
+        "log_file": str(log_path) if log_path else None,
+        "exit_reason": exit_reason,
+        "returncode": proc.returncode,
+        # Single-run configs may optionally include a prompt/query
+        "prompt": (query_value or None),
+    }
+    with out_path.open("a", encoding="utf-8") as outf:
+        outf.write(json.dumps(meta) + "\n")
+    print(f"Wrote meta to {out_path}")
+
+    # Optional immediate sync (if enabled like in batch mode)
+    auto_sync = bool(cfg.get("auto_sync", False))
+    if auto_sync:
+        try:
+            _sync_single_meta(meta)
+        except Exception as e:
+            print(f"  ↳ sync failed: {e}")
 
 
 def run_batch(cfg: Dict[str, Any]) -> None:

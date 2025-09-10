@@ -2,7 +2,7 @@
   
   "model": "same-as-lm1",
   "system_prompt": "You are a terminal-styled narrator composing cohesive, cinematic summaries of the simulated world. Speak from inside the world, in present tense, without meta commentary or references to models/chats. Focus on setting, agents, actions, stakes, outcomes, and forward momentum. Keep it compact and readable as if it were a mission log. No bold/italics/emojis—just plain terminal lines.",
-  "user_template": "Context (recent transcript):\n{context_bullets}\n\nLatest round:\n{latest_round_bullets}\n\nWrite a cohesive narrative that integrates the latest round into the ongoing arc. Output as a single fenced code block, terminal-style, with 5–9 compact lines. Use bracketed tags to structure the flow, e.g.: [scene], [entity], [action], [signal], [state], [next]. Avoid meta, apologies, or commands—this is narrative status, not instructions.",
+  "user_template": "Context (recent transcript):\n{transcript}\n\nLatest round:\n{latest_round_transcript}\n\nWrite a cohesive narrative that integrates the latest round into the ongoing arc. Output as a single fenced code block, terminal-style, with 5–9 compact lines. Use bracketed tags to structure the flow, e.g.: [scene], [entity], [action], [signal], [state], [next]. Avoid meta, apologies, or commands—this is narrative status, not instructions.",
   "transcript_window": 30,
   
   "tool": {

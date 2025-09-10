@@ -2,13 +2,14 @@
 """
 Sync Backrooms runs into Supabase.
 
-Reads a JSONL metadata file (default: BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl)
+Reads one or more JSONL metadata files (default: BackroomsLogs/; scans **/*_meta.jsonl)
 and upserts rows into public.backrooms, attaching the transcript from each
 log_file if present. Safe to re-run; uses on_conflict=log_file to merge.
 
 Usage:
-  python scripts/sync_backrooms.py                      # sync default JSONL
+  python scripts/sync_backrooms.py                      # sync all *_meta.jsonl under BackroomsLogs/
   python scripts/sync_backrooms.py --meta path/to.jsonl # custom file
+  python scripts/sync_backrooms.py --meta BackroomsLogs # scan a directory
   python scripts/sync_backrooms.py --dry-run            # preview only
 
 Env:
@@ -21,7 +22,8 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Iterable
+import re
 
 import requests
 
@@ -89,6 +91,20 @@ def read_jsonl(path: Path) -> List[Dict]:
     return out
 
 
+def find_meta_files(base: Path) -> List[Path]:
+    """Return a list of JSONL meta files.
+
+    - If base is a file, return [base]
+    - If base is a directory, scan recursively for *_meta.jsonl
+    - If base does not exist, return []
+    """
+    if base.is_file():
+        return [base]
+    if base.is_dir():
+        return sorted(base.rglob("*_meta.jsonl"))
+    return []
+
+
 def _clean_string(s: str) -> str:
     """Remove characters not accepted by Postgres text (e.g., NUL bytes).
 
@@ -110,7 +126,10 @@ def _sanitize_row_strings(row: Dict) -> Dict:
 
 def _is_tiny_log(p: Path, min_bytes: int) -> bool:
     try:
-        return p.exists() and p.is_file() and p.stat().st_size < max(1, min_bytes)
+        # Size filter disabled when min_bytes <= 0
+        if int(min_bytes) <= 0:
+            return False
+        return p.exists() and p.is_file() and p.stat().st_size < max(1, int(min_bytes))
     except Exception:
         return True
 
@@ -159,7 +178,26 @@ def chunked(seq, n):
         yield seq[i : i + n]
 
 
-def to_backrooms_rows(items: List[Dict]) -> List[Dict]:
+def _count_replies_from_text(txt: str) -> int:
+    """Count reply sections in a Backrooms log.
+
+    Heuristic: count actor headers like '### <Actor> ###'.
+    Falls back to counting lines that start with '### ' but not '### Round'.
+    """
+    if not isinstance(txt, str) or not txt:
+        return 0
+    count = 0
+    for line in txt.splitlines():
+        if not line.startswith("### "):
+            continue
+        if line.startswith("### Round"):
+            continue
+        # Typical pattern: ### <Actor> ###
+        count += 1
+    return count
+
+
+def to_backrooms_rows(items: List[Dict], *, min_replies: int = 0) -> List[Dict]:
     """Map JSONL items to backrooms table rows.
 
     Also ensures the `source` is populated:
@@ -209,11 +247,17 @@ def to_backrooms_rows(items: List[Dict]) -> List[Dict]:
         created_at = it.get("start") or it.get("created_at")
         # Attach transcript from file, best-effort
         transcript = None
+        replies_count = 0
         try:
             p = Path(lf)
             if p.exists():
                 # Replace undecodable bytes and then strip NUL/control chars
-                transcript = _clean_string(p.read_text(encoding="utf-8", errors="replace"))
+                raw = p.read_text(encoding="utf-8", errors="replace")
+                replies_count = _count_replies_from_text(raw)
+                # Skip rows with too-few replies
+                if min_replies and replies_count < int(min_replies):
+                    continue
+                transcript = _clean_string(raw)
         except Exception:
             transcript = None
 
@@ -235,6 +279,7 @@ def to_backrooms_rows(items: List[Dict]) -> List[Dict]:
             "log_file": lf,
             "exit_reason": it.get("exit_reason"),
             "transcript": transcript,
+            "replies": replies_count or None,
             # Always include 'source' key (None when unknown) to ensure
             # all objects in a batch share identical keys for PostgREST.
             "source": src if src is not None else None,
@@ -322,25 +367,38 @@ def main():
     _load_env_from_file(env_path)
 
     ap = argparse.ArgumentParser(description="Sync Backrooms runs into Supabase")
-    ap.add_argument("--meta", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Path to JSONL metadata file")
+    ap.add_argument(
+        "--meta",
+        default="BackroomsLogs",
+        help="Path to JSONL meta file or a directory to scan (default: BackroomsLogs)",
+    )
     ap.add_argument("--dry-run", action="store_true", help="Print actions without writing to Supabase")
     ap.add_argument("--no-clean", action="store_true", help="Skip tiny/missing log cleanup before syncing")
-    ap.add_argument("--min-bytes", type=int, default=128, help="Minimum size threshold for logs when cleaning (default: 128)")
+    ap.add_argument("--min-bytes", type=int, default=0, help="Minimum size threshold for logs when cleaning; 0 disables size filter (default: 0)")
+    ap.add_argument("--min-replies", type=int, default=3, help="Skip logs with fewer than this many replies (default: 3)")
     args = ap.parse_args()
 
     url, key = env_keys()
-    meta_path = Path(args.meta)
-    if not meta_path.exists():
-        raise SystemExit(f"Metadata file not found: {meta_path}")
+    target = Path(args.meta)
+    files = find_meta_files(target)
+    if not files:
+        raise SystemExit(f"No meta files found at: {target}")
 
-    # Clean tiny/missing logs and de-duplicate JSONL by default
-    if not args.no_clean:
-        clean_meta_inplace(meta_path, min_bytes=int(args.min_bytes), delete_logs=True)
-
-    items = read_jsonl(meta_path)
-    rows = to_backrooms_rows(items)
-    count = upsert_rows(url, key, rows, dry_run=args.dry_run)
-    print(f"Synced {count} rows from {meta_path}")
+    total_synced = 0
+    for meta_path in files:
+        # Clean tiny/missing logs and de-duplicate JSONL by default
+        if not args.no_clean:
+            clean_meta_inplace(meta_path, min_bytes=int(args.min_bytes), delete_logs=True)
+        items = read_jsonl(meta_path)
+        if not items:
+            continue
+        rows = to_backrooms_rows(items, min_replies=int(args.min_replies))
+        if not rows:
+            continue
+        count = upsert_rows(url, key, rows, dry_run=args.dry_run)
+        print(f"Synced {count} rows from {meta_path}")
+        total_synced += count
+    print(f"Done. Total rows synced: {total_synced}")
 
 
 if __name__ == "__main__":
