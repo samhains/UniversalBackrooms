@@ -311,39 +311,64 @@ def upsert_rows(url: str, key: str, rows: List[Dict], dry_run: bool = False) -> 
         return 0
     endpoint = f"{url}/rest/v1/backrooms?on_conflict=log_file"
     total = 0
+    def _extract_unknown_cols(msg: Optional[str]) -> List[str]:
+        if not msg:
+            return []
+        try:
+            s = msg.lower()
+        except Exception:
+            s = str(msg)
+        # Common PostgREST error phrasing examples:
+        # - Could not find the 'replies' column of 'backrooms' in the schema cache
+        # - column "source" of relation "backrooms" does not exist
+        import re as _re
+        cols: set[str] = set()
+        for pat in [
+            r"the '([a-zA-Z0-9_]+)' column",
+            r"column\s+\"([a-zA-Z0-9_]+)\"",
+            r"column\s+'([a-zA-Z0-9_]+)'",
+        ]:
+            m = _re.search(pat, msg)
+            if m:
+                cols.add(m.group(1))
+        return list(cols)
+
     for batch in chunked(rows, 50):
         # Normalize keys to avoid PGRST102 (all object keys must match)
         norm_batch = _normalize_rows(batch)
-        r = requests.post(endpoint, headers=headers(key), json=norm_batch, timeout=60)
-        if not r.ok:
-            # If the failure looks like an unknown column (e.g., 'source' missing), retry without it
-            detail_text = None
+        drop: set[str] = set()
+        attempt = 0
+        while True:
+            attempt += 1
+            send_batch = _normalize_rows(norm_batch, drop_keys=drop) if drop else norm_batch
+            r = requests.post(endpoint, headers=headers(key), json=send_batch, timeout=60)
+            if r.ok:
+                try:
+                    payload = r.json()
+                    total += len(payload) if isinstance(payload, list) else len(send_batch)
+                except Exception:
+                    total += len(send_batch)
+                break
+
+            # If the failure looks like an unknown column (e.g., 'replies' or 'source'), iteratively drop and retry
+            detail_text: Optional[str]
             try:
                 detail = r.json()
                 detail_text = json.dumps(detail)
             except Exception:
                 detail_text = r.text
-            if detail_text and ("source" in detail_text.lower() and ("column" in detail_text.lower() or "unknown" in detail_text.lower() or "schema cache" in detail_text.lower())):
-                try:
-                    alt_batch = _normalize_rows(norm_batch, drop_keys={"source"})
-                    r2 = requests.post(endpoint, headers=headers(key), json=alt_batch, timeout=60)
-                    if r2.ok:
-                        try:
-                            payload = r2.json()
-                            total += len(payload) if isinstance(payload, list) else len(alt_batch)
-                        except Exception:
-                            total += len(alt_batch)
-                        continue
-                    else:
-                        # Raise error from retry to surface the real blocker
-                        try:
-                            alt_detail = r2.json()
-                            alt_detail_text = json.dumps(alt_detail)
-                        except Exception:
-                            alt_detail_text = r2.text
-                        raise SystemExit(f"Upsert failed after dropping 'source': HTTP {r2.status_code}: {alt_detail_text}")
-                except Exception:
-                    pass
+
+            unknown_cols = set(_extract_unknown_cols(detail_text))
+            if detail_text and ("schema cache" in (detail_text or "").lower() or "does not exist" in (detail_text or "").lower()):
+                for candidate in ("replies", "source"):
+                    if candidate in (detail_text or "").lower():
+                        unknown_cols.add(candidate)
+
+            # If we detected unknown columns, add to drop set and retry (limit attempts to avoid infinite loops)
+            if unknown_cols and attempt < 5:
+                drop |= unknown_cols
+                continue
+
             # If we reach here, either no fallback or fallback failed
             raise SystemExit(f"Upsert failed: HTTP {r.status_code}: {detail_text}")
         try:
