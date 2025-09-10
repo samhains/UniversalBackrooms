@@ -7,9 +7,7 @@
     "server": "discord",
     "name": "send-message",
     "defaults": {
-      "channel": "backrooms"
+      "channel": "logs"
     }
-  },
-  "post_transcript": true,
-  "transcript_channel": "logs"
+  }
 }

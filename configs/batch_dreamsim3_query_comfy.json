@@ -8,23 +8,13 @@
   "max_context_frac": 0.0,
   "context_window": 128000,
   "integrations": {
-    "discord": "narrative_terminal",
+    "discord": ["dreamsim", "status_feed"],
     "media": "cli"
   },
   "data_source": {
     "kind": "supabase",
-    "query": "rollercoaster",
+    "query": "Tara",
     "limit": 200,
-    "source": "all"
-  },
-  "template_vars_from_item": {
-    "DREAM_TEXT": "content"
-  },
-  "output": {
-    "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl"
-  },
-  "shuffle": null,
-  "seed": null,
-  "max_items": 0,
-  "auto_sync": false
+    "source": "mine"
+  }
 }

@@ -1,6 +1,6 @@
 {
   "model": "k2",
-  "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator. Think Cult VHS/cronenberg/lynch sort of imagery (not literally). Capture the current state of the system. Avoid meta text, or text.  Keep under 200 chars unless necessary.",
+  "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator.  Capture the current state of the system. Avoid meta text, or text.  Keep under 200 chars unless necessary.",
   "mode": "t2i",
   "post_image_to_discord": true,
   "discord_channel": "media",

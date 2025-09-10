@@ -1,0 +1,172 @@
+
+### Round 1/30
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ help
+
+### Hermes 405B 2 ###
+simulator@nousresearch:~/$ <cmd>help</cmd>
+
+GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
+These shell commands are defined internally.  Type 'help' to see this list.
+Type 'help name' to find out more about the function 'name'.
+Use 'info bash' to find out more about the shell in general.
+Use 'man -k' or 'info' to find out more about commands not in this list.
+
+A star (*) next to a name means that the command is disabled.
+
+ job_spec [&]                            history [-c] [-d offset] [n] or hist>
+ (( expression ))                        if COMMANDS; then COMMANDS; [ elif C>
+ . filename [arguments]                  jobs [-lnprs] [jobspec ...] or jobid>
+ :                                       kill [-s sigspec | -n signum | -sigs>
+ [ arg... ]                              let arg [arg ...]
+ [[ expression ]]                        local [option] name[=value] ...
+ alias [-p] [name[=value] ... ]         logout [n]
+ bg [job_spec ...]                      mapfile [-d delim] [-n count] [-O or>
+ bind [-lpsvPSVX] [-m keymap] [-f fil>  popd [-n] [+N | -N]
+ break [n]                              printf [-v var] format [arguments]
+ builtin [shell-builtin [arg ...]]      pushd [-n] [+N | -N | dir]
+ caller [expr]                          read [-ers] [-a array] [-d delim] [->
+ case WORD in [PATTERN [| PATTERN]...>  readarray [-d delim] [-n count] [-O>
+ cd [-L|[-P [-e]] [-@]] [dir]           select NAME [in WORDS ... ;] do COMM>
+ command [-pVv] command [arg ...]       set [-abefhkmnptuvxBCHP] [-o option>
+ compgen [-abcdefuv] [-o option] [pat>  shift [n]
+ complete [-abcdefgjksuv] [-pr] [-DE] >  shopt [-pqsu] [-o] [optname ...]
+ compopt [-o|+o option] [-DE] [name ..>  source filename [arguments]
+ continue [n]                           suspend [-f]
+ coproc [NAME] command [redirections]   test [expr]
+ declare [-aAfFgilnrtux] [-p] [name[=>  time [-p] pipeline
+ dirs [-clpv] [+N] [-N]                 times
+ disown [-h] [-ar] [jobspec ... | pid>  trap [-lp] [[arg] signal_spec ...]
+ echo [-neE] [arg ...]                  type [-afptP] name [name ...]
+ enable [-a] [-dnps] [-f filename] [n>  typeset [-aAfFgilnrtux] [-p] name[=v>
+ eval [arg ...]                         ulimit [-SHabcdefiklmnpqrstuvxPT] [l>
+ exec [-cl] [-a name] [command [argud>  umask [-p] [-S] [mode]
+ exit [n]                               unalias [-a] name [name ...]
+ export [-fn] [name[=value] ...] or ex>  unset [-f] [-v] [-n] [name ...]
+ false                                  wait [-fn] [-p var] [id ...]
+ fc [-e ename] [-lnr] [first] [last] o>  while COMMANDS; do COMMANDS; done
+ fg [job_spec]                          : [ arguments ]
+ for NAME [in WORDS ... ] ; do COMMAND>  [[ expressions ]]
+ function name { COMMANDS ; } or name >  (( expression ))
+ getopts optstring name [arg ...]       alias [-p] [name[=value] ... ]
+ hash [-lr] [-p pathname] [-dt] [name>  bg [job_spec ...]
+ help [-dms] [pattern ...]              bind [-lpsvPSVX] [-m keymap] [-f fil>
+ history [-c] [-d offset] [n]           builtin [shell-builtin [arg ...]]
+ if COMMANDS; then COMMANDS; [ elif CO>  caller [expr]
+ jobs [-lnprs] [jobspec ...]            case WORD in [PATTERN [| PATTERN]...>
+ kill [-s sigspec | -n signum | -sign>  cd [-L|[-P [-e]] [-@]] [dir]
+ let arg [arg ...]                      command [-pVv] command [arg ...]
+ local [option] name[=value] ...        compgen [-abcdefuv] [-o option] [pat>
+ logout [n]                             complete [-abcdefgjksuv] [-pr] [-DE] >
+ mapfile [-d delim] [-n count] [-O or>  compopt [-o|+o option] [-DE] [name ..>
+ popd [-n] [+N | -N]                    continue [n]
+ printf [-v var] format [arguments]     coproc [NAME] command [redirections]
+ pushd [-n] [+N | -N | dir]             declare [-aAfFgilnrtux] [-p] [name[=v>
+ read [-ers] [-a array] [-d delim] [->  dirs [-clpv] [+N] [-N]
+ readarray [-d delim] [-n count] [-O>  disown [-h] [-ar] [jobspec ... | pid>
+ select NAME [in WORDS ... ;] do COMM>  echo [-neE] [arg ...]
+ set [-abefhkmnptuvxBCHP] [-o option>  enable [-a] [-dnps] [-f filename] [n>
+ shift [n]                              eval [arg ...]
+ shopt [-pqsu] [-o] [optname ...]       exec [-cl] [-a name] [command [argud>
+ source filename [arguments]             exit [n]
+ suspend [-f]                           export [-fn] [name[=value] ...] or ex>
+ test [expr]                            false
+ time [-p] pipeline                     fc [-e ename] [-lnr] [first] [last] o>
+ times                                  fg [job_spec]
+ trap [-lp] [[arg] signal_spec ...]     for NAME [in WORDS ... ] ; do COMMAND>
+ type [-afptP] name [name ...]          function name { COMMANDS ; } or name >
+ typeset [-aAfFgilnrtux] [-p] name[=v>  getopts optstring name [arg ...]
+ ulimit [-SHabcdefiklmnpqrstuvxPT] [l>  hash [-lr] [-p pathname] [-dt] [name>
+ umask [-p] [-S] [mode]                 help [-dms] [pattern ...]
+ unalias [-a] name [name ...]           history [-c] [-d offset] [n] or hist>
+ unset [-f] [-v] [-n] [name ...]        if COMMANDS; then COMMANDS; [ elif C>
+ wait [-fn] [-p var] [id ...]           jobs [-lnprs] [jobspec ...] or jobid>
+ while COMMANDS; do COMMANDS; done      kill [-s sigspec | -n signum | -sign>
+: [ arguments ]                         let arg [arg ...]
+[[ expressions ]]                       local [option] name[=value] ...
+(( expression ))                        logout [n]
+alias [-p] [name[=value] ... ]          mapfile [-d delim] [-n count] [-O or>
+bg [job_spec ...]                       popd [-n] [+N | -N]
+bind [-lpsvPSVX] [-m keymap] [-f fil>  printf [-v var] format [arguments]
+break [n]                               pushd [-n] [+N | -N | dir]
+builtin [shell-builtin [arg ...]]       read [-ers] [-a array] [-d delim] [->
+caller [expr]                           readarray [-d delim] [-n count] [-O>
+case WORD in [PATTERN [| PATTERN]...>  select NAME [in WORDS ... ;] do COMM>
+cd [-L|[-P [-e]] [-@]] [dir]            set [-abefhkmnptuvxBCHP] [-o option>
+command [-pVv] command [arg ...]        shift [n]
+compgen [-abcdefuv] [-o option] [pat>  shopt [-pqsu] [-o] [optname ...]
+complete [-abcdefgjksuv] [-pr] [-DE] >  source filename [arguments]
+compopt [-o|+o option] [-DE] [name ..>  suspend [-f]
+continue [n]                            test [expr]
+coproc [NAME] command [redirections]    time [-p] pipeline
+declare [-aAfFgilnrtux] [-p] [name[=>  times
+dirs [-clpv] [+N] [-N]                 trap [-lp] [[arg] signal_spec ...]
+disown [-h] [-ar] [jobspec ... | pid>  type [-afptP] name [name ...]
+echo [-neE] [arg ...]                  typeset [-aAfFgilnrtux] [-p] name[=v>
+enable [-a] [-dnps] [-f filename] [n>  ulimit [-SHabcdefiklmnpqrstuvxPT] [l>
+eval [arg ...]                         umask [-p] [-S] [mode]
+exec [-cl] [-a name] [command [argud>  unalias [-a] name [name ...]
+exit [n]                               unset [-f] [-v] [-n] [name ...]
+export [-fn] [name[=value] ...] or ex>  wait [-fn] [-p var] [id ...]
+false                                  while COMMANDS; do COMMANDS; done
+fc [-e ename] [-lnr] [first] [last] o>  : [ arguments ]
+fg [job_spec]                          [[ expressions ]]
+for NAME [in WORDS ... ] ; do COMMAND>  (( expression ))
+function name { COMMANDS ; } or name >  alias [-p] [name[=value] ... ]
+getopts optstring name [arg ...]       bg [job_spec ...]
+hash [-lr] [-p pathname] [-dt] [name>  bind [-lpsvPSVX] [-m keymap] [-f fil>
+help [-dms] [pattern ...]              break [n]
+history [-c] [-d offset] [n] or hist>  builtin [shell-builtin [arg ...]]
+if COMMANDS; then COMMANDS; [ elif CO>  caller [expr]
+jobs [-lnprs] [jobspec ...] or jobid>  case WORD in [PATTERN [| PATTERN]...>
+kill [-s sigspec | -n signum | -sign>  cd [-L|[-P [-e]] [-@]] [dir]
+let arg [arg ...]                      command [-pVv] command [arg ...]
+local [option] name[=value] ...        compgen [-abcdefuv] [-o option] [pat>
+logout [n]                             complete [-abcdefgjksuv] [-pr] [-DE] >
+mapfile [-d delim] [-n count] [-O or>  compopt [-o|+o option] [-DE] [name ..>
+popd [-n] [+N | -N]                    continue [n]
+printf [-v var] format [arguments]     coproc [NAME] command [redirections]
+pushd [-n] [+N | -N | dir]             declare [-aAfFgilnrtux] [-p] [name[=v>
+read [-ers] [-a array] [-d delim] [->  dirs [-clpv] [+N] [-N]
+readarray [-d delim] [-n count] [-O>  disown [-h] [-ar] [jobspec ... | pid>
+select NAME [in WORDS ... ;] do COMM>  echo [-neE] [arg ...]
+set [-abefhkmnptuvxBCHP] [-o option>  enable [-a] [-dnps] [-f filename] [n>
+shift [n]                              eval [arg ...]
+shopt [-pqsu] [-o] [optname ...]       exec [-cl] [-a name] [command [argud>
+source filename [arguments]             exit [n]
+suspend [-f]                           export [-fn] [name[=value] ...] or ex>
+test [expr]                            false
+time [-p] pipeline                     fc [-e ename] [-lnr] [first] [last] o>
+times                                  fg [job_spec]
+trap [-lp] [[arg] signal_spec ...]     for NAME [in WORDS ... ] ; do COMMAND>
+type [-afptP] name [name ...]          function name { COMMANDS ; } or name >
+typeset [-aAfFgilnrtux] [-p] name[=v>  getopts optstring name [arg ...]
+ulimit [-SHabcdefiklmnpqrstuvxPT] [l>  hash [-lr] [-p pathname] [-dt] [name>
+umask [-p] [-S] [mode]                 help [-dms] [pattern ...]
+unalias [-a] name [name ...]           history [-c] [-d offset] [n] or hist>
+unset [-f] [-v] [-n] [name ...]        if COMMANDS; then COMMANDS; [ elif C>
+wait [-fn] [-p var] [id ...]           jobs [-lnprs] [jobspec ...] or jobid>
+while COMMANDS; do COMMANDS; done      kill [-s sigspec | -n signum | -sign>
+: [ arguments ]                         let arg [arg ...]
+[[ expressions ]]                       local [option] name[=value] ...
+(( expression ))                        logout [n]
+
+simulator@nousresearch:~/$
+
+### Round 2/30
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ whoami
+
+### Hermes 405B 2 ###
+simulator@nousresearch:~/$ <cmd>whoami</cmd>
+
+simulator
+
+simulator@nousresearch:~/$
+
+### Round 3/30
+
+### Hermes 405B 1 ###
+simulator@nousresearch:~/$ ls -la

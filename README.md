@@ -402,15 +402,15 @@ The project can optionally post round-by-round updates to a Discord channel usin
 
 ### Transcript Posting
 
-You can also mirror the conversation verbatim to a separate channel (e.g., `#transcripts`).
-
-- Add the following keys to your `./discord/<profile>.json`:
+You can also mirror the conversation verbatim to a separate channel (e.g., `#transcripts`). Configure this per run in your config file under `integrations` (recommended; presets ignore transcript toggles):
 
 ```json
 {
-  "post_transcript": true,
-  "transcript_channel": "transcripts",
-  "transcript_max_length": 1900
+  "integrations": {
+    "discord": ["status_feed"],
+    "post_transcript": false,
+    "transcript_channel": "transcripts"
+  }
 }
 ```
 
@@ -426,7 +426,7 @@ You can also mirror the conversation verbatim to a separate channel (e.g., `#tra
 }
 ```
 
-When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript, with model names as headers, to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
+When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
 
 ### Included Presets
 

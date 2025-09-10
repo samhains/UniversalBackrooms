@@ -85,12 +85,26 @@ Provide a profile name under `discord/` via `integrations.discord`. Each profile
   - `server`: usually `"discord"`
   - `name`: usually `"send-message"`
   - `defaults.channel`: the channel name (e.g., `"backrooms"`)
-- `post_transcript`: boolean; if true, also post a verbatim transcript of the last round.
+- `post_transcript`: boolean; if true, also post a verbatim transcript of the last round. Default: `false`.
 - `transcript_channel`: channel for transcripts; falls back to `tool.defaults.channel`.
 
 Notes:
 - Empty string `"server": ""` is ignored. Omit it or set a valid guild/server name if your MCP server expects it.
-- Transcripts are posted per-entry (one Discord message per actor’s message) to maximize readability.
+- Transcripts (when enabled) are posted per-entry (one Discord message per actor’s message) to maximize readability.
+
+Presets should not contain transcript toggles. Instead, configure per-run at the config level under `integrations`:
+
+```json
+{
+  "integrations": {
+    "discord": ["status_feed"],
+    "post_transcript": false,
+    "transcript_channel": "transcripts"
+  }
+}
+```
+
+Advanced: You may also use `integrations.discord_overrides` to pass any additional fields directly into the Discord profile(s) for that run.
 
 ### Media (images)
 
@@ -110,4 +124,3 @@ For Supabase-backed batches:
 - `SUPABASE_ANON_KEY` or `SUPABASE_SERVICE_ROLE_KEY` (fallback `SUPABASE_KEY` supported)
 
 For Discord MCP server, configure your bot token and any server/guild details in your MCP config file (e.g., `mcp.config.json`).
-

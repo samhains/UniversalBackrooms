@@ -106,6 +106,7 @@ def _run_backrooms(
     query_value: Optional[str] = None,
     max_tokens: Optional[int] = None,
     stream: bool = True,
+    discord_overrides: Optional[Dict[str, Any]] = None,
 ) -> subprocess.CompletedProcess:
     cmd = [
         sys.executable,
@@ -147,6 +148,12 @@ def _run_backrooms(
     mcp_cfg_path = str(ROOT / "mcp.config.json")
     if os.path.exists(mcp_cfg_path):
         env.setdefault("MCP_SERVERS_CONFIG", mcp_cfg_path)
+    # Provide per-run Discord overrides to backrooms via env
+    if discord_overrides:
+        try:
+            env["BACKROOMS_DISCORD_OVERRIDES"] = json.dumps(discord_overrides)
+        except Exception:
+            pass
     run_kwargs = {"cwd": str(ROOT), "env": env}
     if stream:
         return subprocess.run(cmd, **run_kwargs)
@@ -175,8 +182,44 @@ def run_single(cfg: Dict[str, Any]) -> None:
     max_turns = int(cfg.get("max_turns", 30))
     max_context_frac = float(cfg.get("max_context_frac", 0.0))
     context_window = int(cfg.get("context_window", 128000))
-    discord_profile = cfg.get("discord")
-    media_preset = cfg.get("media")
+    # Accept integrations via either top-level keys or an 'integrations' map (parity with batch mode)
+    integrations = cfg.get("integrations") or {}
+    discord_profile = cfg.get("discord") or integrations.get("discord")
+    media_preset = cfg.get("media") or integrations.get("media")
+    # Optional per-run Discord overrides at config level
+    discord_overrides = (
+        cfg.get("discord_overrides")
+        or integrations.get("discord_overrides")
+        or integrations.get("discord_options")
+    )
+    # Simpler knobs: allow `integrations.post_transcript` and `integrations.transcript_channel`
+    simple_overrides = {}
+    if "post_transcript" in integrations:
+        try:
+            simple_overrides["post_transcript"] = bool(integrations.get("post_transcript"))
+        except Exception:
+            pass
+    if "transcript_channel" in integrations and integrations.get("transcript_channel"):
+        simple_overrides["transcript_channel"] = str(integrations.get("transcript_channel"))
+    if simple_overrides:
+        if not isinstance(discord_overrides, dict) or discord_overrides is None:
+            discord_overrides = {}
+        discord_overrides.update(simple_overrides)
+
+    # Normalize to list or string; also allow comma-separated strings
+    if isinstance(discord_profile, list):
+        discord_val: Optional[Union[str, List[str]]] = [str(x) for x in discord_profile]
+    elif isinstance(discord_profile, str) and "," in discord_profile:
+        discord_val = [x.strip() for x in discord_profile.split(",") if x.strip()]
+    else:
+        discord_val = discord_profile
+
+    if isinstance(media_preset, list):
+        media_val: Optional[Union[str, List[str]]] = [str(x) for x in media_preset]
+    elif isinstance(media_preset, str) and "," in media_preset:
+        media_val = [x.strip() for x in media_preset.split(",") if x.strip()]
+    else:
+        media_val = media_preset
     vars_inline = cfg.get("vars") or None
     query_value = cfg.get("query") or None
     max_tokens = cfg.get("max_tokens")
@@ -188,12 +231,13 @@ def run_single(cfg: Dict[str, Any]) -> None:
         max_turns,
         max_context_frac=max_context_frac,
         context_window=context_window,
-        discord_profile=discord_profile,
-        media_preset=media_preset,
+        discord_profile=discord_val,
+        media_preset=media_val,
         vars_inline=vars_inline,
         query_value=query_value,
         max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
         stream=True,
+        discord_overrides=discord_overrides if isinstance(discord_overrides, dict) else None,
     )
 
 
@@ -218,6 +262,25 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     else:
         discord_val = discord_profile
     media_preset = integrations.get("media")
+    # Optional per-run Discord overrides at config level
+    discord_overrides = (
+        cfg.get("discord_overrides")
+        or integrations.get("discord_overrides")
+        or integrations.get("discord_options")
+    )
+    # Simpler knobs: allow `integrations.post_transcript` and `integrations.transcript_channel`
+    simple_overrides = {}
+    if "post_transcript" in integrations:
+        try:
+            simple_overrides["post_transcript"] = bool(integrations.get("post_transcript"))
+        except Exception:
+            pass
+    if "transcript_channel" in integrations and integrations.get("transcript_channel"):
+        simple_overrides["transcript_channel"] = str(integrations.get("transcript_channel"))
+    if simple_overrides:
+        if not isinstance(discord_overrides, dict) or discord_overrides is None:
+            discord_overrides = {}
+        discord_overrides.update(simple_overrides)
     # Allow list of media presets
     if isinstance(media_preset, list):
         media_val: Optional[Union[str, List[str]]] = [str(x) for x in media_preset]
@@ -441,6 +504,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 query_value=None,
                 max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
                 stream=True,
+                discord_overrides=discord_overrides if isinstance(discord_overrides, dict) else None,
             )
 
             log_path = latest_log_for(models_pair, template)

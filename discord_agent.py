@@ -281,37 +281,7 @@ def run_discord_agent(
                     })
         out["posted_transcript"] = posted_transcript
 
-    # 4) Optionally post each round entry as separate messages to the main channel
-    # Default behavior: post each round entry to the main channel as separate messages
-    # Can be disabled by setting post_round_in_main=false in the profile if desired
-    if bool(discord_cfg.get("post_round_in_main", True)):
-        round_channel = discord_cfg.get("round_channel") or defaults.get("channel", "general")
-        r_args_base: Dict[str, Any] = {"channel": round_channel}
-        sv3 = defaults.get("server")
-        if isinstance(sv3, str) and sv3.strip():
-            r_args_base["server"] = sv3.strip()
-        posted_round: List[Dict[str, Any]] = []
-        for e in round_entries:
-            actor = e.get("actor", "")
-            text = e.get("text", "")
-            base = f"{actor}:\n{text}" if actor else str(text)
-            parts = _chunk_text(base, chunk_limit)
-            for idx, part in enumerate(parts, start=1):
-                r_args = dict(r_args_base)
-                r_args["message"] = part
-                try:
-                    _ = call_tool(server_cfg, tool_name, r_args)
-                    posted_round.append({
-                        "server": r_args.get("server"),
-                        "channel": r_args.get("channel"),
-                        "message": part,
-                    })
-                except Exception:
-                    posted_round.append({
-                        "server": r_args.get("server"),
-                        "channel": r_args.get("channel"),
-                        "message": "<failed to post round chunk>",
-                    })
-        out["posted_round_main"] = posted_round
+    # 4) Intentionally do NOT post raw round entries to the main channel.
+    #    Keep channels clean; only the LLM-composed summary is posted.
 
     return out

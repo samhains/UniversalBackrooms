@@ -1,13 +1,13 @@
 {
   
-  "model": "same-as-lm1",
-  "system_prompt": "You are a system status reporter. Post terse, factual updates about the latest round.",
-  "user_template": "Latest round (concise):\n{latest_round_bullets}",
+  "model": "hermes",
+  "system_prompt": "Post a factual account of what has happened in the latest round. ",
+  "user_template": "Latest round:\n{latest_round_bullets}.",
   "transcript_window": 0,
+  "post_round_in_main": false,
   "tool": {
     "server": "discord",
     "name": "send-message",
     "defaults": { "channel": "status" }
-  },
-  "post_transcript": false
+  }
 }

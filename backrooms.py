@@ -605,6 +605,17 @@ def main():
             elif isinstance(d, str):
                 raw_dc.append(d.strip())
         seen_dc = set()
+        # Read global per-run overrides for Discord profiles from env (JSON)
+        discord_overrides_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
+        discord_overrides: dict[str, object] = {}
+        if discord_overrides_env:
+            try:
+                import json as _json
+                parsed = _json.loads(discord_overrides_env)
+                if isinstance(parsed, dict):
+                    discord_overrides = parsed  # shallow override map
+            except Exception:
+                pass
         for name in raw_dc:
             if not name or name in seen_dc:
                 continue
@@ -612,6 +623,13 @@ def main():
             cfg = load_discord_config(name)
             if cfg:
                 cfg.setdefault("__name__", name)
+                # Apply shallow overrides from env if provided (config-level control)
+                if discord_overrides:
+                    try:
+                        for k, v in discord_overrides.items():
+                            cfg[k] = v
+                    except Exception:
+                        pass
                 discord_cfgs.append(cfg)
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
