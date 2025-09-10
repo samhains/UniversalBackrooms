@@ -606,6 +606,8 @@ def main():
 
     # Optional Discord agent configs: support multiple profiles
     discord_cfgs = []
+    # Maintain per-profile message history (current run) for Discord bots
+    discord_bot_history: dict[str, list[str]] = {}
     if args.discord and load_discord_config:
         raw_dc: list[str] = []
         for d in (args.discord or []):
@@ -640,6 +642,7 @@ def main():
                     except Exception:
                         pass
                 discord_cfgs.append(cfg)
+                discord_bot_history[name] = []
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
@@ -879,7 +882,7 @@ def main():
         if discord_cfgs and run_discord_agent:
             for dcfg in discord_cfgs:
                 try:
-                    run_discord_agent(
+                    res = run_discord_agent(
                         discord_cfg=dcfg,
                         selected_models=models,
                         round_entries=round_entries,
@@ -887,7 +890,17 @@ def main():
                         generate_text_fn=media_generate_text_fn,
                         model_info=MODEL_INFO,
                         media_url=None,
+                        bot_history=discord_bot_history.get(dcfg.get("__name__", ""), []),
                     )
+                    # Append the composed summary to this bot's history
+                    try:
+                        name = dcfg.get("__name__", "")
+                        if name and isinstance(res, dict):
+                            summary_text = res.get("composed_summary")
+                            if isinstance(summary_text, str) and summary_text.strip():
+                                discord_bot_history.setdefault(name, []).append(summary_text.strip())
+                    except Exception:
+                        pass
                 except Exception as e:
                     err = f"\nDiscord Agent error: {e}"
                     print(err)

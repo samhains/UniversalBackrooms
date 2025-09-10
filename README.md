@@ -428,6 +428,26 @@ You can also mirror the conversation verbatim to a separate channel (e.g., `#tra
 
 When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
 
+### Bot Memory (per-run)
+
+Discord profiles can optionally include their own prior posts from the current run as context for better continuity. This history is kept in memory per profile for the duration of a run and is only included when referenced explicitly in the template.
+
+- Template-controlled only: No hidden prompt injection occurs. Use `{bot_history}` in your `user_template` to include a bullet list of the bot’s prior posts (oldest to newest).
+
+- Optional window control (profile JSON):
+
+```json
+{
+  "bot_history_window": 5
+}
+```
+
+- Example placement inside a profile template:
+
+```
+"user_template": "Your prior posts (oldest to newest):\n{bot_history}\n\nLatest round:\n{latest_round_transcript}"
+```
+
 ### Included Presets
 
 - `chronicle`: third‑person, concise atmospheric updates.

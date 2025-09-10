@@ -70,7 +70,7 @@ def _build_default_user_prompt(
     win = max(0, int(window))
     if transcript and win > 0:
         tb_src = transcript[-win:]
-        lines.append("Recent context (most recent first):")
+        lines.append("Recent context (oldest to newest):")
         for e in tb_src:
             actor = e.get("actor", "")
             text = e.get("text", "")
@@ -97,6 +97,7 @@ def run_discord_agent(
     media_url: Optional[str] = None,
     override_channel: Optional[str] = None,
     override_server: Optional[str] = None,
+    bot_history: Optional[List[str]] = None,
 ) -> Optional[Dict[str, Any]]:
     """Post a per-round summary to Discord via MCP 'discord' server.
 
@@ -112,6 +113,18 @@ def run_discord_agent(
         )
         # Build user prompt, preferring template if provided, otherwise include transcript context
         template = discord_cfg.get("user_template")
+        # Prepare optional bot self-history bullets for template use only
+        try:
+            hist_window = int(discord_cfg.get("bot_history_window", 5))
+        except Exception:
+            hist_window = 5
+        bot_hist_list = list(bot_history or [])
+        # Slice to last N in chronological order (oldest -> newest)
+        if bot_hist_list and hist_window > 0:
+            bot_hist_src = bot_hist_list[-hist_window:]
+        else:
+            bot_hist_src = []
+        bot_hist_bullets = "\n".join(f"- {t}" for t in bot_hist_src)
         if isinstance(template, str) and template.strip():
             # Build transcript-style lists
             round_bullets = "\n".join(
@@ -131,6 +144,7 @@ def run_discord_agent(
                 # New names (clearer)
                 "latest_round_transcript": round_bullets,
                 "transcript": transcript_bullets,
+                "bot_history": bot_hist_bullets,
                 # Backward-compat (deprecated)
                 "latest_round_bullets": round_bullets,
                 "context_bullets": transcript_bullets,
@@ -140,11 +154,13 @@ def run_discord_agent(
             }
             user_prompt = template.format(**fmt_vars)
         else:
+            # No template: include transcript and latest round only (no hidden history injection)
             user_prompt = _build_default_user_prompt(
                 round_entries=round_entries,
                 transcript=transcript,
                 window=int(discord_cfg.get("transcript_window", 10)),
             )
+            # Note: bot history is available only via {bot_history} in templates.
         summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
     # No non-LLM path (was gated by use_llm)
 
@@ -229,6 +245,7 @@ def run_discord_agent(
     out: Dict[str, Any] = {
         "posted": posted_summary,
         "result": {"chunks": len(posted_summary)},
+        "composed_summary": summary,
     }
 
     # 3) Optionally post verbatim transcript of the round to a different channel

@@ -4,6 +4,7 @@
   "system_prompt": "You are a terminal prompt system. Provide human-readable, refined status logs based on the current transcripts.  Do not output meta, apologies, or explanations—only the text.",
   "user_template": "Context (recent transcript):\n{transcript}\n\nLatest round:\n{latest_round_transcript}\n\n",
   "transcript_window": 50,
+  "bot_history_window": 5,
   "tool": {
     "server": "discord",
     "name": "send-message",

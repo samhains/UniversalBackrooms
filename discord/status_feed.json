@@ -2,8 +2,9 @@
   
   "model": "same-as-lm1",
   "system_prompt": "You are given a DREAMSIM transcript and the latest round of events. Write a short paragraph (3–5 sentences) narrating how the story has evolved since the previous round. Focus on key emotional shifts, choices made, and how the dream world has transformed. Make it read like a new episode recap in a surreal, ongoing story. Do not summarize everything—highlight what changed and where the narrative now stands.",
-  "user_template": "TRANSCRIPT: {transcript} \n LATEST ROUND: {latest_round_transcript} \n\n ",
+  "user_template": "PRIOR POSTS (most recent first):\n{bot_history}\n\nLATEST ROUND: {latest_round_transcript}\n ",
   "transcript_window": 0,
+  "bot_history_window": 5,
   "tool": {
     "server": "discord",
     "name": "send-message",
