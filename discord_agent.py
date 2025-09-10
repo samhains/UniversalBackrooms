@@ -114,6 +114,7 @@ def run_discord_agent(
         # Build user prompt, preferring template if provided, otherwise include transcript context
         template = discord_cfg.get("user_template")
         if isinstance(template, str) and template.strip():
+            # Build bullet lists
             round_bullets = "\n".join(
                 f"- {e.get('actor','')}: {e.get('text','')}" for e in round_entries
             )
@@ -125,12 +126,20 @@ def run_discord_agent(
             transcript_bullets = "\n".join(
                 f"- {e.get('actor','')}: {e.get('text','')}" for e in tb_src
             )
-            user_prompt = template.format(
-                round_bullets=round_bullets,
-                last_actor=last_actor,
-                last_text=last_text,
-                transcript_bullets=transcript_bullets,
-            )
+
+            # Backward/forward-compatible format vars
+            fmt_vars = {
+                # Legacy names
+                "round_bullets": round_bullets,
+                "transcript_bullets": transcript_bullets,
+                # New clearer aliases
+                "latest_round_bullets": round_bullets,
+                "context_bullets": transcript_bullets,
+                # Additional convenience
+                "last_actor": last_actor,
+                "last_text": last_text,
+            }
+            user_prompt = template.format(**fmt_vars)
         else:
             user_prompt = _build_default_user_prompt(
                 round_entries=round_entries,

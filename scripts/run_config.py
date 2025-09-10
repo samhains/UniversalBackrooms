@@ -231,8 +231,11 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         source = ds.get("source", "mine")
         rows = read_dreams_from_supabase(query=query or None, limit=limit, source=source)
 
-        # Shuffle/limit
-        if cfg.get("shuffle"):
+        # Shuffle/limit — default to shuffle when using a search query
+        shuffle_flag = cfg.get("shuffle")
+        if shuffle_flag is None:
+            shuffle_flag = bool(query)
+        if shuffle_flag:
             seed = cfg.get("seed")
             rng = random.Random(seed) if seed is not None else random
             rng.shuffle(rows)

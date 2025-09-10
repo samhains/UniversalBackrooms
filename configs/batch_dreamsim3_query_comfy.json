@@ -9,7 +9,7 @@
   "context_window": 128000,
   "integrations": {
     "discord": "narrative_terminal",
-    "media": "kieai"
+    "media": "cli"
   },
   "data_source": {
     "kind": "supabase",

@@ -21,9 +21,16 @@ from model_config import get_model_info
 
 def env_keys() -> Tuple[str, str]:
     url = os.getenv("SUPABASE_URL")
-    key = os.getenv("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    # Accept common key names: ANON, SERVICE_ROLE, or legacy SUPABASE_KEY
+    key = (
+        os.getenv("SUPABASE_ANON_KEY")
+        or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        or os.getenv("SUPABASE_KEY")
+    )
     if not url or not key:
-        raise SystemExit("Missing SUPABASE_URL and/or SUPABASE_ANON_KEY (or SERVICE_ROLE).")
+        raise SystemExit(
+            "Missing SUPABASE_URL and/or SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY)."
+        )
     return url.rstrip("/"), key
 
 
@@ -199,4 +206,3 @@ def sync_single_meta(meta: dict) -> None:
         print("  ↳ synced to Supabase (on_conflict=log_file)")
     except Exception as e:
         print(f"  ↳ sync failed: {e}")
-
