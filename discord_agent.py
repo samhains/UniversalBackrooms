@@ -153,10 +153,12 @@ def run_discord_agent(
         "channel": override_channel or defaults.get("channel", "general"),
         "message": summary,
     }
-    if override_server is not None:
+    if override_server is not None and str(override_server).strip():
         args["server"] = override_server
-    elif "server" in defaults:
-        args["server"] = defaults["server"]
+    else:
+        sv = defaults.get("server")
+        if isinstance(sv, str) and sv.strip():
+            args["server"] = sv.strip()
     if media_url:
         args["mediaUrl"] = media_url
 
@@ -195,8 +197,9 @@ def run_discord_agent(
         # Post each round entry as its own message to ensure readability and avoid chunking
         posted_transcript: List[Dict[str, Any]] = []
         t_args_base: Dict[str, Any] = {"channel": transcript_channel}
-        if "server" in t_defaults:
-            t_args_base["server"] = t_defaults["server"]
+        sv2 = t_defaults.get("server")
+        if isinstance(sv2, str) and sv2.strip():
+            t_args_base["server"] = sv2.strip()
         # Reuse same MCP server config if server name matches; else reload
         if t_server_name == server_name:
             t_server_cfg = server_cfg
