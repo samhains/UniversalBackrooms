@@ -18,8 +18,7 @@ def load_discord_config(profile_name: Optional[str]) -> Optional[Dict[str, Any]]
         return None
     with open(path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
-    if not cfg.get("enabled", False):
-        return None
+    # Always treat profiles as enabled; no config flag required
     return cfg
 
 
@@ -104,9 +103,9 @@ def run_discord_agent(
     generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str
     """
     # 1) Build summary text via LLM (optional; can be disabled)
-    use_llm = bool(discord_cfg.get("use_llm", True))
     api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
-    if use_llm:
+    # Always generate with LLM (config flag removed)
+    if True:
         system_prompt = discord_cfg.get(
             "system_prompt",
             "You produce concise narrative summaries suitable for Discord updates.",
@@ -142,10 +141,7 @@ def run_discord_agent(
                 window=int(discord_cfg.get("transcript_window", 10)),
             )
         summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
-    else:
-        # Simple non-LLM summary (first 300 chars of last message)
-        last = round_entries[-1]["text"] if round_entries else ""
-        summary = (last[:297] + "...") if len(last) > 300 else last
+    # No non-LLM path (was gated by use_llm)
 
     # 2) Build tool args from config (summary post)
     tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})
@@ -196,37 +192,7 @@ def run_discord_agent(
             or t_defaults.get("channel")
             or defaults.get("channel", "transcripts")
         )
-        # Prepare verbatim body with model-name headers
-        blocks: List[str] = []
-        for e in round_entries:
-            actor = e.get("actor", "")
-            text = e.get("text", "")
-            # Minimal header formatting; keep the content verbatim
-            blocks.append(f"{actor}:\n{text}")
-        transcript_body = "\n\n".join(blocks)
-
-        # Discord hard limit ~2000 chars; split into chunks preserving block boundaries
-        max_len = int(discord_cfg.get("transcript_max_length", 1900))
-        chunks: List[str] = []
-        if len(transcript_body) <= max_len:
-            chunks = [transcript_body]
-        else:
-            current = []
-            current_len = 0
-            for block in blocks:
-                sep = "\n\n" if current else ""
-                add_len = len(sep) + len(block)
-                if current_len + add_len > max_len and current:
-                    chunks.append("\n\n".join(current))
-                    current = [block]
-                    current_len = len(block)
-                else:
-                    current.append(block)
-                    current_len += add_len
-            if current:
-                chunks.append("\n\n".join(current))
-
-        # Send each chunk
+        # Post each round entry as its own message to ensure readability and avoid chunking
         posted_transcript: List[Dict[str, Any]] = []
         t_args_base: Dict[str, Any] = {"channel": transcript_channel}
         if "server" in t_defaults:
@@ -242,19 +208,18 @@ def run_discord_agent(
                     mcp_config_path = alt
             t_server_cfg = load_server_config(mcp_config_path, t_server_name)
 
-        for idx, chunk in enumerate(chunks, start=1):
+        for e in round_entries:
+            actor = e.get("actor", "")
+            text = e.get("text", "")
+            body = f"{actor}:\n{text}"
             t_args = dict(t_args_base)
-            t_args["message"] = chunk
+            t_args["message"] = body
             t_res = call_tool(t_server_cfg, t_tool_name, t_args)
-            posted_transcript.append(
-                {
-                    "server": t_args.get("server"),
-                    "channel": t_args.get("channel"),
-                    "message": chunk,
-                    "part": idx,
-                    "parts": len(chunks),
-                }
-            )
+            posted_transcript.append({
+                "server": t_args.get("server"),
+                "channel": t_args.get("channel"),
+                "message": body,
+            })
         out["posted_transcript"] = posted_transcript
 
     return out

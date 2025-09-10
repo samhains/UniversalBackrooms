@@ -1,6 +1,5 @@
 {
-  "enabled": true,
-  "use_llm": true,
+  
   "model": "sonnet4",
   "system_prompt": "You are a terminal-style system running dream emulation technology. Provide human-readable, refined status logs based on the current simulation.",
   "transcript_window": 50,
@@ -12,6 +11,5 @@
     }
   },
   "post_transcript": true,
-  "transcript_channel": "logs",
-  "transcript_max_length": 1900
+  "transcript_channel": "logs"
 }
