@@ -1,0 +1,27 @@
+{
+  "model": "same-as-lm1",
+  "mode": "chain",
+  "system_prompt": "You create concise, vivid prompts.",
+  "t2i_use_summary": true,
+  "t2i_tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "wrap_params": true,
+    "defaults": { "width": 1024, "height": 1024 },
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "max_seconds": 120, "interval": 3 }
+  },
+  "edit_tool": {
+    "server": "comfyui",
+    "name": "edit_image",
+    "wrap_params": true,
+    "defaults": { "width": 1024, "height": 1024 },
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "max_seconds": 180, "interval": 3 }
+  },
+  "edit_image_url_param": "image_url",
+  "edit_prompt_include_base_image": false,
+  "post_image_to_discord": true,
+  "discord_channel": "media",
+  "discord_tool": { "name": "send-message", "defaults": { "channel": "media" } }
+}

@@ -280,6 +280,12 @@ Notes:
 
 ### Modes
 
+- chain (t2i → edit):
+  - First round generates a base image (t2i) and stores its URL.
+  - Subsequent rounds issue short edit instructions against the stored image URL.
+  - Configure separate tools for each stage via `t2i_tool` and `edit_tool`.
+  - Example preset: `media/comfyui_edit_chain.json` (uses ComfyUI `generate_image` and `edit_image`).
+
 - t2i (default):
   - Generates a concise text-to-image prompt from the latest round.
   - Optionally, set `"t2i_use_summary": true` to incorporate a short running conversation summary.
@@ -293,7 +299,7 @@ Notes:
 - edit (iterative updates):
   - Maintains a short conversation summary per run and the last generated image reference.
   - Produces an edit instruction that updates the image to reflect the latest round while staying true to the conversation’s overall essence.
-  - The prompt includes a `BASE_IMAGE: <url>` line when available. Ensure your MCP server/workflow (e.g., using Qwen Edit) understands this convention and applies edits based on the provided base image and instruction.
+  - For ComfyUI `edit_image`, the base image URL is passed as an explicit `image_url` param; the edit instruction prompt is kept short. You can set `edit_prompt_include_base_image: true` if your workflow expects the base reference inside the text.
   - Example config:
     {
       "model": "sonnet",
@@ -349,19 +355,25 @@ Example:
 - Files: `media/<preset>.json` or `templates/<template>/media.json`
 - "model": `same-as-lm1` or a key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`). If `same-as-lm1` cannot be resolved, set a concrete model.
 - "system_prompt": system prompt for generating the image prompt text.
-- "tool.server": MCP server key from `mcp.config.json` (required).
-- "tool.name": MCP tool to call (required).
-- "tool.defaults": optional args merged into each call (e.g., width/height).
+- "mode": `t2i`, `edit`, or `chain`.
+- For `t2i`/single-tool flows:
+  - "tool.server": MCP server key from `mcp.config.json` (required).
+  - "tool.name": MCP tool to call (required).
+  - "tool.defaults": optional args merged into each call (e.g., width/height).
+- For `chain` flows:
+  - "t2i_tool": tool config for base generation (e.g., `generate_image`).
+  - "edit_tool": tool config for edits (e.g., `edit_image`).
+  - "edit_image_url_param": name for the base image URL param (default `image_url`).
+  - "edit_prompt_include_base_image": include `BASE_IMAGE` line inside prompt text (default false).
 
 Example:
 {
   "model": "same-as-lm1",
   "system_prompt": "You are a visual director…",
-  "tool": {
-    "server": "comfyui",
-    "name": "generate_image",
-    "defaults": { "width": 768, "height": 768 }
-  }
+  "mode": "chain",
+  "t2i_tool": { "server": "comfyui", "name": "generate_image", "defaults": { "width": 768, "height": 768 } },
+  "edit_tool": { "server": "comfyui", "name": "edit_image", "defaults": { "width": 768, "height": 768 } },
+  "edit_image_url_param": "image_url"
 }
 
 **Execution Model**
