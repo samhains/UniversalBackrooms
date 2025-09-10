@@ -127,15 +127,10 @@ def run_discord_agent(
                 f"- {e.get('actor','')}: {e.get('text','')}" for e in tb_src
             )
 
-            # Backward/forward-compatible format vars
+            # Template variables (legacy placeholders removed)
             fmt_vars = {
-                # Legacy names
-                "round_bullets": round_bullets,
-                "transcript_bullets": transcript_bullets,
-                # New clearer aliases
                 "latest_round_bullets": round_bullets,
                 "context_bullets": transcript_bullets,
-                # Additional convenience
                 "last_actor": last_actor,
                 "last_text": last_text,
             }

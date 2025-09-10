@@ -3,7 +3,7 @@
   "use_llm": true,
   "model": "same-as-lm1",
   "system_prompt": "You are a system status reporter. Post terse, factual updates about the latest round.",
-  "user_template": "Latest round (concise):\n{round_bullets}",
+  "user_template": "Latest round (concise):\n{latest_round_bullets}",
   "transcript_window": 0,
   "tool": {
     "server": "discord",
@@ -12,4 +12,3 @@
   },
   "post_transcript": false
 }
-
