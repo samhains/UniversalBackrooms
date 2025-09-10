@@ -172,7 +172,14 @@ def run_media_agent(
     state = MediaAgentState(state_path=f"{filename}.media_state.json")
 
     # 1) Build image prompt text via LLM
-    system_prompt: str = media_cfg.get("system_prompt", "You create concise, vivid prompts.")
+    # Allow separate system prompts per stage, with fallbacks
+    base_sp = media_cfg.get("system_prompt", "You create concise, vivid prompts.")
+    system_prompt_t2i: str = media_cfg.get("t2i_system_prompt", base_sp)
+    system_prompt_edit: str = media_cfg.get("edit_system_prompt", base_sp)
+    summary_system_prompt: str = media_cfg.get(
+        "summary_system_prompt",
+        "You compress conversations into concise visual summaries.",
+    )
     if model_info is None:
         model_info = {}
     try:
@@ -201,9 +208,7 @@ def run_media_agent(
         summary_user = (
             f"{summary_prompt}\n\nRecent messages to consider:\n{transcript_text}\n\nCurrent summary (may be empty):\n{state.conversation_summary}"
         )
-        new_summary = generate_text_fn(
-            "You compress conversations into concise visual summaries.", api_model, summary_user
-        ).strip()
+        new_summary = generate_text_fn(summary_system_prompt, api_model, summary_user).strip()
         if new_summary:
             state.conversation_summary = new_summary
 
@@ -212,6 +217,7 @@ def run_media_agent(
             conversation_summary=state.conversation_summary,
             round_entries=round_entries,
         )
+        system_prompt = system_prompt_edit
     else:
         if media_cfg.get("t2i_use_summary", False):
             # Build/update a concise summary to reflect current state
@@ -222,9 +228,7 @@ def run_media_agent(
             summary_user = (
                 f"{summary_prompt}\n\nRecent messages to consider:\n{transcript_text}\n\nCurrent summary (may be empty):\n{state.conversation_summary}"
             )
-            new_summary = generate_text_fn(
-                "You compress conversations into concise visual summaries.", api_model, summary_user
-            ).strip()
+            new_summary = generate_text_fn(summary_system_prompt, api_model, summary_user).strip()
             if new_summary:
                 state.conversation_summary = new_summary
                 state.save()
@@ -244,6 +248,7 @@ def run_media_agent(
             user_content = "\n".join(lines)
         else:
             user_content = build_t2i_prompt(round_entries)
+        system_prompt = system_prompt_t2i
 
     prompt_text = generate_text_fn(system_prompt, api_model, user_content).strip()
 

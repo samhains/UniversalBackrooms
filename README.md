@@ -354,7 +354,10 @@ Example:
 **Media Preset Config**
 - Files: `media/<preset>.json` or `templates/<template>/media.json`
 - "model": `same-as-lm1` or a key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`). If `same-as-lm1` cannot be resolved, set a concrete model.
-- "system_prompt": system prompt for generating the image prompt text.
+- "system_prompt": global fallback system prompt for both stages.
+- "t2i_system_prompt": system prompt for T2I prompt generation (overrides `system_prompt`).
+- "edit_system_prompt": system prompt for edit-instruction generation (overrides `system_prompt`).
+- "summary_system_prompt": system prompt for building the internal conversation summary used by chain/edit flows.
 - "mode": `t2i`, `edit`, or `chain`.
 - For `t2i`/single-tool flows:
   - "tool.server": MCP server key from `mcp.config.json` (required).
@@ -370,6 +373,9 @@ Example:
   "model": "same-as-lm1",
   "system_prompt": "You are a visual director…",
   "mode": "chain",
+  "t2i_system_prompt": "Create a concise, cinematic T2I prompt…",
+  "edit_system_prompt": "Write a terse, targeted edit instruction…",
+  "summary_system_prompt": "Compress transcript into a visual summary…",
   "t2i_tool": { "server": "comfyui", "name": "generate_image", "defaults": { "width": 768, "height": 768 } },
   "edit_tool": { "server": "comfyui", "name": "edit_image", "defaults": { "width": 768, "height": 768 } },
   "edit_image_url_param": "image_url"
