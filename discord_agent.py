@@ -143,6 +143,35 @@ def run_discord_agent(
         summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
     # No non-LLM path (was gated by use_llm)
 
+    # Helper: chunk long Discord messages to <=2000 chars (use 1900 margin)
+    def _chunk_text(txt: str, limit: int = 1900) -> List[str]:
+        if not isinstance(txt, str):
+            txt = str(txt)
+        if len(txt) <= limit:
+            return [txt]
+        chunks: List[str] = []
+        start = 0
+        n = len(txt)
+        while start < n:
+            end = min(start + limit, n)
+            # Prefer to break at a newline boundary if possible
+            if end < n:
+                nl = txt.rfind("\n", start, end)
+                if nl != -1 and nl > start:
+                    end = nl + 1
+            chunks.append(txt[start:end])
+            start = end
+        return chunks
+
+    # Determine chunk limit (bots are limited to ~2000 chars)
+    try:
+        chunk_limit = int(discord_cfg.get("max_message_length", 1900))
+    except Exception:
+        chunk_limit = 1900
+    # Bots are limited to 2000 chars; keep a safety margin
+    if chunk_limit > 1900:
+        chunk_limit = 1900
+
     # 2) Build tool args from config (summary post)
     tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})
     server_name = tool.get("server", "discord")
@@ -169,16 +198,32 @@ def run_discord_agent(
         if os.path.exists(alt):
             mcp_config_path = alt
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
-    result = call_tool(server_cfg, tool_name, args)
+    # Post summary (chunked if needed)
+    posted_summary: List[Dict[str, Any]] = []
+    summary_parts = _chunk_text(summary, chunk_limit)
+    for idx, part in enumerate(summary_parts, start=1):
+        s_args = dict(args)
+        s_args["message"] = part
+        # Attach media only to the first chunk if provided
+        if media_url and idx > 1 and "mediaUrl" in s_args:
+            s_args.pop("mediaUrl", None)
+        try:
+            _ = call_tool(server_cfg, tool_name, s_args)
+            posted_summary.append({
+                "server": s_args.get("server"),
+                "channel": s_args.get("channel"),
+                "message": part,
+            })
+        except Exception:
+            posted_summary.append({
+                "server": s_args.get("server"),
+                "channel": s_args.get("channel"),
+                "message": "<failed to post summary chunk>",
+            })
 
     out: Dict[str, Any] = {
-        "posted": {
-            "server": args.get("server"),
-            "channel": args.get("channel"),
-            "message": summary,
-            "mediaUrl": media_url,
-        },
-        "result": result,
+        "posted": posted_summary,
+        "result": {"chunks": len(posted_summary)},
     }
 
     # 3) Optionally post verbatim transcript of the round to a different channel
@@ -214,15 +259,59 @@ def run_discord_agent(
         for e in round_entries:
             actor = e.get("actor", "")
             text = e.get("text", "")
-            body = f"{actor}:\n{text}"
-            t_args = dict(t_args_base)
-            t_args["message"] = body
-            t_res = call_tool(t_server_cfg, t_tool_name, t_args)
-            posted_transcript.append({
-                "server": t_args.get("server"),
-                "channel": t_args.get("channel"),
-                "message": body,
-            })
+            # Prefix actor for each chunk to keep context clear
+            base = f"{actor}:\n{text}" if actor else str(text)
+            parts = _chunk_text(base, chunk_limit)
+            for idx, part in enumerate(parts, start=1):
+                t_args = dict(t_args_base)
+                t_args["message"] = part
+                try:
+                    _ = call_tool(t_server_cfg, t_tool_name, t_args)
+                    posted_transcript.append({
+                        "server": t_args.get("server"),
+                        "channel": t_args.get("channel"),
+                        "message": part,
+                    })
+                except Exception as _err:
+                    # Record failure but continue with remaining chunks/entries
+                    posted_transcript.append({
+                        "server": t_args.get("server"),
+                        "channel": t_args.get("channel"),
+                        "message": f"<failed to post chunk {idx}/{len(parts)}>",
+                    })
         out["posted_transcript"] = posted_transcript
+
+    # 4) Optionally post each round entry as separate messages to the main channel
+    # Default behavior: post each round entry to the main channel as separate messages
+    # Can be disabled by setting post_round_in_main=false in the profile if desired
+    if bool(discord_cfg.get("post_round_in_main", True)):
+        round_channel = discord_cfg.get("round_channel") or defaults.get("channel", "general")
+        r_args_base: Dict[str, Any] = {"channel": round_channel}
+        sv3 = defaults.get("server")
+        if isinstance(sv3, str) and sv3.strip():
+            r_args_base["server"] = sv3.strip()
+        posted_round: List[Dict[str, Any]] = []
+        for e in round_entries:
+            actor = e.get("actor", "")
+            text = e.get("text", "")
+            base = f"{actor}:\n{text}" if actor else str(text)
+            parts = _chunk_text(base, chunk_limit)
+            for idx, part in enumerate(parts, start=1):
+                r_args = dict(r_args_base)
+                r_args["message"] = part
+                try:
+                    _ = call_tool(server_cfg, tool_name, r_args)
+                    posted_round.append({
+                        "server": r_args.get("server"),
+                        "channel": r_args.get("channel"),
+                        "message": part,
+                    })
+                except Exception:
+                    posted_round.append({
+                        "server": r_args.get("server"),
+                        "channel": r_args.get("channel"),
+                        "message": "<failed to post round chunk>",
+                    })
+        out["posted_round_main"] = posted_round
 
     return out

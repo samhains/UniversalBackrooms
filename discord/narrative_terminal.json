@@ -6,13 +6,12 @@
   "transcript_window": 30,
   "post_transcript": true,
   "transcript_channel": "logs",
+  
   "tool": {
     "server": "discord",
     "name": "send-message",
     "defaults": {
       "channel": "backrooms"
     }
-  },
-  "post_transcript": true,
-  "transcript_channel": "transcripts"
+  }
 }

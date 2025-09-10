@@ -36,6 +36,8 @@ dotenv.load_dotenv(override=False)
 anthropic_client = None
 openai_client = None
 openrouter_client = None
+# Optional global override set from CLI; do not use env vars
+EXPLICIT_MAX_TOKENS: Optional[int] = None
 
 MODEL_INFO = get_model_info()
 
@@ -50,9 +52,11 @@ def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
 
     # If Claude is the first model in the conversation, it must have a user message
+    # Anthropic requires max_tokens; use CLI override if provided, else a higher default
+    max_toks = EXPLICIT_MAX_TOKENS if EXPLICIT_MAX_TOKENS is not None else 4096
     kwargs = {
         "model": model,
-        "max_tokens": 1024,
+        "max_tokens": max_toks,
         "temperature": 1.0,
         "messages": messages,
     }
@@ -80,10 +84,13 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
         "temperature": 1.0,
     }
 
-    if model == "o1-preview" or model == "o1-mini":
-        kwargs["max_tokens"] = 4000
+    if EXPLICIT_MAX_TOKENS is not None:
+        kwargs["max_tokens"] = EXPLICIT_MAX_TOKENS
     else:
-        kwargs["max_tokens"] = 1024
+        if model == "o1-preview" or model == "o1-mini":
+            kwargs["max_tokens"] = 4000
+        else:
+            kwargs["max_tokens"] = 1024
 
     # Lazy init for OpenAI client (used by media agent too)
     global openai_client
@@ -116,8 +123,10 @@ def openrouter_conversation(actor, model, context, system_prompt=None):
         "model": api_model,
         "messages": messages,
         "temperature": 1.0,
-        "max_tokens": 1024,
     }
+    # Only set max_tokens for OpenRouter when explicitly requested via CLI
+    if EXPLICIT_MAX_TOKENS is not None:
+        kwargs["max_tokens"] = EXPLICIT_MAX_TOKENS
     # Enable Hermes 4 internal reasoning traces when requested via vendor extension
     if reasoning_flag:
         kwargs["extra_body"] = {"reasoning": {"enabled": True, "exclude": False}, "include_reasoning": True}
@@ -430,7 +439,17 @@ def main():
         default=None,
         help="Convenience text variable. Sets both QUERY and DREAM_TEXT for templates.",
     )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=None,
+        help="Override max output tokens per response. For OpenRouter, only applied when provided.",
+    )
     args = parser.parse_args()
+    # Set global explicit max tokens if provided
+    if args.max_tokens is not None and args.max_tokens > 0:
+        global EXPLICIT_MAX_TOKENS
+        EXPLICIT_MAX_TOKENS = args.max_tokens
 
     # Build CLI vars map from --var NAME=VALUE and --query
     cli_vars: dict[str, str] = {}
@@ -620,9 +639,16 @@ def main():
         return max(1, (chars // 4) + 8)
 
     def next_max_tokens_for_model(api_model: str) -> int:
-        # Mirror provider defaults below
+        # Use CLI override if provided
+        if EXPLICIT_MAX_TOKENS is not None:
+            return EXPLICIT_MAX_TOKENS
+        # Heuristics per provider/model string
         if api_model == "o1-preview" or api_model == "o1-mini":
             return 4000
+        # Anthropic models typically start with 'claude-'
+        if isinstance(api_model, str) and api_model.startswith("claude-"):
+            return 4096
+        # OpenRouter (contains '/') — leave modest budget unless overridden
         return 1024
 
     # Load template with CLI vars overlays

@@ -104,6 +104,7 @@ def _run_backrooms(
     media_preset: Optional[Union[str, List[str]]] = None,
     vars_inline: Optional[Dict[str, str]] = None,
     query_value: Optional[str] = None,
+    max_tokens: Optional[int] = None,
     stream: bool = True,
 ) -> subprocess.CompletedProcess:
     cmd = [
@@ -120,6 +121,8 @@ def _run_backrooms(
         cmd += ["--max-context-frac", str(max_context_frac)]
         if context_window and context_window > 0:
             cmd += ["--context-window", str(context_window)]
+    if max_tokens is not None and max_tokens > 0:
+        cmd += ["--max-tokens", str(max_tokens)]
     if discord_profile:
         if isinstance(discord_profile, list):
             for dp in discord_profile:
@@ -176,6 +179,7 @@ def run_single(cfg: Dict[str, Any]) -> None:
     media_preset = cfg.get("media")
     vars_inline = cfg.get("vars") or None
     query_value = cfg.get("query") or None
+    max_tokens = cfg.get("max_tokens")
 
     print(f"Running single: template='{template}', models={models}, turns={max_turns}")
     _run_backrooms(
@@ -188,6 +192,7 @@ def run_single(cfg: Dict[str, Any]) -> None:
         media_preset=media_preset,
         vars_inline=vars_inline,
         query_value=query_value,
+        max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
         stream=True,
     )
 
@@ -200,6 +205,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     max_turns = int(cfg.get("max_turns", 30))
     max_context_frac = float(cfg.get("max_context_frac", 0.0))
     context_window = int(cfg.get("context_window", 128000))
+    max_tokens = cfg.get("max_tokens")
 
     # Integrations
     integrations = cfg.get("integrations") or {}
@@ -348,6 +354,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 media_preset=media_val,
                 vars_inline=None,
                 query_value=None,
+                max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
                 stream=True,
             )
             log_path = latest_log_for([m1, m2], template)
@@ -432,6 +439,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 media_preset=media_preset,
                 vars_inline=None,
                 query_value=None,
+                max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
                 stream=True,
             )
 
