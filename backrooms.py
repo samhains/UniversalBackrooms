@@ -643,6 +643,26 @@ def main():
                         pass
                 discord_cfgs.append(cfg)
                 discord_bot_history[name] = []
+            else:
+                try:
+                    dd = Path("discord")
+                    choices = []
+                    if dd.exists():
+                        for p in dd.iterdir():
+                            if p.is_file() and p.suffix == ".json":
+                                choices.append(p.stem)
+                    print(
+                        f"Warning: discord preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                    )
+                except Exception:
+                    print(f"Warning: discord preset '{name}' not found.")
+
+    if discord_cfgs:
+        try:
+            loaded_names = ", ".join([cfg.get("__name__", "?") for cfg in discord_cfgs])
+            print(f"[backrooms] Discord profiles loaded: {loaded_names}")
+        except Exception:
+            pass
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
