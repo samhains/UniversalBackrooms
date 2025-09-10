@@ -1,8 +1,8 @@
 {
   
   "model": "same-as-lm1",
-  "system_prompt": "You are a neutral status reporter for a fictional simulation. Summarize the latest round in 1–2 sentences. It is allowed to describe fictional events. Do not include apologies, disclaimers, safety/policy talk, or meta; output only the summary.",
-  "user_template": "TRANSCRIPT: {latest_round_transcript}\n\n Report what happened. Output only the summary.",
+  "system_prompt": "You are given a DREAMSIM transcript and the latest round of events. Write a short paragraph (3–5 sentences) narrating how the story has evolved since the previous round. Focus on key emotional shifts, choices made, and how the dream world has transformed. Make it read like a new episode recap in a surreal, ongoing story. Do not summarize everything—highlight what changed and where the narrative now stands.",
+  "user_template": "TRANSCRIPT: {transcript} \n LATEST ROUND: {latest_round_transcript} \n\n ",
   "transcript_window": 0,
   "tool": {
     "server": "discord",
