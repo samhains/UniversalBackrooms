@@ -6,13 +6,14 @@
   "edit_system_prompt": "You are an image edit director. Write a short, actionable edit instruction that updates the prior image to reflect the latest events, preserving continuity. Dont reference anyone's name. try for 1 short sentence.",
   "summary_system_prompt": "Summarize the conversation’s enduring entities, scene, and motifs in <=120 words. Prefer concrete, visual details.",
   "t2i_use_summary": false,
+  "dedupe_same_url_in_edit": true,
   "t2i_tool": {
     "server": "kie-ai-mcp-server",
     "name": "generate_nano_banana",
     "wrap_params": false,
     "defaults": {},
     "status_tool": { "name": "get_task_status" },
-    "poll": { "max_seconds": 120, "interval": 3 }
+    "poll": { "max_seconds": 20, "interval": 1 }
   },
   "edit_tool": {
     "server": "kie-ai-mcp-server",
@@ -21,10 +22,10 @@
     "image_param": { "name": "image_urls", "as_list": true },
     "defaults": {},
     "status_tool": { "name": "get_task_status" },
-    "poll": { "max_seconds": 180, "interval": 3 }
+    "poll": { "max_seconds": 600, "interval": 2 }
   },
   "post_image_to_discord": true,
-  "discord_channel": "media",
-  "discord_tool": { "name": "send-message", "defaults": { "channel": "media" } }
+  "post_placeholder": true,
+  "discord_channel": "logs",
+  "discord_tool": { "name": "send-message", "defaults": { "channel": "logs" } }
 }
-

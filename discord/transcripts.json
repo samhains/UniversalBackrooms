@@ -1,11 +1,10 @@
 {
   "disable_summary": true,
   "post_transcript": true,
-  "transcript_channel": "transcripts",
+  "transcript_channel": "transcript",
   "transcript_tool": {
     "server": "discord",
     "name": "send-message",
     "defaults": { "channel": "transcripts" }
   }
 }
-

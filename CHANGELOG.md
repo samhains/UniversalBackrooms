@@ -5,6 +5,15 @@
   - Discord agent now supports `disable_summary` in a profile to skip summary posting (used by the transcripts preset).
   - Docs updated to recommend using the `transcripts` preset instead of setting transcript toggles in two places; config-level overrides remain supported.
 
+- Dream header + posting flow
+  - Added `discord/dream_header.json`: one-shot, maximalist ASCII banner posted at the start of each dream (infers short title + embeds 2–3 poetic lines). Defaults to `#logs` channel.
+  - `backrooms.py`: supports `post_once_at_start: true` and `run_on: "first"|"start"` in Discord profiles to post only in the first round; logs loaded Discord profiles and warns when a preset is missing.
+  - `configs/posting_dreams.json`: enabled `dream_header` alongside `simple_director` and `transcripts` so each dream opens with the header.
+
+- Media (ComfyUI edit chain)
+  - `configs/posting_dreams.json`: added `"media": "comfyui_edit_chain"` to pair the ComfyUI chain (initial T2I then iterative edits) with posting runs.
+  - Uses existing `media/comfyui_edit_chain.json` which posts generated/edited images to the `#media` channel via its `discord_tool` defaults.
+
 - Media (Kie.ai)
   - `media/kieai_edit_chain_logonly.json`: disabled `discord_dry_run` and set the Discord channel to `logs` so images are actually posted to `#logs`.
   - No new config required; existing `configs/batch_dreamsim3_query_kie_chain.json` continues to work and now posts images to `#logs`.

@@ -26,6 +26,7 @@ import time
 import datetime as dt
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
+import getpass
 
 # Ensure repository root is importable when running as a script from scripts/
 ROOT = Path(__file__).resolve().parents[1]
@@ -107,6 +108,7 @@ def _run_backrooms(
     max_tokens: Optional[int] = None,
     stream: bool = True,
     discord_overrides: Optional[Dict[str, Any]] = None,
+    media_overrides: Optional[Dict[str, Any]] = None,
 ) -> subprocess.CompletedProcess:
     cmd = [
         sys.executable,
@@ -154,6 +156,12 @@ def _run_backrooms(
             env["BACKROOMS_DISCORD_OVERRIDES"] = json.dumps(discord_overrides)
         except Exception:
             pass
+    # Provide per-run Media overrides to backrooms via env
+    if media_overrides:
+        try:
+            env["BACKROOMS_MEDIA_OVERRIDES"] = json.dumps(media_overrides)
+        except Exception:
+            pass
     run_kwargs = {"cwd": str(ROOT), "env": env}
     if stream:
         return subprocess.run(cmd, **run_kwargs)
@@ -191,6 +199,12 @@ def run_single(cfg: Dict[str, Any]) -> None:
         cfg.get("discord_overrides")
         or integrations.get("discord_overrides")
         or integrations.get("discord_options")
+    )
+    # Optional per-run Media overrides at config level
+    media_overrides = (
+        cfg.get("media_overrides")
+        or integrations.get("media_overrides")
+        or integrations.get("media_options")
     )
     # Simpler knobs: allow `integrations.post_transcript` and `integrations.transcript_channel`
     simple_overrides = {}
@@ -240,6 +254,7 @@ def run_single(cfg: Dict[str, Any]) -> None:
         max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
         stream=True,
         discord_overrides=discord_overrides if isinstance(discord_overrides, dict) else None,
+        media_overrides=media_overrides if isinstance(media_overrides, dict) else None,
     )
     duration = time.time() - t0
     end = dt.datetime.now(dt.timezone.utc).isoformat()
@@ -266,9 +281,7 @@ def run_single(cfg: Dict[str, Any]) -> None:
         # Single-run configs may optionally include a prompt/query
         "prompt": (query_value or None),
     }
-    with out_path.open("a", encoding="utf-8") as outf:
-        outf.write(json.dumps(meta) + "\n")
-    print(f"Wrote meta to {out_path}")
+    _append_meta_jsonl(out_path, meta)
 
     # Optional immediate sync (if enabled like in batch mode)
     auto_sync = bool(cfg.get("auto_sync", False))
@@ -300,6 +313,12 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     else:
         discord_val = discord_profile
     media_preset = integrations.get("media")
+    # Optional per-run Media overrides at config level
+    media_overrides = (
+        cfg.get("media_overrides")
+        or integrations.get("media_overrides")
+        or integrations.get("media_options")
+    )
     # Optional per-run Discord overrides at config level
     discord_overrides = (
         cfg.get("discord_overrides")
@@ -457,6 +476,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 query_value=None,
                 max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
                 stream=True,
+                media_overrides=media_overrides if isinstance(media_overrides, dict) else None,
             )
             log_path = latest_log_for([m1, m2], template)
             duration = time.time() - t0
@@ -474,8 +494,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 "returncode": proc.returncode,
                 "stderr_tail": (proc.stderr[-1000:] if (hasattr(proc, "stderr") and proc.stderr) else None),
             }
-            with out_path.open("a", encoding="utf-8") as outf:
-                outf.write(json.dumps(meta) + "\n")
+            _append_meta_jsonl(out_path, meta)
             completed += 1
             print(f"[{completed}/{len(run_plan)}] pair={m1}-{m2} turns={max_turns} exit={exit_reason} time={duration:.1f}s")
         print(f"Done. Wrote metadata to {out_path}")
@@ -543,6 +562,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 max_tokens=int(max_tokens) if isinstance(max_tokens, (int, str)) and str(max_tokens).isdigit() else None,
                 stream=True,
                 discord_overrides=discord_overrides if isinstance(discord_overrides, dict) else None,
+                media_overrides=media_overrides if isinstance(media_overrides, dict) else None,
             )
 
             log_path = latest_log_for(models_pair, template)
@@ -568,8 +588,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 "returncode": proc.returncode,
                 "stderr_tail": (proc.stderr[-1000:] if (hasattr(proc, "stderr") and proc.stderr) else None),
             }
-            with out_path.open("a", encoding="utf-8") as outf:
-                outf.write(json.dumps(meta) + "\n")
+            _append_meta_jsonl(out_path, meta)
 
             completed += 1
             print(f"[{completed}/{total_runs}] pair={m1}-{m2} turns={max_turns} exit={exit_reason} time={duration:.1f}s")
@@ -602,6 +621,34 @@ def main():
         run_batch(cfg)
     else:
         raise SystemExit("Config 'type' must be 'single' or 'batch'")
+
+
+def _append_meta_jsonl(path: Path, meta: Dict[str, Any]) -> None:
+    """Append a JSON object to a JSONL file with robust fallback on permission errors.
+
+    If the target file exists but is not writable (e.g., created by another user),
+    write to a per-user fallback file alongside it, and print a concise notice.
+    """
+    line = json.dumps(meta)
+    try:
+        with path.open("a", encoding="utf-8") as outf:
+            outf.write(line + "\n")
+        print(f"Wrote meta to {path}")
+        return
+    except PermissionError as e:
+        user = getpass.getuser() or "unknown"
+        alt = path.with_name(f"{path.stem}.{user}.jsonl")
+        try:
+            with alt.open("a", encoding="utf-8") as outf:
+                outf.write(line + "\n")
+            print(f"Meta not writable ({path}): {e}. Wrote to {alt}")
+            return
+        except Exception as e2:
+            print(f"Failed to write meta to fallback {alt}: {e2}")
+            raise
+    except Exception as e:
+        print(f"Failed to write meta to {path}: {e}")
+        raise
 
 
 if __name__ == "__main__":
