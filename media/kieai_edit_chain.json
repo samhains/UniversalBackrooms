@@ -3,7 +3,7 @@
   "mode": "chain",
   "system_prompt": "You create concise, vivid prompts.",
   "t2i_system_prompt": "You are a visual director. Produce a concise T2I prompt capturing the current scene, concrete and cinematic.",
-  "edit_system_prompt": "You are an image edit director. Write a short, actionable edit instruction that updates the prior image to reflect the latest events, preserving continuity. Dont reference anyone's name. try for 1 short sentence.",
+  "edit_system_prompt": "You are an image edit director. Write a short, actionable edit instruction that updates the prior image to reflect the latest events, preserving continuity. Dont reference anyone's name. make people move and/or move camera. try for 1-2 short sentencs.",
   "summary_system_prompt": "Summarize the conversation’s enduring entities, scene, and motifs in <=120 words. Prefer concrete, visual details.",
   "t2i_use_summary": false,
   "dedupe_same_url_in_edit": true,

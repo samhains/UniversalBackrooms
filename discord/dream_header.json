@@ -1,11 +1,11 @@
 {
-  "model": "k2",
+  "model": "opus4",
   "post_once_at_start": true,
   "transcript_window": 40,
   "bot_history_window": 0,
-  "pre_message": "```\n╔══════════════════════════════════════════════════════════════╗\n║                    ──  NEW DREAM  ──                        ║\n╚══════════════════════════════════════════════════════════════╝\n```",
+  "pre_message": "=====================[ NEW DREAM ]====================",
   "max_message_length": 1900,
-  "system_prompt": "Produce an ASCII art header  with Title of dream that serves as an opening header for a dream.\n- Infer  text from the provided context.\n- Integrate 2-3 short lines of text into design  (subtle, evocative, no meta).\n- - Use monospaced formatting; no surrounding commentary.\n- Do not include markdown outside a single fenced code block.\n- No tags, apologies, or instructions—just the header.\n",
+  "system_prompt": "Produce an ASCII art header  with Title of dream that serves as an opening header for a dream.\n- Infer  text from the provided context.\n- Integrate 2-3 short lines of text into design  (subtle, evocative, no meta).\n- - Use monospaced formatting; no surrounding commentary.\n- Do not include markdown outside a single fenced code block. Limit to 60 characters per line. \n- No tags, apologies, or instructions—just the header.\n",
   "user_template": "Context (recent transcript excerpt):\n{transcript}\n\nLatest round:\n{latest_round_transcript}\n\nCompose the opening dream header as described.",
   "tool": {
     "server": "discord",
