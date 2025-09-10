@@ -126,6 +126,39 @@ def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
         val = result.get(key)
         if isinstance(val, str) and val:
             return val
+    # Direct arrays or alt keys at top-level
+    for key in ("image_urls", "images", "urls", "result_urls"):
+        val = result.get(key)
+        if isinstance(val, list) and val and isinstance(val[0], str):
+            return val[0]
+    if isinstance(result.get("result_url"), str) and result.get("result_url"):
+        return result.get("result_url")
+    # 1b) Common nested shapes
+    try:
+        nested_resp = (result.get("response", {}) or {}).get("data", {})
+        for k in ("imageUrl", "image_url", "url", "uri", "result_url"):
+            v = nested_resp.get(k)
+            if isinstance(v, str) and v:
+                return v
+        # Arrays: imageUrls, image_urls, urls, images
+        for k in ("imageUrls", "image_urls", "urls", "images", "result_urls"):
+            arr = nested_resp.get(k)
+            if isinstance(arr, list) and arr and isinstance(arr[0], str):
+                return arr[0]
+    except Exception:
+        pass
+    # 1c) Nested under local_task
+    try:
+        lt = result.get("local_task", {}) or {}
+        for k in ("result_url", "image_url", "url", "uri"):
+            if isinstance(lt.get(k), str) and lt.get(k):
+                return lt.get(k)
+        for k in ("result_urls", "image_urls", "urls"):
+            arr = lt.get(k)
+            if isinstance(arr, list) and arr and isinstance(arr[0], str):
+                return arr[0]
+    except Exception:
+        pass
 
     # 2) Standard MCP content array
     content = result.get("content")
@@ -280,9 +313,28 @@ def run_media_agent(
 
     defaults = tool.get("defaults", {})
     args = {"prompt": prompt_text, **defaults}
-    # For edit mode, attach the prior image URL as required by edit_image
+    debug_args_summary = ""
+    # For edit mode, attach the prior image reference using configurable param name/shape
     if mode == "edit" and state.last_image_ref:
-        args["image_url"] = state.last_image_ref
+        img_param_cfg = tool.get("image_param")
+        # Support either a simple string (param name) or an object { name, as_list }
+        if isinstance(img_param_cfg, dict):
+            param_name = img_param_cfg.get("name") or "image_url"
+            as_list = bool(img_param_cfg.get("as_list"))
+        elif isinstance(img_param_cfg, str):
+            param_name = img_param_cfg
+            as_list = False
+        else:
+            param_name = "image_url"
+            as_list = False
+        ref_to_use = state.last_image_ref
+        args[param_name] = [ref_to_use] if as_list else ref_to_use
+        # Keep a short debug summary for logs
+        try:
+            shown = ref_to_use if not isinstance(ref_to_use, str) else (ref_to_use[:120] + ("…" if len(ref_to_use) > 120 else ""))
+            debug_args_summary = f"EditParam: {param_name}={'list' if as_list else 'str'} -> {shown}"
+        except Exception:
+            pass
 
     # Load MCP server config (support multiple common envs/filenames)
     mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
@@ -323,7 +375,8 @@ def run_media_agent(
 
     # 4) Log
     header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
-    body = f"Mode: {mode}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
+    dbg = ("\n" + debug_args_summary) if debug_args_summary else ""
+    body = f"Mode: {mode}{dbg}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
     log_media_result(filename, header, body)
 
     # 5) Try to extract an image ref; if missing, poll status tool when task_id is present
@@ -371,6 +424,9 @@ def run_media_agent(
                 with open(filename, "a") as f:
                     f.write("\n" + hb + "\n")
                 ref = parse_result_for_image_ref(status_result)
+                # For edit cycles, ignore duplicate refs matching the previous image
+                if mode == "edit" and ref and state.last_image_ref and ref == state.last_image_ref:
+                    ref = None
                 if not ref:
                     # Also attempt to parse JSON text for 'imageUrl' fields
                     c2 = status_result.get("content")
@@ -391,6 +447,9 @@ def run_media_agent(
                                 or (d.get("local_task", {}) or {}).get("result_url")
                             )
                             if isinstance(cand, str) and cand:
+                                # For edit cycles, ignore duplicate refs matching the previous image
+                                if mode == "edit" and state.last_image_ref and cand == state.last_image_ref:
+                                    continue
                                 ref = cand
                                 break
                         except Exception:
@@ -420,9 +479,33 @@ def run_media_agent(
         state.last_image_ref = ref
     state.save()
 
-    # 7) Optionally post image directly to Discord (media-only responsibility)
+    # 7) Best-effort JSONL event for diagnostics/consumption
+    try:
+        media_event = {
+            "mode": mode,
+            "prompt": prompt_text,
+            "task_id": task_id,
+            "image_url": ref,
+            "server": server_name,
+            "tool": tool_name,
+        }
+        with open(f"{filename}.media.jsonl", "a", encoding="utf-8") as jf:
+            jf.write(json.dumps(media_event, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+    # 8) Optionally post image directly to Discord (media-only responsibility)
     try:
         if ref and media_cfg.get("post_image_to_discord", True):
+            # Support a dry-run mode that logs the intended post without calling Discord
+            if media_cfg.get("discord_dry_run", False):
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Discord Post) ###\n")
+                    f.write(f"Channel: {media_cfg.get('discord_channel') or 'media'}\n")
+                    f.write(f"Media: {ref}\n")
+                    f.write("Result: DRY RUN (not posted)\n")
+                # Skip actual Discord call
+                return result
             # Resolve Discord server config and channel
             dserver = media_cfg.get("discord_server", "discord")
             dtool = media_cfg.get("discord_tool", {"name": "send-message"})

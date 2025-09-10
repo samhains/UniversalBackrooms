@@ -39,7 +39,8 @@ Configuration (mcp.config.json)
 
 Media preset
 - Use `media/kieai.json` to route prompts to Kie.ai’s `generate_nano_banana` tool. It sends arguments directly (no FastMCP param wrapper).
-- The server is asynchronous. The preset includes a status tool (`get_task_status`) and polling config so the Media Agent waits briefly for a resulting URL and injects it into the result for Discord posting.
+- For a generate→edit flow, use `media/kieai_edit_chain.json` which chains `generate_nano_banana` and `edit_nano_banana`. The edit step passes the previous URL via `image_urls: ["..."]`.
+- The server is asynchronous. Presets include a status tool (`get_task_status`) and polling config so the Media Agent waits for a resulting URL and injects it into the result for Discord posting.
 
 Testing via the included MCP client
 - List tools:
@@ -51,6 +52,10 @@ Using in a run
 - Pass the media preset name:
   python backrooms.py --media kieai
 - The media agent generates a concise image prompt, calls Kie.ai, and logs the returned URL. The Discord agent can then post this URL if configured.
+
+- Or, for the generate→edit chain that updates the image across rounds:
+  python backrooms.py --media kieai_edit_chain
+  The first round generates an image; subsequent rounds produce edit instructions and call `edit_nano_banana` with the prior image URL.
 
 Notes
 - Kie.ai endpoints require HTTP/HTTPS URLs for editing (no local file paths).

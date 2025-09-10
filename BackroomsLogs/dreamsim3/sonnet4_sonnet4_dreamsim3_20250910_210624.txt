@@ -1,0 +1,51 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: sonnet4, sonnet4
+Started: 2025-09-10T11:06:24.115375+00:00
+
+### Round 1/30
+
+### Claude 1 ###
+./dreamsim.exe "Some guys come over and Nisha disappears from the pram. I find him on the floor crying with his face warped like he has been stepped on. I freak out and start accusing all the people who are now filling up the room at my parents house. I punch someone in the face who tellls me his dad has just died.  There's a lot of hatred between me and the people who are at my parents house."
+
+### Claude 2 ###
+```
+DREAMSIM v2.1.4 - Initializing dreamspace...
+Loading scenario: "Some guys come over and Nisha disappears..."
+Generating environment... Done.
+
+=====================================
+
+You are in your parents' house. The familiar living room feels wrong somehow - too crowded, the air thick with unspoken tension. Multiple strangers mill about, their faces unclear but their presence overwhelming. The walls seem to pulse slightly with an orange-red glow.
+
+Your heart pounds. Something is terribly wrong.
+
+The pram sits empty near the sofa, blankets disheveled. 
+
+Current sensations: PANIC, RAGE, PROTECTIVE_INSTINCT
+Room population: 6-8 STRANGERS
+Atmospheric pressure: SUFFOCATING
+
+> look around
+
+The strangers turn to look at you with expressions ranging from blank to accusatory. Their mouths move but the words come out distorted. One man near the kitchen doorway has tears streaming down his face. Another by the window clenches and unclenches his fists.
+
+The empty pram rocks slightly though no one is touching it.
+
+> look down
+
+On the carpet, you see Nisha. His small form is crumpled, face distorted as if pressed by an invisible weight. He's crying - a sound that cuts through the room's strange muffled quality like broken glass.
+
+Your protective rage flares white-hot.
+
+> _
+```
+
+What do you do next?
+
+### Media Agent ###
+Mode: t2i
+Prompt: Interior of a suburban living room bathed in sick orange-red light, 8 blurred hostile men crowding the space, an overturned pram in foreground, tiny toddler on carpet with warped crying face, young man mid-lunge fist clenched, cinematic handheld panic tilt, chiaroscuro
+Result: {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"4ffd75b376e79ee5b4ed77faa61a5228\",\n      \"recordId\": \"4ffd75b376e79ee5b4ed77faa61a5228\"\n    }\n  },\n  \"message\": \"Nano Banana image generation initiated\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+Status(4ffd75b376e79ee5b4ed77faa61a5228) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 14,\n    \"task_id\": \"4ffd75b376e79ee5b4ed77faa61a5228\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-10 11:06:42\",\n    \"updated_at\": \"2025-09-...
