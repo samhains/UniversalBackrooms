@@ -1,5 +1,17 @@
 ## 2025-09-10
 
+- Discord presets
+  - Added `discord/transcripts.json` preset for transcript-only posting. No summary; posts each round's verbatim entries to a transcripts channel.
+  - Discord agent now supports `disable_summary` in a profile to skip summary posting (used by the transcripts preset).
+  - Docs updated to recommend using the `transcripts` preset instead of setting transcript toggles in two places; config-level overrides remain supported.
+
+- Media (Kie.ai)
+  - `media/kieai_edit_chain_logonly.json`: disabled `discord_dry_run` and set the Discord channel to `logs` so images are actually posted to `#logs`.
+  - No new config required; existing `configs/batch_dreamsim3_query_kie_chain.json` continues to work and now posts images to `#logs`.
+
+- Docs
+  - README and `docs/configs.md` updated: transcript preset usage, included presets list, and clarified per-run overrides.
+
 ## 2025-09-09
 
 - Kie.ai MCP integration and Discord improvements (branch: feature/discord-transcripts):
