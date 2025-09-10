@@ -62,11 +62,9 @@ def build_edit_prompt(
     last_image_ref: Optional[str],
     conversation_summary: str,
     round_entries: List[Dict[str, str]],
-    include_base_ref_line: bool = True,
 ) -> str:
     lines = [
         "You are an image edit prompt designer. Compare the current round to the conversation summary and produce a brief, actionable edit instruction that keeps the image aligned to the conversation’s essence.",
-        "If a base image URL is provided, include it in the response as BASE_IMAGE: <url> on its own line.",
         "Keep edit text under 220 characters unless crucial details are needed.",
         "Conversation summary:",
         conversation_summary,
@@ -76,9 +74,7 @@ def build_edit_prompt(
     for e in round_entries:
         lines.append(f"- {e.get('actor','')}: {e.get('text','')}")
     lines.append("")
-    if include_base_ref_line and last_image_ref:
-        lines.append(f"BASE_IMAGE: {last_image_ref}")
-    lines.append("Return only the edit instruction (and BASE_IMAGE line if present).")
+    lines.append("Return only the edit instruction.")
     return "\n".join(lines)
 
 
@@ -211,13 +207,10 @@ def run_media_agent(
         if new_summary:
             state.conversation_summary = new_summary
 
-        # Control whether to include a BASE_IMAGE reference line inside the prompt text
-        include_base_line = bool(media_cfg.get("edit_prompt_include_base_image", False))
         user_content = build_edit_prompt(
             last_image_ref=state.last_image_ref,
             conversation_summary=state.conversation_summary,
             round_entries=round_entries,
-            include_base_ref_line=include_base_line,
         )
     else:
         if media_cfg.get("t2i_use_summary", False):
@@ -283,10 +276,8 @@ def run_media_agent(
     defaults = tool.get("defaults", {})
     args = {"prompt": prompt_text, **defaults}
     # For edit mode, attach the prior image URL as required by edit_image
-    if mode == "edit":
-        image_param = media_cfg.get("edit_image_url_param", "image_url")
-        if state.last_image_ref:
-            args[image_param] = state.last_image_ref
+    if mode == "edit" and state.last_image_ref:
+        args["image_url"] = state.last_image_ref
 
     # Load MCP server config (support multiple common envs/filenames)
     mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"

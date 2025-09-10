@@ -19,8 +19,6 @@
     "status_tool": { "name": "get_task_status" },
     "poll": { "max_seconds": 180, "interval": 3 }
   },
-  "edit_image_url_param": "image_url",
-  "edit_prompt_include_base_image": false,
   "post_image_to_discord": true,
   "discord_channel": "media",
   "discord_tool": { "name": "send-message", "defaults": { "channel": "media" } }

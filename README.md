@@ -299,7 +299,7 @@ Notes:
 - edit (iterative updates):
   - Maintains a short conversation summary per run and the last generated image reference.
   - Produces an edit instruction that updates the image to reflect the latest round while staying true to the conversation’s overall essence.
-  - For ComfyUI `edit_image`, the base image URL is passed as an explicit `image_url` param; the edit instruction prompt is kept short. You can set `edit_prompt_include_base_image: true` if your workflow expects the base reference inside the text.
+  - For ComfyUI `edit_image`, the base image URL is passed as an explicit `image_url` param. The prompt text never includes the URL.
   - Example config:
     {
       "model": "sonnet",
@@ -363,8 +363,7 @@ Example:
 - For `chain` flows:
   - "t2i_tool": tool config for base generation (e.g., `generate_image`).
   - "edit_tool": tool config for edits (e.g., `edit_image`).
-  - "edit_image_url_param": name for the base image URL param (default `image_url`).
-  - "edit_prompt_include_base_image": include `BASE_IMAGE` line inside prompt text (default false).
+  - Base image URL is always passed via the `image_url` argument; the prompt contains only the edit instruction.
 
 Example:
 {
