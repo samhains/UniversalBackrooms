@@ -111,8 +111,8 @@ obsidian-export vault="/Users/samhains/Documents/Backrooms" since="" dream_id=""
     eval "$cmd"
 
 # Run from a JSON config (see ./configs for examples)
-run config="configs/single_roleplay_hermes.json":
-    python scripts/run_config.py --config "{{config}}"
+run config="single_roleplay_hermes":
+    python scripts/run_config.py --config "configs/{{config}}.json"
 
 # Sync DreamSim3 and DreamSim4 to Supabase
 # Usage:
