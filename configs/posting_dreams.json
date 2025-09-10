@@ -1,0 +1,19 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 30,
+  "models": ["opus3"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": {
+    "discord": ["dream_header", "simple_director", "transcripts"]
+  },
+  "data_source": {
+    "kind": "supabase",
+    "limit": 200,
+    "source": "mine"
+  },
+  "shuffle": true
+}
