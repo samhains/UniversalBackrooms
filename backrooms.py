@@ -881,6 +881,16 @@ def main():
         # After the round, post Discord updates (text-only) for each profile
         if discord_cfgs and run_discord_agent:
             for dcfg in discord_cfgs:
+                # Optional: allow certain Discord presets to post only at the start of a dream
+                try:
+                    run_on = (dcfg.get("run_on") or "every").strip().lower()
+                except Exception:
+                    run_on = "every"
+                post_once_at_start = bool(dcfg.get("post_once_at_start", False))
+                # 'turn' is 0-based and incremented at end of loop; first round occurs when turn == 0
+                if post_once_at_start or run_on in ("first", "first_only", "start", "start_only"):
+                    if turn != 0:
+                        continue
                 try:
                     res = run_discord_agent(
                         discord_cfg=dcfg,

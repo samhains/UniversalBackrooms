@@ -1,0 +1,17 @@
+{
+  "model": "sonnet4",
+  "post_once_at_start": true,
+  "transcript_window": 40,
+  "bot_history_window": 0,
+  "max_message_length": 1900,
+  "system_prompt": "Produce a single, maximalist ASCII art banner that serves as an opening header for a dream.\n- Infer a short dream title from the provided context.\n- Integrate 2–3 poetic lines into the banner (subtle, evocative, no meta).\n- Keep it compact and readable on mobile: ~60–90 characters wide, <= 25 lines.\n- Use monospaced formatting and strong borders; no surrounding commentary.\n- Do not include markdown outside a single fenced code block.\n- No tags, apologies, or instructions—just the header.\n",
+  "user_template": "Context (recent transcript excerpt):\n{transcript}\n\nLatest round:\n{latest_round_transcript}\n\nCompose the opening dream header as described.",
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": {
+      "channel": "logs"
+    }
+  }
+}
+
