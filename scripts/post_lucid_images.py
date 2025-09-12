@@ -179,6 +179,85 @@ def main(argv: Optional[List[str]] = None) -> int:
             generate_text_fn=generate_text_fn,
             model_info=model_info,
         )
+        # If no URLs found or error returned, fall back to REST to ensure we post images
+        def _extract_urls_from_result(r: Dict[str, Any]) -> List[str]:
+            urls: List[str] = []
+            try:
+                content = r.get("content")
+                if isinstance(content, list):
+                    for it in content:
+                        u = it.get("uri") or it.get("url")
+                        if isinstance(u, str) and u:
+                            urls.append(u)
+                        t = it.get("text")
+                        if isinstance(t, str):
+                            import re as _re
+                            for m in _re.finditer(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif)", t, _re.I):
+                                urls.append(m.group(0))
+                # Supabase execute_sql rows
+                data = (r.get("response", {}) or {}).get("data", {})
+                rows = data.get("rows")
+                if isinstance(rows, list):
+                    for row in rows:
+                        if isinstance(row, dict):
+                            u = row.get("imageUrl") or row.get("image_url")
+                            if isinstance(u, str) and u:
+                                urls.append(u)
+            except Exception:
+                pass
+            # Dedup preserve order
+            dedup: List[str] = []
+            for u in urls:
+                if u not in dedup:
+                    dedup.append(u)
+            return dedup
+
+        need_fallback = False
+        try:
+            if not isinstance(res, dict):
+                need_fallback = True
+            else:
+                urls = _extract_urls_from_result(res)
+                # If no valid-looking image URLs, fallback
+                need_fallback = len(urls) == 0
+        except Exception:
+            need_fallback = True
+
+        if need_fallback:
+            supabase_url = os.getenv("SUPABASE_URL")
+            supabase_key = (
+                os.getenv("SUPABASE_KEY")
+                or os.getenv("SUPABASE_ANON_KEY")
+                or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+            )
+            if not supabase_url or not supabase_key:
+                raise SystemExit("Supabase REST fallback requires SUPABASE_URL and a key (SUPABASE_ANON_KEY or SERVICE_ROLE)")
+            import requests
+            headers = {
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}",
+            }
+            # Fetch latest 3 as a reliable default
+            url = f"{supabase_url}/rest/v1/eagle_images?select=title,storage_path,created_at&order=created_at.desc&limit=3"
+            r2 = requests.get(url, headers=headers, timeout=15)
+            rows = r2.json() if (r2.status_code == 200 and r2.content) else []
+            pub_base = f"{supabase_url}/storage/v1/object/public/eagle-images/"
+            images: List[str] = []
+            if isinstance(rows, list):
+                for row in rows:
+                    sp = (row.get("storage_path") or "").strip()
+                    if sp:
+                        images.append(pub_base + sp)
+            # Post to Discord via MCP
+            d_server: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord")
+            caption = cfg.get("discord_caption") or "Eagle picks — Backrooms vibe"
+            for u in images:
+                payload = {"channel": args.channel, "message": caption, "mediaUrl": u}
+                try:
+                    call_tool(d_server, cfg.get("discord_tool", {"name": "send-message"}).get("name", "send-message"), payload)
+                except Exception:
+                    pass
+            res = {"content": [{"type": "image", "uri": u} for u in images]}
     else:
         # Fallback: directly hit Supabase REST to fetch latest 3 images; then post via Discord MCP
         supabase_url = os.getenv("SUPABASE_URL")
