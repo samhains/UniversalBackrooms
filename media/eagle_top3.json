@@ -1,14 +1,14 @@
 {
   "model": "k2",
   "mode": "t2i",
-  "prompt_param": "sql",
+  "prompt_param": "query",
   "system_prompt": "You are a retrieval specialist. Based on the latest round text, write a SINGLE SQL query that selects up to THREE best-matching images from the eagle_images table. Rules: 1) Output ONLY SQL (no commentary). 2) Return columns id, title, and a computed column imageUrl built as concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', storage_path). 3) Prefer rows whose title or tags match 2–4 concise keywords extracted from the latest round. 4) Use ILIKE with wildcards for each keyword over title and unnest(tags). 5) Order by created_at DESC then random() and LIMIT 3. 6) Keep SQL to a single statement.",
   "tool": {
     "server": "supabase",
-    "name": "sql",
-    "wrap_params": true,
+    "name": "execute_sql",
+    "wrap_params": false,
     "defaults": {},
-    "note": "If the Supabase MCP server does not expose a 'sql' tool, scripts/post_lucid_images.py falls back to REST and posts directly via the Discord MCP server."
+    "note": "Uses 'execute_sql' on the Supabase MCP server. scripts/post_lucid_images.py also adapts automatically if this tool exists."
   },
   "post_top_k": 3,
   "post_image_to_discord": true,

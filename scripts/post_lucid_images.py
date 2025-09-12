@@ -157,7 +157,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         tool_names = set()
 
     res = None
-    if "sql" in tool_names or "execute_sql" in tool_names:
+    if ("sql" in tool_names) or ("execute_sql" in tool_names):
+        # If server offers execute_sql but our preset says sql, adapt the preset
+        try:
+            if ("execute_sql" in tool_names) and isinstance(cfg.get("tool"), dict):
+                if cfg["tool"].get("name") != "execute_sql":
+                    cfg["tool"]["name"] = "execute_sql"
+                # Supabase MCP expects direct { query: "..." }
+                cfg["tool"]["wrap_params"] = False
+                # And the argument name must be 'query'
+                cfg["prompt_param"] = "query"
+        except Exception:
+            pass
         # Drive the media agent end-to-end (MCP Supabase path)
         res = run_media_agent(
             media_cfg=cfg,
