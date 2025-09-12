@@ -350,7 +350,8 @@ def run_media_agent(
         return {"isError": True, "content": [{"type": "text", "text": err}]}
 
     defaults = tool.get("defaults", {})
-    args = {"prompt": prompt_text, **defaults}
+    prompt_param = media_cfg.get("prompt_param", "prompt")
+    args = {prompt_param: prompt_text, **defaults}
     debug_args_summary = ""
     # For edit mode, attach the prior image reference using configurable param name/shape
     if mode == "edit" and state.last_image_ref:

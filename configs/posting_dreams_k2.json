@@ -1,7 +1,7 @@
 {
   "type": "batch",
   "template": "dreamsim3",
-  "max_turns": 30,
+  "max_turns": 1000,
   "models": ["k2"],
   "pairs": [],
   "mixed": null,
