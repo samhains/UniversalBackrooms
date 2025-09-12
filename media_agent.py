@@ -181,6 +181,15 @@ def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
                 cand = next((s for s in reversed(arr) if isinstance(s, str) and s), None)
                 if cand:
                     return cand
+        # Rows array (Supabase execute_sql typical shape: data.rows)
+        rows = nested_resp.get("rows")
+        if isinstance(rows, list) and rows:
+            # Prefer last row's imageUrl-like field
+            for row in reversed(rows):
+                if isinstance(row, dict):
+                    u = row.get("imageUrl") or row.get("image_url") or row.get("url") or row.get("uri")
+                    if isinstance(u, str) and u:
+                        return u
     except Exception:
         pass
     # 1c) Nested under local_task
@@ -478,6 +487,12 @@ def run_media_agent(
                             _add(it)
                         elif isinstance(it, dict):
                             _add(it.get("imageUrl") or it.get("url") or it.get("uri"))
+            # Rows array from Supabase execute_sql
+            rows = nested_resp.get("rows")
+            if isinstance(rows, list):
+                for row in rows:
+                    if isinstance(row, dict):
+                        _add(row.get("imageUrl") or row.get("image_url") or row.get("url") or row.get("uri"))
         except Exception:
             pass
         # local_task nesting (FastMCP servers)
