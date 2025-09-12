@@ -187,7 +187,13 @@ def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
             # Prefer last row's imageUrl-like field
             for row in reversed(rows):
                 if isinstance(row, dict):
-                    u = row.get("imageUrl") or row.get("image_url") or row.get("url") or row.get("uri")
+                    u = (
+                        row.get("imageUrl")
+                        or row.get("image_url")
+                        or row.get("imageurl")
+                        or row.get("url")
+                        or row.get("uri")
+                    )
                     if isinstance(u, str) and u:
                         return u
     except Exception:
@@ -374,6 +380,27 @@ def run_media_agent(
 
     defaults = tool.get("defaults", {})
     prompt_param = media_cfg.get("prompt_param", "prompt")
+
+    # If the LLM wrapped the output in Markdown code fences (e.g., ```sql ... ```),
+    # strip the fences so SQL/commands execute cleanly. Apply when we're likely
+    # sending a query/command (common for Supabase SQL tools).
+    try:
+        if isinstance(prompt_text, str) and any(k in (prompt_param or "") for k in ("query", "sql", "command")):
+            s = prompt_text.strip()
+            if s.startswith("```"):
+                # Remove leading triple backticks and optional language tag
+                s = re.sub(r"^```[a-zA-Z0-9_-]*\s*\n?", "", s)
+                # Remove trailing triple backticks if present
+                s = re.sub(r"\n?```$", "", s.strip())
+            else:
+                # Handle inline fenced blocks by extracting the first fenced section
+                m = re.search(r"```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```", s)
+                if m:
+                    s = m.group(1).strip()
+            prompt_text = s
+    except Exception:
+        pass
+
     args = {prompt_param: prompt_text, **defaults}
     debug_args_summary = ""
     # For edit mode, attach the prior image reference using configurable param name/shape
@@ -492,7 +519,13 @@ def run_media_agent(
             if isinstance(rows, list):
                 for row in rows:
                     if isinstance(row, dict):
-                        _add(row.get("imageUrl") or row.get("image_url") or row.get("url") or row.get("uri"))
+                        _add(
+                            row.get("imageUrl")
+                            or row.get("image_url")
+                            or row.get("imageurl")
+                            or row.get("url")
+                            or row.get("uri")
+                        )
         except Exception:
             pass
         # local_task nesting (FastMCP servers)
@@ -748,7 +781,7 @@ def run_media_agent(
         if ref and media_cfg.get("post_image_to_discord", True):
             # Collect multiple image URLs when requested
             try:
-                top_k = int(media_cfg.get("post_top_k", 1))
+                top_k = int(media_cfg.get("n") or media_cfg.get("post_top_k", 1))
             except Exception:
                 top_k = 1
             urls_to_post = [ref]
@@ -757,6 +790,65 @@ def run_media_agent(
                     urls_to_post = _extract_all_image_urls(result)[: top_k]
                 except Exception:
                     urls_to_post = [ref]
+            # As a fallback for Supabase SQL tools that return JSON text arrays
+            # inside content strings, try to extract URLs by parsing the JSON
+            # between <untrusted-data> tags when no URLs were found.
+            if not urls_to_post:
+                try:
+                    content = result.get("content")
+                    texts: list[str] = []
+                    if isinstance(content, list):
+                        for it in content:
+                            t = it.get("text")
+                            if isinstance(t, str):
+                                texts.append(t)
+                    elif isinstance(content, str):
+                        texts.append(content)
+                    for t in texts:
+                        m = re.search(r"<untrusted-data-[^>]+>\s*(\[.*?\])\s*</untrusted-data-[^>]+>", t, re.S)
+                        if not m:
+                            continue
+                        raw = m.group(1)
+                        # Unescape if the block is doubly-quoted
+                        try:
+                            parsed = json.loads(raw) if isinstance(raw, str) else raw
+                        except Exception:
+                            # Sometimes the JSON is embedded with backslashes; try to unescape once
+                            try:
+                                parsed = json.loads(json.loads(f'"{raw}"'))
+                            except Exception:
+                                parsed = None
+                        if isinstance(parsed, list):
+                            for row in parsed:
+                                if isinstance(row, dict):
+                                    u = (
+                                        row.get("imageUrl")
+                                        or row.get("image_url")
+                                        or row.get("imageurl")
+                                    )
+                                    if isinstance(u, str) and u:
+                                        if u not in urls_to_post:
+                                            urls_to_post.append(u)
+                        if urls_to_post:
+                            break
+                except Exception:
+                    pass
+            # Final safety: sanitize to ensure clean image URLs
+            try:
+                _pat = re.compile(r"https?://[^\s\)\"']+\.(?:png|jpg|jpeg|webp|gif)(?:\?[^\s\"']*)?", re.I)
+                cleaned: list[str] = []
+                for u in urls_to_post:
+                    if not isinstance(u, str):
+                        continue
+                    m2 = _pat.search(u)
+                    if m2:
+                        v = m2.group(0)
+                        if v not in cleaned:
+                            cleaned.append(v)
+                if cleaned:
+                    urls_to_post = cleaned[: top_k]
+            except Exception:
+                pass
             # Avoid duplicate single-posts if configured (default: true)
             dedupe = bool(media_cfg.get("dedupe_discord_posts", True))
             if len(urls_to_post) == 1 and dedupe and (
@@ -796,6 +888,10 @@ def run_media_agent(
             last_posted_ref_local = None
             for u in urls_to_post:
                 dargs = {"channel": channel, "message": caption_to_use, "mediaUrl": u}
+                # Maximize compatibility with different Discord MCP servers
+                # by also providing common alternative keys.
+                dargs.setdefault("imageUrl", u)
+                dargs.setdefault("attachments", [u])
                 if "server" in ddefaults:
                     dargs["server"] = ddefaults["server"]
                 # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
@@ -817,14 +913,41 @@ def run_media_agent(
                     if os.path.exists(alt):
                         mcp_config_path = alt
                 d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
-                # Fire and log minimal outcome
-                d_res = call_tool(d_server_cfg, dtool_name, dargs)
-                with open(filename, "a") as f:
-                    f.write("\n### Media Agent (Discord Post) ###\n")
-                    f.write(f"Channel: {dargs.get('channel')}\n")
-                    f.write(f"Media: {u}\n")
-                    f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
-                last_posted_ref_local = u
+                # Fire and log minimal outcome with fallback strategy
+                try:
+                    d_res = call_tool(d_server_cfg, dtool_name, dargs)
+                    with open(filename, "a") as f:
+                        f.write("\n### Media Agent (Discord Post) ###\n")
+                        f.write(f"Channel: {dargs.get('channel')}\n")
+                        f.write(f"Media: {u}\n")
+                        f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                        f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+                    last_posted_ref_local = u
+                except Exception as _post_err:
+                    # Fallback: append URL to the message and try a plain text post
+                    try:
+                        alt_args = dict(dargs)
+                        url_text = f"\n{u}" if caption_to_use else u
+                        alt_args.pop("mediaUrl", None)
+                        alt_args.pop("imageUrl", None)
+                        alt_args.pop("attachments", None)
+                        alt_args["message"] = (caption_to_use + url_text) if caption_to_use else url_text
+                        d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
+                        with open(filename, "a") as f:
+                            f.write("\n### Media Agent (Discord Post) ###\n")
+                            f.write(f"Channel: {alt_args.get('channel')}\n")
+                            f.write(f"Media: {u}\n")
+                            f.write(f"Args: {json.dumps({k:v for k,v in alt_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
+                            f.write(f"Result (fallback): {json.dumps(d_res2, ensure_ascii=False)}\n")
+                        last_posted_ref_local = u
+                    except Exception as _post_err2:
+                        with open(filename, "a") as f:
+                            f.write("\n### Media Agent (Discord Post) ###\n")
+                            f.write(f"Channel: {dargs.get('channel')}\n")
+                            f.write(f"Media: {u}\n")
+                            f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                            f.write(f"Error: {repr(_post_err)}\n")
+                            f.write(f"Error (fallback): {repr(_post_err2)}\n")
             # Remember last posted ref after a successful call
             if last_posted_ref_local:
                 state.last_posted_ref = last_posted_ref_local

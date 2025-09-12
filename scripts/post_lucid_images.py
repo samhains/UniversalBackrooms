@@ -4,11 +4,22 @@ One-off: prompt -> N Eagle DB images -> Discord #lucid
 
 Usage:
   python scripts/post_lucid_images.py "LAKE DOOR THRESHOLD" \
-    [--channel lucid] [--model haiku3] [--caption "..."] [--config eagle_top3_fts] [--n 3]
+    [--channel lucid] [--caption "..."] [--config eagle_top3_fts] [--n 3] \
+    [--semantic] [--vector-column caption_embedding] [--embed-model text-embedding-3-small] [--no-llm]
 
-This uses the media agent with an Eagle retrieval preset. It asks an LLM
-to produce a single SQL statement to fetch up to N matching images from
-`eagle_images` via the Supabase MCP server, and then posts them to Discord.
+This can either:
+  Priority is a pure embedding-based semantic search (pgvector) — no LLM needed.
+  If embeddings are not available, we fall back to a deterministic fused
+  FTS+trigram SQL. LLM-driven SQL remains optional via --use-llm.
+
+  Retrieval modes:
+  - Semantic (default when OPENAI_API_KEY present):
+      1) Compute prompt embedding via OpenAI embeddings.
+      2) ORDER BY e.<vector-column> <-> '[...]'::vector LIMIT N.
+  - Deterministic (no-LLM):
+      Fused FTS + trigram + small recency, always returns rows.
+  - LLM (optional):
+      Ask a model to write SQL (kept for compatibility; not recommended).
 
 Refinement: `--n` controls the exact number of images to post. If the agent
 returns fewer than N, we "top off" by fetching the latest images from Supabase
@@ -29,6 +40,8 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+import re
+import unicodedata
 
 # Ensure repository root is importable when running from scripts/
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +64,12 @@ from model_config import get_model_info
 
 # Reuse LLM call paths from backrooms for provider routing
 from backrooms import claude_conversation, gpt4_conversation, openrouter_conversation
+
+# Embeddings
+try:
+    from openai import OpenAI as _OpenAI
+except Exception:  # pragma: no cover
+    _OpenAI = None
 
 
 def _load_env() -> None:
@@ -116,6 +135,162 @@ def _apply_overrides(
     return cfg
 
 
+def _normalize_text(text: str) -> str:
+    s = text or ""
+    # Lowercase and strip accents
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    s = s.lower()
+    # Replace non-word with spaces
+    s = re.sub(r"[^a-z0-9]+", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+_STOPWORDS = set(
+    """
+    a an and the of to in on at for from with without within into onto by is are was were be been being this that these those it its as if then else when while do did done doing over under again further so very just not nor only own same than too can will would could should shall might must may about above after against all am any because before below both but down during each few more most other out our ours ourselves some such their theirs them themselves there through until up we you your yours yourself yourselves he she they i me my myself him his her hers itself who whom why how what which where
+    """.split()
+)
+
+
+def _summarize_prompt(prompt: str, *, max_tokens: int = 12) -> str:
+    """Generate a lightweight, deterministic summary/keyword string.
+
+    No LLM: normalize, drop short words/stopwords, keep unique order.
+    """
+    norm = _normalize_text(prompt)
+    if not norm:
+        return ""
+    tokens: List[str] = []
+    seen: Set[str] = set()
+    for w in norm.split():
+        if len(w) <= 2:
+            continue
+        if w in _STOPWORDS:
+            continue
+        if w not in seen:
+            seen.add(w)
+            tokens.append(w)
+        if len(tokens) >= max_tokens:
+            break
+    return " ".join(tokens)
+
+
+def _openai_embed(text: str, *, model: str = "text-embedding-3-small") -> List[float]:
+    """Return an embedding vector for the given text using OpenAI embeddings.
+
+    Requires OPENAI_API_KEY. This is not an LLM call.
+    """
+    if _OpenAI is None:
+        raise RuntimeError("openai package not available; cannot compute embeddings")
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not set; cannot compute embeddings")
+    client = _OpenAI(api_key=api_key)
+    # Strip to keep payload small and consistent
+    text = (text or "").strip()
+    if not text:
+        text = " "
+    try:
+        emb = client.embeddings.create(model=model, input=text)
+        vec = emb.data[0].embedding  # type: ignore[attr-defined]
+        if not isinstance(vec, list) or not vec:
+            raise RuntimeError("Empty embedding returned")
+        return [float(x) for x in vec]
+    except Exception as e:
+        raise RuntimeError(f"Embedding failed: {e}")
+
+
+def _vector_literal(vec: List[float]) -> str:
+    """Format a Python list[float] for pgvector: '[v1,v2,...]'::vector.
+
+    Keep a reasonable precision to avoid huge SQL strings.
+    """
+    # Limit precision to 6 decimal places
+    parts = [format(float(x), ".6f") for x in vec]
+    return "[" + ",".join(parts) + "]::vector"
+
+
+def _build_vector_sql(*, prompt_vec: List[float], limit: int, pub_base: str, vector_column: str) -> str:
+    """Build a pgvector semantic search SQL over eagle_images.
+
+    Orders by vector distance asc, then recency. No WHERE.
+    """
+    base = pub_base.rstrip("/") + "/"
+    concat_expr = f"concat('{base}', e.storage_path)"
+    vec_lit = _vector_literal(prompt_vec)
+    col = re.sub(r"[^a-zA-Z0-9_]+", "", vector_column or "caption_embedding")
+    sql = f"""
+SELECT
+  e.id,
+  e.title,
+  {concat_expr} AS imageUrl
+FROM eagle_images e
+ORDER BY e.{col} <-> {vec_lit} ASC,
+         e.created_at DESC
+LIMIT {int(max(1, limit))};
+""".strip()
+    return sql
+
+
+def _sql_literal(s: str) -> str:
+    """Escape a Python string as a single-quoted SQL literal."""
+    return "'" + (s or "").replace("'", "''") + "'"
+
+
+def _build_fused_sql(*, prompt: str, summary: str, limit: int, pub_base: str, include_caption: bool = True) -> str:
+    """Build deterministic always-return SQL with fused scoring.
+
+    If include_caption=False, omits caption to handle schemas without it.
+    """
+    P = _sql_literal(prompt)
+    S = _sql_literal(summary or prompt)
+    base = pub_base.rstrip("/") + "/"
+    concat_expr = f"concat('{base}', e.storage_path)"
+
+    if include_caption:
+        tsv_expr = (
+            "setweight(to_tsvector('english', unaccent(coalesce(e.caption,''))), 'A') || "
+            "setweight(to_tsvector('simple',  unaccent(array_to_string(e.tags,' '))), 'B') || "
+            "setweight(to_tsvector('simple',  unaccent(coalesce(e.title,''))), 'C')"
+        )
+        cap_sim = "similarity(unaccent(coalesce(e.caption,'')), unaccent(" + S + ")) AS cap_sim,"
+        cap_weight = "0.8*COALESCE(s.cap_sim,0) + "
+    else:
+        tsv_expr = (
+            "setweight(to_tsvector('simple',  unaccent(array_to_string(e.tags,' '))), 'B') || "
+            "setweight(to_tsvector('simple',  unaccent(coalesce(e.title,''))), 'C')"
+        )
+        cap_sim = ""
+        cap_weight = ""
+
+    sql = f"""
+SELECT
+  e.id,
+  e.title,
+  {concat_expr} AS imageUrl
+FROM eagle_images e
+CROSS JOIN LATERAL (
+  SELECT
+    {tsv_expr} AS tsv,
+    websearch_to_tsquery('english', unaccent({P})) AS q_web,
+    plainto_tsquery('simple',  unaccent({P}))       AS q_plain,
+    {cap_sim}
+    similarity(unaccent(coalesce(e.title,'')),   unaccent({S})) AS title_sim,
+    (SELECT max(similarity(unaccent(tag), unaccent({S}))) FROM unnest(e.tags) AS tag) AS tag_sim
+) s
+ORDER BY
+  (0.9*COALESCE(ts_rank_cd(s.tsv, s.q_web), 0) + 0.8*COALESCE(ts_rank_cd(s.tsv, s.q_plain), 0)) +
+  ({cap_weight}0.6*COALESCE(s.tag_sim,0) + 0.4*COALESCE(s.title_sim,0)) +
+  (0.05 * (extract(epoch from (now() - e.created_at)) * -1.0 / 86400.0)) +
+  (0.02*random()) DESC,
+  e.created_at DESC
+LIMIT {int(max(1, limit))};
+""".strip()
+    return sql
+
+
 def _fetch_latest_image_urls(*, supabase_url: str, supabase_key: str, limit: int, exclude: Set[str] | None = None) -> List[str]:
     import requests
     headers = {
@@ -142,14 +317,84 @@ def _fetch_latest_image_urls(*, supabase_url: str, supabase_key: str, limit: int
     return images
 
 
+def _post_images_to_discord(
+    *,
+    urls: List[str],
+    channel: str,
+    caption: str,
+    media_cfg: Dict[str, Any],
+    mcp_cfg_path: Path,
+    filename: str,
+) -> None:
+    """Robustly post a list of image URLs to Discord via MCP.
+
+    Tries mediaUrl + imageUrl + attachments, then falls back to plain text with URL.
+    Mirrors media_agent's compatibility strategy.
+    """
+    try:
+        d_server: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord")
+    except Exception as e:
+        with open(filename, "a") as f:
+            f.write(f"\n### Discord Post Error ###\nCould not load Discord MCP: {e}\n")
+        return
+    dtool = media_cfg.get("discord_tool", {"name": "send-message"})
+    dtool_name = dtool.get("name", "send-message")
+    posted = 0
+    # URL sanitizer (match a single valid-looking image URL)
+    _pat = re.compile(r"https?://[^\s\)\"']+\.(?:png|jpg|jpeg|webp|gif)(?:\?[^\s\"']*)?", re.I)
+    for u in urls:
+        # Sanitize to a clean image URL
+        clean_u = None
+        if isinstance(u, str):
+            m = _pat.search(u)
+            if m:
+                clean_u = m.group(0)
+        if not clean_u:
+            with open(filename, "a") as f:
+                f.write("\n### Discord Post Skip (no clean URL) ###\n")
+                f.write(f"Raw: {repr(u)}\n")
+            continue
+        dargs = {"channel": channel, "message": caption, "mediaUrl": clean_u}
+        dargs.setdefault("imageUrl", clean_u)
+        dargs.setdefault("attachments", [clean_u])
+        try:
+            d_res = call_tool(d_server, dtool_name, dargs)
+            posted += 1
+            with open(filename, "a") as f:
+                f.write("\n### Discord Post ###\n")
+                f.write(f"Channel: {channel}\n")
+                f.write(f"Media: {clean_u}\n")
+                f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+        except Exception:
+            try:
+                alt_msg = (caption + "\n" + clean_u) if caption else clean_u
+                alt = {"channel": channel, "message": alt_msg}
+                d_res2 = call_tool(d_server, dtool_name, alt)
+                posted += 1
+                with open(filename, "a") as f:
+                    f.write("\n### Discord Post (fallback) ###\n")
+                    f.write(f"Channel: {channel}\n")
+                    f.write(f"Media: {clean_u}\n")
+                    f.write(f"Args: {json.dumps({k:v for k,v in alt.items() if k in ['channel','message']}, ensure_ascii=False)}\n")
+                    f.write(f"Result: {json.dumps(d_res2, ensure_ascii=False)}\n")
+            except Exception as e2:
+                with open(filename, "a") as f:
+                    f.write("\n### Discord Post Error ###\n")
+                    f.write(f"Channel: {channel}\n")
+                    f.write(f"Media: {clean_u}\n")
+                    f.write(f"Error: {repr(e2)}\n")
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Post N Eagle DB images to Discord from a one-off prompt.")
     parser.add_argument("prompt", type=str, help="Short prompt describing the vibe, e.g. 'LAKE DOOR THRESHOLD'.")
     parser.add_argument("--channel", default="lucid", help="Discord channel to post into (default: lucid)")
+    # Model only used for optional LLM path; not required for semantic/FTS
     parser.add_argument(
         "--model",
         default="haiku3",
-        help="Model alias to craft the Eagle SQL (default: haiku3)",
+        help="Model alias for optional LLM SQL path (default: haiku3)",
     )
     parser.add_argument(
         "--caption",
@@ -160,6 +405,33 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--config",
         default="eagle_top3_fts",
         help="Media preset name (under media/) or JSON filename without extension (default: eagle_top3_fts)",
+    )
+    # Semantic-embedding path controls
+    parser.add_argument(
+        "--semantic",
+        action="store_true",
+        help="Prefer semantic search with embeddings + pgvector (no LLM). Defaults on when OPENAI_API_KEY exists.",
+    )
+    parser.add_argument(
+        "--vector-column",
+        default="caption_embedding",
+        help="pgvector column on eagle_images to search (default: caption_embedding)",
+    )
+    parser.add_argument(
+        "--embed-model",
+        default=os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
+        help="OpenAI embedding model to use (default: text-embedding-3-small)",
+    )
+    # Retrieval mode selection
+    parser.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Force deterministic fused SQL (caption+tags+title) via Supabase MCP; do not ask an LLM to write SQL.",
+    )
+    parser.add_argument(
+        "--use-llm",
+        action="store_true",
+        help="Use the LLM-driven SQL preset (overrides default deterministic path).",
     )
     parser.add_argument(
         "--n",
@@ -229,7 +501,146 @@ def main(argv: Optional[List[str]] = None) -> int:
         tool_names = set()
 
     res = None
-    if ("sql" in tool_names) or ("execute_sql" in tool_names):
+    # Preferred modes: semantic (if OPENAI_API_KEY or --semantic), else deterministic FTS; LLM only when explicitly requested
+    use_llm = bool(args.use_llm) and not bool(args.no_llm)
+    prefer_semantic = bool(args.semantic or os.getenv("OPENAI_API_KEY")) and not use_llm
+    if (not use_llm) and (("sql" in tool_names) or ("execute_sql" in tool_names)):
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = (
+            os.getenv("SUPABASE_KEY")
+            or os.getenv("SUPABASE_ANON_KEY")
+            or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        )
+        if not supabase_url:
+            raise SystemExit("Semantic/FTS path requires SUPABASE_URL for public image URL prefix and potential fallback")
+
+        pub_base = f"{supabase_url}/storage/v1/object/public/eagle-images/"
+
+        # Helper to extract URLs from result (reuse logic below)
+        def _extract_urls_from_result(r: Dict[str, Any]) -> List[str]:
+            urls: List[str] = []
+            try:
+                content = r.get("content")
+                if isinstance(content, list):
+                    for it in content:
+                        u = it.get("uri") or it.get("url")
+                        if isinstance(u, str) and u:
+                            urls.append(u)
+                        t = it.get("text")
+                        if isinstance(t, str):
+                            import re as _re
+                            for m in _re.finditer(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif)", t, _re.I):
+                                urls.append(m.group(0))
+                data = (r.get("response", {}) or {}).get("data", {})
+                rows = data.get("rows")
+                if isinstance(rows, list):
+                    for row in rows:
+                        if isinstance(row, dict):
+                            u = row.get("imageUrl") or row.get("image_url") or row.get("imageurl")
+                            if isinstance(u, str) and u:
+                                urls.append(u)
+            except Exception:
+                pass
+            dedup: List[str] = []
+            for u in urls:
+                if u not in dedup:
+                    dedup.append(u)
+            return dedup
+
+        # Prefer execute_sql tool if available
+        tool_name = "execute_sql" if ("execute_sql" in tool_names) else "sql"
+        urls: List[str] = []
+
+        if prefer_semantic:
+            # Try semantic vector search first
+            try:
+                vec = _openai_embed(args.prompt, model=args.embed_model)
+                sql = _build_vector_sql(prompt_vec=vec, limit=n, pub_base=pub_base, vector_column=args.vector_column)
+                # Log SQL for traceability
+                try:
+                    with open(filename, "a") as f:
+                        f.write("\n### SQL (semantic) ###\n")
+                        f.write(sql + "\n")
+                except Exception:
+                    pass
+                res = call_tool(supa_cfg, tool_name, {"query": sql})
+                urls = _extract_urls_from_result(res) if isinstance(res, dict) else []
+                if urls:
+                    try:
+                        with open(filename, "a") as f:
+                            f.write(f"URLs: {len(urls)}\n")
+                    except Exception:
+                        pass
+            except Exception:
+                urls = []
+
+        # If semantic failed or not preferred, try deterministic FTS/trigram
+        if not urls:
+            try:
+                summary = _summarize_prompt(args.prompt)
+                sql = _build_fused_sql(prompt=args.prompt, summary=summary, limit=n, pub_base=pub_base, include_caption=True)
+                try:
+                    with open(filename, "a") as f:
+                        f.write("\n### SQL (fts+trgm, caption) ###\n")
+                        f.write(sql + "\n")
+                except Exception:
+                    pass
+                res = call_tool(supa_cfg, tool_name, {"query": sql})
+                urls = _extract_urls_from_result(res) if isinstance(res, dict) else []
+            except Exception:
+                urls = []
+        if not urls:
+            try:
+                summary = _summarize_prompt(args.prompt)
+                sql = _build_fused_sql(prompt=args.prompt, summary=summary, limit=n, pub_base=pub_base, include_caption=False)
+                try:
+                    with open(filename, "a") as f:
+                        f.write("\n### SQL (fts+trgm, no caption) ###\n")
+                        f.write(sql + "\n")
+                except Exception:
+                    pass
+                res = call_tool(supa_cfg, tool_name, {"query": sql})
+                urls = _extract_urls_from_result(res) if isinstance(res, dict) else []
+            except Exception:
+                urls = []
+
+        # Fallback to REST latest if needed
+        if not urls:
+            if not supabase_key:
+                raise SystemExit("No results and no Supabase key available for REST fallback.")
+            urls = _fetch_latest_image_urls(supabase_url=supabase_url, supabase_key=supabase_key, limit=n)
+
+        # Post to Discord via MCP (robust)
+        caption = args.caption or ""
+        chosen = urls[:n]
+        _post_images_to_discord(
+            urls=chosen, channel=args.channel, caption=caption, media_cfg=media_cfg, mcp_cfg_path=mcp_cfg_path, filename=filename
+        )
+
+        # Top-off to exactly N if we posted fewer than requested
+        try:
+            need_more = max(0, n - len(chosen))
+            if need_more > 0 and supabase_key:
+                extra = _fetch_latest_image_urls(
+                    supabase_url=supabase_url, supabase_key=supabase_key, limit=need_more, exclude=set(chosen)
+                )
+                if extra:
+                    _post_images_to_discord(
+                        urls=extra,
+                        channel=args.channel,
+                        caption=caption,
+                        media_cfg=media_cfg,
+                        mcp_cfg_path=mcp_cfg_path,
+                        filename=filename,
+                    )
+                    chosen = chosen + extra
+        except Exception:
+            pass
+
+        # Synthesize a minimal result for logging/display
+        res = {"content": [{"type": "image", "uri": u} for u in chosen]}
+
+    elif ("sql" in tool_names) or ("execute_sql" in tool_names):
         # If server offers execute_sql but our preset says sql, adapt the preset
         try:
             if ("execute_sql" in tool_names) and isinstance(cfg.get("tool"), dict):
@@ -272,7 +683,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 if isinstance(rows, list):
                     for row in rows:
                         if isinstance(row, dict):
-                            u = row.get("imageUrl") or row.get("image_url")
+                            u = row.get("imageUrl") or row.get("image_url") or row.get("imageurl")
                             if isinstance(u, str) and u:
                                 urls.append(u)
             except Exception:
@@ -307,14 +718,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             # Fetch latest N as a reliable default
             images = _fetch_latest_image_urls(supabase_url=supabase_url, supabase_key=supabase_key, limit=n)
             # Post to Discord via MCP
-            d_server: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord")
-            caption = cfg.get("discord_caption") or "Eagle picks — Backrooms vibe"
-            for u in images:
-                payload = {"channel": args.channel, "message": caption, "mediaUrl": u}
-                try:
-                    call_tool(d_server, cfg.get("discord_tool", {"name": "send-message"}).get("name", "send-message"), payload)
-                except Exception:
-                    pass
+            caption = cfg.get("discord_caption") or ""
+            _post_images_to_discord(
+                urls=images, channel=args.channel, caption=caption, media_cfg=cfg, mcp_cfg_path=mcp_cfg_path, filename=filename
+            )
             res = {"content": [{"type": "image", "uri": u} for u in images]}
         else:
             # Top-off to exactly N images when the agent produced fewer
@@ -334,20 +741,15 @@ def main(argv: Optional[List[str]] = None) -> int:
                     )
                     if extra:
                         # Post only the additional images (agent already posted its own)
-                        d_server: MCPServerConfig = load_server_config(
-                            os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord"
+                        caption = cfg.get("discord_caption") or ""
+                        _post_images_to_discord(
+                            urls=extra,
+                            channel=args.channel,
+                            caption=caption,
+                            media_cfg=cfg,
+                            mcp_cfg_path=mcp_cfg_path,
+                            filename=filename,
                         )
-                        caption = cfg.get("discord_caption") or "Eagle picks — Backrooms vibe"
-                        for u in extra:
-                            payload = {"channel": args.channel, "message": caption, "mediaUrl": u}
-                            try:
-                                call_tool(
-                                    d_server,
-                                    cfg.get("discord_tool", {"name": "send-message"}).get("name", "send-message"),
-                                    payload,
-                                )
-                            except Exception:
-                                pass
                         # Extend the result list for logging/completeness
                         if isinstance(res, dict):
                             res.setdefault("content", [])
@@ -385,19 +787,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             sp = (row.get("storage_path") or "").strip()
             if sp:
                 images.append(pub_base + sp)
-        # Post to Discord via MCP
-        try:
-            d_server: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord")
-        except Exception as e:
-            raise SystemExit(f"Discord MCP not configured: {e}")
-        caption = cfg.get("discord_caption") or "Eagle picks — Backrooms vibe"
-        for u in images:
-            payload = {"channel": args.channel, "message": caption, "mediaUrl": u}
-            try:
-                call_tool(d_server, cfg.get("discord_tool", {"name": "send-message"}).get("name", "send-message"), payload)
-            except Exception:
-                # Ignore individual post failures; continue
-                pass
+        # Post to Discord via MCP (robust)
+        caption = cfg.get("discord_caption") or ""
+        _post_images_to_discord(
+            urls=images, channel=args.channel, caption=caption, media_cfg=cfg, mcp_cfg_path=mcp_cfg_path, filename=filename
+        )
         # Synthesize a minimal result for logging/display
         res = {"content": [{"type": "image", "uri": u} for u in images]}
 

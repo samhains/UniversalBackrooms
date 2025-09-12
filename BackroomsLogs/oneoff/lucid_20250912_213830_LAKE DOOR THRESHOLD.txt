@@ -1,0 +1,27 @@
+
+### Media Agent ###
+Mode: t2i
+Prompt: ```sql
+SELECT 
+  id, 
+  title, 
+  concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', storage_path) AS imageUrl
+FROM eagle_images
+WHERE 
+  title ILIKE '%lake%' OR title ILIKE '%door%' OR title ILIKE '%threshold%'
+  OR EXISTS (SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE '%lake%')
+  OR EXISTS (SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE '%door%')
+  OR EXISTS (SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE '%threshold%')
+ORDER BY created_at DESC, random()
+LIMIT 3
+```
+Result: {"content": [{"type": "text", "text": "{\"error\":{\"name\":\"Error\",\"message\":\"Failed to run sql query: ERROR:  42601: syntax error at or near \\\"```\\\"\\nLINE 1: ```sql\\n        ^\\n\"}}", "annotations": null, "_meta": null}], "isError": true, "model": null}
+
+### Media Agent (Placeholder) ###
+No image URL returned by tool/status; using placeholder.
+Placeholder: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1416025224029147209", "annotations": null, "_meta": null}], "isError": false, "model": null}

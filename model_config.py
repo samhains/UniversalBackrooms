@@ -23,6 +23,11 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "Claude",
         "company": "anthropic",
     },
+    "oss": {
+        "api_name": "openai/gpt-oss-120b",
+        "display_name": "GPT-OSS",
+        "company": "openrouter",
+        },
     "sonnet3": {
         "api_name": "claude-3-7-sonnet-latest",
         "display_name": "Claude",

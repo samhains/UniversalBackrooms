@@ -1,0 +1,30 @@
+
+### Media Agent ###
+Mode: t2i
+Prompt: SELECT id, title, concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', storage_path) as imageUrl
+FROM eagle_images,
+LATERAL (
+    SELECT 
+        0.8 * ts_rank_cd(tsv, q) + 
+        0.6 * similarity(unaccent(coalesce(title,'')), unaccent('RAINFOREST')) + 
+        0.5 * coalesce((SELECT max(similarity(unaccent(tag), unaccent('RAINFOREST'))) FROM unnest(tags) as tag), 0.0) as score
+    WHERE 
+        tsv = to_tsvector('simple', unaccent(coalesce(title,'') || ' ' || array_to_string(tags,' '))),
+        q = plainto_tsquery('simple', unaccent('RAINFOREST')),
+        ((tsv @@ q) OR 
+         similarity(unaccent(coalesce(title,'')), unaccent('RAINFOREST')) > 0.12 OR 
+         coalesce((SELECT max(similarity(unaccent(tag), unaccent('RAINFOREST'))) FROM unnest(tags) as tag), 0.0) > 0.12)
+) scored
+ORDER BY (score + 0.03*random()) DESC, created_at DESC
+LIMIT 3
+Result: {"content": [{"type": "text", "text": "{\"error\":{\"name\":\"Error\",\"message\":\"Failed to run sql query: ERROR:  42601: syntax error at or near \\\",\\\"\\nLINE 9:         tsv = to_tsvector('simple', unaccent(coalesce(title,'') || ' ' || array_to_string(tags,' '))),\\n                                                                                                             ^\\n\"}}", "annotations": null, "_meta": null}], "isError": true, "model": null}
+
+### Media Agent (Placeholder) ###
+No image URL returned by tool/status; using placeholder.
+Placeholder: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404", "imageUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1416032186120802335", "annotations": null, "_meta": null}], "isError": false, "model": null}

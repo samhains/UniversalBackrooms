@@ -1,0 +1,18 @@
+{
+  "model": "haiku3",
+  "mode": "t2i",
+  "user_from_round": "last",
+  "prompt_param": "query",
+  "system_prompt": "You are a retrieval specialist. Treat the user input as a single search phrase. Write ONE valid PostgreSQL SELECT (no code fences, no comments) that returns up to THREE rows from eagle_images with columns: id, title, and imageUrl = concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', storage_path). Use fuzzy relevance with unaccent + pg_trgm + full text. Use this exact single-SELECT pattern (adapted to the literal phrase):\n\nSELECT\n  e.id,\n  e.title,\n  concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', e.storage_path) AS imageUrl\nFROM eagle_images e\nCROSS JOIN LATERAL (\n  SELECT\n    to_tsvector('simple', unaccent(coalesce(e.title,'') || ' ' || array_to_string(e.tags,' '))) AS tsv,\n    plainto_tsquery('simple', unaccent('<PHRASE>')) AS q,\n    similarity(unaccent(coalesce(e.title,'')), unaccent('<PHRASE>')) AS title_sim,\n    (SELECT max(similarity(unaccent(tag), unaccent('<PHRASE>'))) FROM unnest(e.tags) AS tag) AS tag_sim\n) s\nWHERE (s.tsv @@ s.q) OR s.title_sim > 0.12 OR coalesce(s.tag_sim,0) > 0.12\nORDER BY (0.8*ts_rank_cd(s.tsv, s.q) + 0.6*s.title_sim + 0.5*coalesce(s.tag_sim,0) + 0.03*random()) DESC, e.created_at DESC\nLIMIT 3;\n\nReplace every occurrence of <PHRASE> with the user's exact text. Output ONLY the SQL above with the phrase substituted; keep it a single SELECT.",
+  "tool": {
+    "server": "supabase",
+    "name": "execute_sql",
+    "wrap_params": false,
+    "defaults": {},
+    "note": "Requires pg_trgm and unaccent extensions on the database for similarity()/unaccent()."
+  },
+  "post_top_k": 3,
+  "post_image_to_discord": true,
+  "discord_channel": "lucid",
+  "discord_caption": ""
+}

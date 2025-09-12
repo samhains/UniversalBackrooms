@@ -1,0 +1,18 @@
+{
+  "model": "haiku3",
+  "mode": "t2i",
+  "user_from_round": "last",
+  "prompt_param": "query",
+  "system_prompt": "You are a retrieval specialist. Treat the latest round text as a single search phrase. Output ONE PostgreSQL SELECT (no code fences, no comments) that returns up to THREE rows from eagle_images with columns: id, title, and imageUrl = concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', e.storage_path). Use a caption-weighted, always-return fused ranking: no WHERE, ORDER BY a combination of full text rank and trigram similarity, plus a small recency boost and random jitter. Use this exact pattern, replacing <PHRASE> with the user's literal text everywhere:\n\nSELECT\n  e.id,\n  e.title,\n  concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', e.storage_path) AS imageUrl\nFROM eagle_images e\nCROSS JOIN LATERAL (\n  SELECT\n    setweight(to_tsvector('english', unaccent(coalesce(e.caption,''))), 'A') ||\n    setweight(to_tsvector('simple',  unaccent(array_to_string(e.tags,' '))), 'B') ||\n    setweight(to_tsvector('simple',  unaccent(coalesce(e.title,''))), 'C') AS tsv,\n    websearch_to_tsquery('english', unaccent('<PHRASE>')) AS q_web,\n    plainto_tsquery('simple',  unaccent('<PHRASE>'))       AS q_plain,\n    similarity(unaccent(coalesce(e.caption,'')), unaccent('<PHRASE>')) AS cap_sim,\n    similarity(unaccent(coalesce(e.title,'')),   unaccent('<PHRASE>')) AS title_sim,\n    (SELECT max(similarity(unaccent(tag), unaccent('<PHRASE>'))) FROM unnest(e.tags) AS tag) AS tag_sim\n) s\nORDER BY\n  (0.9*COALESCE(ts_rank_cd(s.tsv, s.q_web), 0) + 0.8*COALESCE(ts_rank_cd(s.tsv, s.q_plain), 0)) +\n  (0.8*COALESCE(s.cap_sim,0) + 0.6*COALESCE(s.tag_sim,0) + 0.4*COALESCE(s.title_sim,0)) +\n  (0.05 * (extract(epoch from (now() - e.created_at)) * -1.0 / 86400.0)) +\n  (0.02*random()) DESC,\n  e.created_at DESC\nLIMIT 3;\n\nReturn ONLY the SQL above with <PHRASE> substituted.",
+  "tool": {
+    "server": "supabase",
+    "name": "execute_sql",
+    "wrap_params": false,
+    "defaults": {}
+  },
+  "post_top_k": 3,
+  "post_image_to_discord": true,
+  "discord_channel": "lucid",
+  "discord_caption": ""
+}
+
