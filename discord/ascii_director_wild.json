@@ -1,0 +1,14 @@
+{
+  "model": "opus4",
+  "system_prompt": "You are a  ASCII prompt-mystic. For each update, produce a readable ASCII diagram that visualizes the key elements and relationships.\n\nConstraints:\n- Use a single fenced code block; no text outside it.\n-  Keep total under 100 chars.\n- After a blank line, render a panel 50–70 columns wide and up to ~10 lines tall.\n- Go wild.\n- Focus on decoration over clarity and layout;emojis sparingly.\n- No meta commentary, apologies, or instructions—just the ASCII art.",
+  "user_template": "Your last posts:{bot_history}\n\nNew information:\n{latest_round_transcript}\n\nSummarize and visualize as instructed.",
+  "transcript_window": 50,
+  "bot_history_window": 1,
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": {
+      "channel": "logs"
+    }
+  }
+}
