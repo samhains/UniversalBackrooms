@@ -69,3 +69,8 @@
 
 - MCP servers
   - Added a `cv-art` server entry to `mcp.config.json` (points to `../cv-art-mcp`); no runtime coupling yet, prepared for future captioning/vibe prompts per image.
+
+- One-off Eagle → Discord poster
+  - Added `scripts/post_lucid_images.py`: a simple CLI to take a one-off prompt (e.g., "LAKE DOOR THRESHOLD"), retrieve up to 3 images from the `eagle_images` DB via the `media/eagle_top3.json` preset (SQL crafted by the selected LLM, default Opus 4), and post them to Discord (default channel `#lucid`).
+  - Usage: `python scripts/post_lucid_images.py "LAKE DOOR THRESHOLD" --channel lucid --model opus4 --caption "optional text" --config eagle_top3`
+  - Writes a run log to `BackroomsLogs/oneoff/` and respects MCP server configuration from `mcp.config.json`.
