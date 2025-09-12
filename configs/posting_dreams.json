@@ -9,7 +9,8 @@
   "context_window": 128000,
   "integrations": {
     "discord": ["dream_header", "simple_director", "transcripts"],
-    "media": "eagle_top3"
+    "media": "eagle_top3",
+    "media_overrides": { "discord_channel": "lucid" }
   },
   "data_source": {
     "kind": "supabase",

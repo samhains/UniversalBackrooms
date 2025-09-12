@@ -14,7 +14,8 @@
       "ascii_director_wild",
       "simple_director"
     ],
-    "media": "eagle_top3"
+    "media": "eagle_top3",
+    "media_overrides": { "discord_channel": "lucid" }
   },
   "data_source": {
     "kind": "supabase",
