@@ -48,3 +48,11 @@
 - Refactor: made `scripts/dreamsim3_dataset.py` use shared helpers
 - Justfile cleanup: added config-based presets and a `run` target
 - README: updated with Quickstart, config runner usage, and media agent improvements
+## 2025-09-12
+
+- K2 posting presets
+  - Added `configs/posting_dreams_k2.json`: identical to `configs/posting_dreams.json` but forced to K2 for all runs.
+  - Added `configs/posting_dreams_k2_ascii.json`: K2-only batch config using Discord presets `dream_header`, `ascii_director`, and `transcripts`.
+
+- Discord ASCII director
+  - Added `discord/ascii_director.json`: an ASCII-art-focused variant of the simple director that outputs a compact `prompt:` line followed by a readable ASCII panel (single fenced code block, clear layout, no meta/emojis).
