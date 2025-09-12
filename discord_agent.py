@@ -103,10 +103,11 @@ def run_discord_agent(
 
     generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str
     """
-    # 1) Build summary text via LLM (optional; can be disabled)
-    api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
-    # Always generate with LLM (config flag removed)
-    if True:
+    # 1) Build summary text via LLM (optional; can be disabled via config)
+    disable_summary = bool(discord_cfg.get("disable_summary", False))
+    summary = ""
+    if not disable_summary:
+        api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
         system_prompt = discord_cfg.get(
             "system_prompt",
             "You produce concise narrative summaries suitable for Discord updates.",
@@ -162,7 +163,6 @@ def run_discord_agent(
             )
             # Note: bot history is available only via {bot_history} in templates.
         summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
-    # No non-LLM path (was gated by use_llm)
 
     # Helper: chunk long Discord messages to <=2000 chars (use 1900 margin)
     def _chunk_text(txt: str, limit: int = 1900) -> List[str]:
@@ -219,28 +219,58 @@ def run_discord_agent(
         if os.path.exists(alt):
             mcp_config_path = alt
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
-    # Post summary (chunked if needed)
+    # Optionally post a pre-message separator before any content (e.g., between dreams)
+    # This uses the same tool/channel/server defaults.
+    posted_premessage: List[Dict[str, Any]] = []
+    pre_message = discord_cfg.get("pre_message")
+    if isinstance(pre_message, str) and pre_message.strip():
+        pre_parts = _chunk_text(pre_message.strip(), chunk_limit)
+        for part in pre_parts:
+            p_args = {
+                k: v
+                for k, v in {
+                    "channel": args.get("channel"),
+                    "server": args.get("server"),
+                    "message": part,
+                }.items()
+                if v is not None
+            }
+            try:
+                _ = call_tool(server_cfg, tool_name, p_args)
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": part,
+                })
+            except Exception:
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": "<failed to post pre_message>",
+                })
+    # Post summary (chunked if needed) unless disabled
     posted_summary: List[Dict[str, Any]] = []
-    summary_parts = _chunk_text(summary, chunk_limit)
-    for idx, part in enumerate(summary_parts, start=1):
-        s_args = dict(args)
-        s_args["message"] = part
-        # Attach media only to the first chunk if provided
-        if media_url and idx > 1 and "mediaUrl" in s_args:
-            s_args.pop("mediaUrl", None)
-        try:
-            _ = call_tool(server_cfg, tool_name, s_args)
-            posted_summary.append({
-                "server": s_args.get("server"),
-                "channel": s_args.get("channel"),
-                "message": part,
-            })
-        except Exception:
-            posted_summary.append({
-                "server": s_args.get("server"),
-                "channel": s_args.get("channel"),
-                "message": "<failed to post summary chunk>",
-            })
+    if not disable_summary:
+        summary_parts = _chunk_text(summary, chunk_limit)
+        for idx, part in enumerate(summary_parts, start=1):
+            s_args = dict(args)
+            s_args["message"] = part
+            # Attach media only to the first chunk if provided
+            if media_url and idx > 1 and "mediaUrl" in s_args:
+                s_args.pop("mediaUrl", None)
+            try:
+                _ = call_tool(server_cfg, tool_name, s_args)
+                posted_summary.append({
+                    "server": s_args.get("server"),
+                    "channel": s_args.get("channel"),
+                    "message": part,
+                })
+            except Exception:
+                posted_summary.append({
+                    "server": s_args.get("server"),
+                    "channel": s_args.get("channel"),
+                    "message": "<failed to post summary chunk>",
+                })
 
     out: Dict[str, Any] = {
         "posted": posted_summary,

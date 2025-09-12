@@ -1,0 +1,20 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 30,
+  "models": ["sonnet4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": {
+    "media": "kieai_edit_chain_logonly",
+    "discord": "simple_director"
+  },
+  "data_source": {
+    "kind": "supabase",
+    "limit": 200,
+    "source": "mine"
+  },
+  "shuffle": true
+}

@@ -573,6 +573,16 @@ def main():
 
     # Optional media agent configs: support multiple presets
     media_cfgs = []
+    # Read global per-run overrides for media presets from env (JSON)
+    media_overrides_env = os.getenv("BACKROOMS_MEDIA_OVERRIDES")
+    media_overrides: dict[str, object] = {}
+    if media_overrides_env:
+        try:
+            _mov = json.loads(media_overrides_env)
+            if isinstance(_mov, dict):
+                media_overrides = _mov
+        except Exception:
+            pass
     if args.media and load_media_config:
         # Flatten possible comma-separated values across repeated flags
         raw_media: list[str] = []
@@ -589,6 +599,13 @@ def main():
             cfg = load_media_config(name)
             if cfg:
                 cfg.setdefault("__name__", name)
+                # Apply shallow overrides from env if provided
+                if media_overrides:
+                    try:
+                        for k, v in media_overrides.items():
+                            cfg[k] = v
+                    except Exception:
+                        pass
                 media_cfgs.append(cfg)
             else:
                 try:
@@ -643,6 +660,26 @@ def main():
                         pass
                 discord_cfgs.append(cfg)
                 discord_bot_history[name] = []
+            else:
+                try:
+                    dd = Path("discord")
+                    choices = []
+                    if dd.exists():
+                        for p in dd.iterdir():
+                            if p.is_file() and p.suffix == ".json":
+                                choices.append(p.stem)
+                    print(
+                        f"Warning: discord preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                    )
+                except Exception:
+                    print(f"Warning: discord preset '{name}' not found.")
+
+    if discord_cfgs:
+        try:
+            loaded_names = ", ".join([cfg.get("__name__", "?") for cfg in discord_cfgs])
+            print(f"[backrooms] Discord profiles loaded: {loaded_names}")
+        except Exception:
+            pass
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
@@ -785,6 +822,9 @@ def main():
         pass
 
     # Database save disabled by default; no early row creation.
+    # Track Discord profiles that have already posted at start to avoid duplicates
+    _discord_posted_start: set[str] = set()
+
     while turn < args.max_turns:
         # Announce round progress in terminal and append to log file
         try:
@@ -860,9 +900,60 @@ def main():
             _save_run_to_supabase(exit_reason="manual_stop")
             break
 
+        # First, for Discord profiles that should post only at the very start,
+        # run them before media so headers land first in the channel.
+        if discord_cfgs and run_discord_agent:
+            for dcfg in discord_cfgs:
+                try:
+                    run_on = (dcfg.get("run_on") or "every").strip().lower()
+                except Exception:
+                    run_on = "every"
+                post_once_at_start = bool(dcfg.get("post_once_at_start", False))
+                name = dcfg.get("__name__", "")
+                # Only fire on the very first round, once
+                if turn == 0 and (post_once_at_start or run_on in ("first", "first_only", "start", "start_only")):
+                    if name and name in _discord_posted_start:
+                        continue
+                    try:
+                        res = run_discord_agent(
+                            discord_cfg=dcfg,
+                            selected_models=models,
+                            round_entries=round_entries,
+                            transcript=transcript,
+                            generate_text_fn=media_generate_text_fn,
+                            model_info=MODEL_INFO,
+                            media_url=None,
+                            bot_history=discord_bot_history.get(name, []),
+                        )
+                        # Track posted summary in bot history and mark as posted-at-start
+                        try:
+                            if name and isinstance(res, dict):
+                                summary_text = res.get("composed_summary")
+                                if isinstance(summary_text, str) and summary_text.strip():
+                                    discord_bot_history.setdefault(name, []).append(summary_text.strip())
+                            if name:
+                                _discord_posted_start.add(name)
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        err = f"\nDiscord Agent error: {e}"
+                        print(err)
+                        with open(filename, "a") as f:
+                            f.write(err + "\n")
+
         # After the round, invoke media agents (one or many); media posts images on its own
         if media_cfgs and run_media_agent:
             for mcfg in media_cfgs:
+                # Optional: only run media every N rounds (default 1 = every round)
+                try:
+                    every = int(mcfg.get("run_every_n_rounds", 1))
+                except Exception:
+                    every = 1
+                if every < 1:
+                    every = 1
+                # 'turn' is 0-based; run on rounds where turn % every == 0
+                if (turn % every) != 0:
+                    continue
                 try:
                     run_media_agent(
                         media_cfg=mcfg,
@@ -881,6 +972,18 @@ def main():
         # After the round, post Discord updates (text-only) for each profile
         if discord_cfgs and run_discord_agent:
             for dcfg in discord_cfgs:
+                # Optional: allow certain Discord presets to post only at the start of a dream
+                try:
+                    run_on = (dcfg.get("run_on") or "every").strip().lower()
+                except Exception:
+                    run_on = "every"
+                post_once_at_start = bool(dcfg.get("post_once_at_start", False))
+                # 'turn' is 0-based and incremented at end of loop; first round occurs when turn == 0
+                if post_once_at_start or run_on in ("first", "first_only", "start", "start_only"):
+                    # Skip here if not first turn, or if we already posted in the pre-media stage
+                    name = dcfg.get("__name__", "")
+                    if turn != 0 or (name and name in _discord_posted_start):
+                        continue
                 try:
                     res = run_discord_agent(
                         discord_cfg=dcfg,

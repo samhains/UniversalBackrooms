@@ -1,0 +1,15 @@
+{
+  "type": "single",
+  "template": "dreamsim3",
+  "max_turns": 4,
+  "models": ["sonnet4", "sonnet4"],
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": {
+    "media": "kieai_edit_chain_logonly",
+    "discord": ["simple_director"],
+    "discord_overrides": { "post_transcript": false }
+  },
+  "vars": {"DREAM_TEXT": "A vivid dream of a neon-lit alley, puddles reflecting signs, a figure approaches with a glowing key."}
+}
+

@@ -1,0 +1,14 @@
+{
+  "model": "k2",
+  "system_prompt": "You are a writer producing a vivid, concise prompt describing the ongoing narrative. Avoid meta text. Simple, short sentences. All lower-case. A little bit Hemmingway. Keep under 300 chars unless necessary. Always end with Ascii Art.",
+  "user_template": "Your last posts:{bot_history} \n\n New Information: {latest_round_transcript}\n\n",
+  "transcript_window": 50,
+  "bot_history_window": 1,
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": {
+      "channel": "logs"
+    }
+  }
+}

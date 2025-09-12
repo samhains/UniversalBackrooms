@@ -419,31 +419,19 @@ The project can optionally post round-by-round updates to a Discord channel usin
 
 ### Transcript Posting
 
-You can also mirror the conversation verbatim to a separate channel (e.g., `#transcripts`). Configure this per run in your config file under `integrations` (recommended; presets ignore transcript toggles):
+To mirror each round verbatim to a separate channel (e.g., `#transcripts`), use a dedicated Discord preset so you don’t need to set options in two places.
 
-```json
-{
-  "integrations": {
-    "discord": ["status_feed"],
-    "post_transcript": false,
-    "transcript_channel": "transcripts"
-  }
-}
+- Recommended: add the built-in preset `transcripts` alongside your normal summary preset(s):
+
+```
+python backrooms.py --lm sonnet3 sonnet3 --template dreamsim3 --discord status_feed --discord transcripts
 ```
 
-- Optional: provide a separate tool config for transcript posts if you want a different MCP server or tool:
+- The `discord/transcripts.json` preset is configured to only post the verbatim entries (no summary) to the `transcripts` channel. You can copy/modify it if you need a different channel or server.
 
-```json
-{
-  "transcript_tool": {
-    "server": "discord",
-    "name": "send-message",
-    "defaults": { "channel": "transcripts" }
-  }
-}
-```
+- Advanced (optional/back‑compat): you can still override transcript behavior per run via config `integrations` (keys `post_transcript`, `transcript_channel`, and `transcript_tool`). This remains supported but using the `transcripts` preset is simpler and avoids duplication.
 
-When enabled, after each round the agent posts the normal summary to the main channel and also posts the verbatim round transcript to the transcript channel. Very long messages are split into multiple parts to respect Discord length limits.
+When enabled, after each round the agent posts the normal summary (from your summary preset(s)) and also posts the verbatim round transcript (from the `transcripts` preset). Very long messages are split into multiple parts to respect Discord length limits.
 
 ### Bot Memory (per-run)
 
@@ -472,6 +460,7 @@ Discord profiles can optionally include their own prior posts from the current r
 - `cctv`: terse surveillance‑style captions.
 - `dreamsim`: terminal‑style status logs of current simulation state.
 - `narrative_terminal`: terminal‑style, cohesive narrative arc of events.
+- `transcripts`: posts verbatim round entries to a transcripts channel (no summary).
 
 Use a preset by passing its filename stem:
 

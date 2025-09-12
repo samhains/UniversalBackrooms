@@ -90,21 +90,18 @@ Provide a profile name under `discord/` via `integrations.discord`. Each profile
 
 Notes:
 - Empty string `"server": ""` is ignored. Omit it or set a valid guild/server name if your MCP server expects it.
-- Transcripts (when enabled) are posted per-entry (one Discord message per actor’s message) to maximize readability.
+- Transcripts are posted per-entry (one Discord message per actor’s message) to maximize readability.
 
-Presets should not contain transcript toggles. Instead, configure per-run at the config level under `integrations`:
+Transcript posting (recommended):
+- Use a dedicated preset `transcripts` so you configure it once. Example usage in a config:
 
 ```json
 {
-  "integrations": {
-    "discord": ["status_feed"],
-    "post_transcript": false,
-    "transcript_channel": "transcripts"
-  }
+  "integrations": { "discord": ["status_feed", "transcripts"] }
 }
 ```
 
-Advanced: You may also use `integrations.discord_overrides` to pass any additional fields directly into the Discord profile(s) for that run.
+Advanced (optional/back‑compat): You may override transcript behavior per run using `integrations.post_transcript`, `integrations.transcript_channel`, or `integrations.transcript_tool`, or pass arbitrary fields via `integrations.discord_overrides`. The preset approach is simpler and avoids duplication.
 
 Backwards compatibility:
 - `{latest_round_bullets}` and `{context_bullets}` are still supported but deprecated in favor of `{latest_round_transcript}` and `{transcript}`.

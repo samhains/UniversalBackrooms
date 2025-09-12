@@ -118,6 +118,28 @@ class MediaAgentState:
     def conversation_summary(self, value: str):
         self.data["conversation_summary"] = value
 
+    @property
+    def last_posted_ref(self) -> Optional[str]:
+        return self.data.get("last_posted_ref")
+
+    @last_posted_ref.setter
+    def last_posted_ref(self, value: Optional[str]):
+        if value:
+            self.data["last_posted_ref"] = value
+        else:
+            self.data.pop("last_posted_ref", None)
+
+    @property
+    def last_posted_task_id(self) -> Optional[str]:
+        return self.data.get("last_posted_task_id")
+
+    @last_posted_task_id.setter
+    def last_posted_task_id(self, value: Optional[str]):
+        if value:
+            self.data["last_posted_task_id"] = value
+        else:
+            self.data.pop("last_posted_task_id", None)
+
 
 def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
     # Best-effort extraction from MCP result formats
@@ -126,6 +148,55 @@ def parse_result_for_image_ref(result: Dict[str, Any]) -> Optional[str]:
         val = result.get(key)
         if isinstance(val, str) and val:
             return val
+    # Direct arrays or alt keys at top-level
+    for key in ("image_urls", "images", "urls", "result_urls"):
+        val = result.get(key)
+        if isinstance(val, list):
+            # Prefer the most recent URL if arrays are ordered oldest->newest
+            cand = None
+            for item in reversed(val):
+                if isinstance(item, str) and item:
+                    cand = item
+                    break
+                if isinstance(item, dict):
+                    u = item.get("imageUrl") or item.get("url") or item.get("uri")
+                    if isinstance(u, str) and u:
+                        cand = u
+                        break
+            if cand:
+                return cand
+    if isinstance(result.get("result_url"), str) and result.get("result_url"):
+        return result.get("result_url")
+    # 1b) Common nested shapes
+    try:
+        nested_resp = (result.get("response", {}) or {}).get("data", {})
+        for k in ("imageUrl", "image_url", "url", "uri", "result_url", "outputUrl", "output_url"):
+            v = nested_resp.get(k)
+            if isinstance(v, str) and v:
+                return v
+        # Arrays: imageUrls, image_urls, urls, images, outputUrls
+        for k in ("imageUrls", "image_urls", "urls", "images", "result_urls", "outputUrls", "output_urls"):
+            arr = nested_resp.get(k)
+            if isinstance(arr, list):
+                cand = next((s for s in reversed(arr) if isinstance(s, str) and s), None)
+                if cand:
+                    return cand
+    except Exception:
+        pass
+    # 1c) Nested under local_task
+    try:
+        lt = result.get("local_task", {}) or {}
+        for k in ("result_url", "image_url", "url", "uri"):
+            if isinstance(lt.get(k), str) and lt.get(k):
+                return lt.get(k)
+        for k in ("result_urls", "image_urls", "urls", "output_urls", "outputUrls", "images"):
+            arr = lt.get(k)
+            if isinstance(arr, list):
+                cand = next((s for s in reversed(arr) if isinstance(s, str) and s), None)
+                if cand:
+                    return cand
+    except Exception:
+        pass
 
     # 2) Standard MCP content array
     content = result.get("content")
@@ -280,9 +351,28 @@ def run_media_agent(
 
     defaults = tool.get("defaults", {})
     args = {"prompt": prompt_text, **defaults}
-    # For edit mode, attach the prior image URL as required by edit_image
+    debug_args_summary = ""
+    # For edit mode, attach the prior image reference using configurable param name/shape
     if mode == "edit" and state.last_image_ref:
-        args["image_url"] = state.last_image_ref
+        img_param_cfg = tool.get("image_param")
+        # Support either a simple string (param name) or an object { name, as_list }
+        if isinstance(img_param_cfg, dict):
+            param_name = img_param_cfg.get("name") or "image_url"
+            as_list = bool(img_param_cfg.get("as_list"))
+        elif isinstance(img_param_cfg, str):
+            param_name = img_param_cfg
+            as_list = False
+        else:
+            param_name = "image_url"
+            as_list = False
+        ref_to_use = state.last_image_ref
+        args[param_name] = [ref_to_use] if as_list else ref_to_use
+        # Keep a short debug summary for logs
+        try:
+            shown = ref_to_use if not isinstance(ref_to_use, str) else (ref_to_use[:120] + ("…" if len(ref_to_use) > 120 else ""))
+            debug_args_summary = f"EditParam: {param_name}={'list' if as_list else 'str'} -> {shown}"
+        except Exception:
+            pass
 
     # Load MCP server config (support multiple common envs/filenames)
     mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
@@ -323,11 +413,24 @@ def run_media_agent(
 
     # 4) Log
     header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
-    body = f"Mode: {mode}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
+    dbg = ("\n" + debug_args_summary) if debug_args_summary else ""
+    body = f"Mode: {mode}{dbg}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
     log_media_result(filename, header, body)
 
     # 5) Try to extract an image ref; if missing, poll status tool when task_id is present
     ref = parse_result_for_image_ref(result)
+    # If this is an EDIT call and the immediate result echoes the input image URL,
+    # ignore it so we proceed to poll for the actual edited output URL.
+    try:
+        if (
+            mode == "edit"
+            and ref
+            and isinstance(state.last_image_ref, str)
+            and ref == state.last_image_ref
+        ):
+            ref = None
+    except Exception:
+        pass
     task_id: Optional[str] = None
     if not ref:
         # Attempt to parse JSON-encoded text content to find taskId
@@ -364,13 +467,26 @@ def run_media_agent(
         # Poll until an image URL appears or timeout
         while elapsed < max_seconds:
             try:
-                status_args = {"task_id": task_id}
-                status_result = call_tool(server_cfg, status_name, status_args)
+                # Be liberal in what we send: include both task_id and taskId.
+                status_args = {"task_id": task_id, "taskId": task_id}
+                # Some FastMCP servers expect params-wrapped input even for status tools.
+                s_wrap = bool(status_cfg.get("wrap_params", False))
+                status_payload = {"params": status_args} if s_wrap else status_args
+                status_result = call_tool(server_cfg, status_name, status_payload)
                 # Log heartbeat in file for transparency (truncate to keep logs tidy)
-                hb = f"Status({task_id}) -> {json.dumps(status_result, ensure_ascii=False)[:300]}..."
+                hb = f"Status({task_id}) -> {json.dumps(status_result, ensure_ascii=False)[:1000]}..."
                 with open(filename, "a") as f:
                     f.write("\n" + hb + "\n")
                 ref = parse_result_for_image_ref(status_result)
+                # Optionally ignore duplicate refs in edit mode; default is to accept same URLs
+                if (
+                    mode == "edit"
+                    and ref
+                    and state.last_image_ref
+                    and ref == state.last_image_ref
+                    and bool(media_cfg.get("dedupe_same_url_in_edit", False))
+                ):
+                    ref = None
                 if not ref:
                     # Also attempt to parse JSON text for 'imageUrl' fields
                     c2 = status_result.get("content")
@@ -385,16 +501,77 @@ def run_media_agent(
                     for t in texts2:
                         try:
                             d = json.loads(t)
-                            cand = (
-                                (d.get("response", {}).get("data", {}) or {}).get("imageUrl")
-                                or d.get("imageUrl")
-                                or (d.get("local_task", {}) or {}).get("result_url")
-                            )
-                            if isinstance(cand, str) and cand:
-                                ref = cand
-                                break
                         except Exception:
                             continue
+                        # Prefer API response data if present (KIE uses 'api_response' here)
+                        data_obj = (
+                            (d.get("response", {}) or {}).get("data", {})
+                            or (d.get("api_response", {}) or {}).get("data", {})
+                            or {}
+                        )
+                        # Try direct scalar first (also accept generic 'url')
+                        cand = (
+                            data_obj.get("imageUrl")
+                            or d.get("imageUrl")
+                            or data_obj.get("url")
+                            or d.get("url")
+                            or data_obj.get("resultUrl")
+                            or d.get("resultUrl")
+                            or data_obj.get("outputUrl")
+                            or d.get("outputUrl")
+                        )
+                        # Try arrays: imageUrls, image_urls, urls, images, result_urls (prefer newest)
+                        if not cand:
+                            for k in ("imageUrls", "image_urls", "urls", "images", "result_urls", "outputUrls", "output_urls", "resultUrls"):
+                                arr = data_obj.get(k) or d.get(k)
+                                if isinstance(arr, list):
+                                    cand2 = None
+                                    for item in reversed(arr):
+                                        if isinstance(item, str) and item:
+                                            if not state.last_image_ref or item != state.last_image_ref:
+                                                cand2 = item
+                                                break
+                                        elif isinstance(item, dict):
+                                            u = item.get("imageUrl") or item.get("url") or item.get("uri")
+                                            if isinstance(u, str) and u:
+                                                if not state.last_image_ref or u != state.last_image_ref:
+                                                    cand2 = u
+                                                    break
+                                    if cand2:
+                                        cand = cand2
+                                        break
+                        # Fallback to local_task.result_url
+                        if not cand:
+                            cand = (d.get("local_task", {}) or {}).get("result_url")
+                        if isinstance(cand, str) and cand:
+                            # Always avoid posting the prior image in edit mode
+                            if mode == "edit" and state.last_image_ref and cand == state.last_image_ref:
+                                continue
+                            ref = cand
+                            break
+                # Final fallback: regex-scan for any image URL in raw status text, preferring URLs that contain the task_id
+                if not ref:
+                    import re as _re
+                    raw_blob = "\n".join(texts2)
+                    # Search for any image/media URL
+                    matches = list(_re.finditer(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif|mp4|webm|mov|m4v|mp3|wav|flac|ogg)", raw_blob, _re.I))
+                    picked = None
+                    for m in matches:
+                        u = m.group(0)
+                        if isinstance(u, str) and u:
+                            # Prefer URLs that include the task_id (new output) and that differ from the prior ref
+                            if (task_id and task_id in u) and (not state.last_image_ref or u != state.last_image_ref):
+                                picked = u
+                                break
+                    if not picked and matches:
+                        # Fallback to the most recent URL that differs from prior
+                        for m in reversed(matches):
+                            u = m.group(0)
+                            if isinstance(u, str) and u and (not state.last_image_ref or u != state.last_image_ref):
+                                picked = u
+                                break
+                    if picked:
+                        ref = picked
                 if ref:
                     # Prepend a standard content element so callers can extract easily
                     try:
@@ -415,14 +592,93 @@ def run_media_agent(
                 break
             elapsed += interval
 
-    # 6) Update state with newest image reference if present
-    if ref:
+    # 6) If no media was produced (e.g., refusal/timeouts), optionally provide a placeholder image
+    if not ref:
+        try:
+            if bool(media_cfg.get("post_placeholder", True)):
+                # Allow override via media config; else use a tasteful 16:9 dark placeholder
+                placeholder_url = (
+                    media_cfg.get("placeholder_url")
+                    or "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404"
+                )
+                ref = placeholder_url
+                # Synthesize a minimal MCP-like result so downstream parsing works
+                if not isinstance(result, dict):
+                    result = {}
+                result.setdefault("content", [])
+                try:
+                    if isinstance(result["content"], list):
+                        result["content"].insert(0, {"type": "image", "uri": ref})
+                    else:
+                        result["content"] = [{"type": "image", "uri": ref}]
+                except Exception:
+                    pass
+                # Log a concise note in the run log
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Placeholder) ###\n")
+                    f.write("No image URL returned by tool/status; using placeholder.\n")
+                    f.write(f"Placeholder: {ref}\n")
+            else:
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Skip) ###\n")
+                    f.write("No image URL returned by tool/status; skipping placeholder and Discord post.\n")
+        except Exception:
+            # Last-resort: keep result as-is (may be None)
+            pass
+
+    # 7) Update state with newest image reference if present and not a placeholder
+    try:
+        _ph = media_cfg.get("placeholder_url") or "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404"
+    except Exception:
+        _ph = None
+    if ref and ref != _ph:
         state.last_image_ref = ref
     state.save()
 
-    # 7) Optionally post image directly to Discord (media-only responsibility)
+    # 8) Best-effort JSONL event for diagnostics/consumption
+    try:
+        media_event = {
+            "mode": mode,
+            "prompt": prompt_text,
+            "task_id": task_id,
+            "image_url": ref,
+            "server": server_name,
+            "tool": tool_name,
+        }
+        with open(f"{filename}.media.jsonl", "a", encoding="utf-8") as jf:
+            jf.write(json.dumps(media_event, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+    # 9) Optionally post image directly to Discord (media-only responsibility)
     try:
         if ref and media_cfg.get("post_image_to_discord", True):
+            # Avoid duplicate posts if configured (default: true)
+            dedupe = bool(media_cfg.get("dedupe_discord_posts", True))
+            if dedupe and (
+                (task_id and state.last_posted_task_id == task_id)
+                or (state.last_posted_ref == ref)
+            ):
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Discord Post) ###\n")
+                    f.write("Duplicate detected; skipping Discord post.\n")
+                    if task_id:
+                        f.write(f"Task: {task_id}\n")
+                    f.write(f"Media: {ref}\n")
+                return result
+            # Support a dry-run mode that logs the intended post without calling Discord
+            if media_cfg.get("discord_dry_run", False):
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Discord Post) ###\n")
+                    f.write(f"Channel: {media_cfg.get('discord_channel') or 'media'}\n")
+                    f.write(f"Media: {ref}\n")
+                    f.write("Result: DRY RUN (not posted)\n")
+                # Skip actual Discord call
+                # Update last_posted markers so subsequent rounds don't re-attempt
+                state.last_posted_ref = ref
+                state.last_posted_task_id = task_id
+                state.save()
+                return result
             # Resolve Discord server config and channel
             dserver = media_cfg.get("discord_server", "discord")
             dtool = media_cfg.get("discord_tool", {"name": "send-message"})
@@ -434,6 +690,18 @@ def run_media_agent(
             dargs = {"channel": channel, "message": caption, "mediaUrl": ref}
             if "server" in ddefaults:
                 dargs["server"] = ddefaults["server"]
+            # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
+            try:
+                _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
+                if _ov_env:
+                    _ov = json.loads(_ov_env)
+                    if isinstance(_ov, dict):
+                        if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
+                            dargs["server"] = _ov.get("server").strip()
+                        if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
+                            dargs["channel"] = _ov.get("channel").strip()
+            except Exception:
+                pass
             # Load discord MCP server config
             mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
             if not os.path.exists(mcp_config_path):
@@ -448,6 +716,10 @@ def run_media_agent(
                 f.write(f"Channel: {channel}\n")
                 f.write(f"Media: {ref}\n")
                 f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+            # Remember last posted ref after a successful call
+            state.last_posted_ref = ref
+            state.last_posted_task_id = task_id
+            state.save()
     except Exception as _e:
         # Non-fatal: keep the media result even if posting fails
         with open(filename, "a") as f:
