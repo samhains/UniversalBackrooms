@@ -290,7 +290,21 @@ def run_media_agent(
         )
         system_prompt = system_prompt_edit
     else:
-        if media_cfg.get("t2i_use_summary", False):
+        # Allow presets to force the user content to be the raw round text
+        force_from_round = media_cfg.get("user_from_round")
+        if isinstance(force_from_round, str):
+            force_from_round = force_from_round.strip().lower()
+        if force_from_round in (True, "true", "last", "all"):
+            texts = [str(e.get("text", "")) for e in round_entries if str(e.get("text", "")).strip()]
+            if texts:
+                if force_from_round in ("all",):
+                    user_content = "\n".join(texts)
+                else:
+                    user_content = texts[-1]
+            else:
+                user_content = ""
+            system_prompt = system_prompt_t2i
+        elif media_cfg.get("t2i_use_summary", False):
             # Build/update a concise summary to reflect current state
             summary_prompt = (
                 "Summarize the ongoing conversation so far in <=120 words focusing on enduring entities, scene, and motifs. Be concrete and visual."
