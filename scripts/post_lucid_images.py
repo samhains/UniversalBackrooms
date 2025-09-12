@@ -41,6 +41,8 @@ except Exception:
 
 # Import media agent helpers
 from media_agent import load_media_config, run_media_agent
+from mcp_cli import load_server_config
+from mcp_client import MCPServerConfig, call_tool, list_tools
 from model_config import get_model_info
 
 # Reuse LLM call paths from backrooms for provider routing
@@ -146,16 +148,71 @@ def main(argv: Optional[List[str]] = None) -> int:
     model_info = get_model_info()
     generate_text_fn = _generate_text_fn("Eagle Retriever")
 
-    # Drive the media agent end-to-end
-    res = run_media_agent(
-        media_cfg=cfg,
-        selected_models=[args.model],
-        round_entries=round_entries,
-        transcript=transcript,
-        filename=filename,
-        generate_text_fn=generate_text_fn,
-        model_info=model_info,
-    )
+    # Try to use Supabase MCP if it exposes a SQL-like tool; else fall back to direct REST + Discord posting
+    try:
+        supa_cfg: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "supabase")
+        tools = list_tools(supa_cfg)
+        tool_names = {t.get("name") for t in tools if isinstance(t, dict)}
+    except Exception:
+        tool_names = set()
+
+    res = None
+    if "sql" in tool_names or "execute_sql" in tool_names:
+        # Drive the media agent end-to-end (MCP Supabase path)
+        res = run_media_agent(
+            media_cfg=cfg,
+            selected_models=[args.model],
+            round_entries=round_entries,
+            transcript=transcript,
+            filename=filename,
+            generate_text_fn=generate_text_fn,
+            model_info=model_info,
+        )
+    else:
+        # Fallback: directly hit Supabase REST to fetch latest 3 images; then post via Discord MCP
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = (
+            os.getenv("SUPABASE_KEY")
+            or os.getenv("SUPABASE_ANON_KEY")
+            or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        )
+        if not supabase_url or not supabase_key:
+            raise SystemExit("Supabase REST fallback requires SUPABASE_URL and a key (SUPABASE_ANON_KEY or SERVICE_ROLE)")
+        import requests
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+        }
+        # Basic heuristic: fetch latest 3; fast and robust
+        url = f"{supabase_url}/rest/v1/eagle_images?select=title,storage_path,created_at&order=created_at.desc&limit=3"
+        r = requests.get(url, headers=headers, timeout=15)
+        if r.status_code != 200:
+            raise SystemExit(f"Supabase REST error {r.status_code}: {r.text[:300]}")
+        rows = r.json() if r.content else []
+        if not isinstance(rows, list):
+            rows = []
+        # Build public URLs from storage_path
+        pub_base = f"{supabase_url}/storage/v1/object/public/eagle-images/"
+        images: List[str] = []
+        for row in rows:
+            sp = (row.get("storage_path") or "").strip()
+            if sp:
+                images.append(pub_base + sp)
+        # Post to Discord via MCP
+        try:
+            d_server: MCPServerConfig = load_server_config(os.environ.get("MCP_SERVERS_CONFIG", str(mcp_cfg_path)), "discord")
+        except Exception as e:
+            raise SystemExit(f"Discord MCP not configured: {e}")
+        caption = cfg.get("discord_caption") or "Eagle picks — Backrooms vibe"
+        for u in images:
+            payload = {"channel": args.channel, "message": caption, "mediaUrl": u}
+            try:
+                call_tool(d_server, cfg.get("discord_tool", {"name": "send-message"}).get("name", "send-message"), payload)
+            except Exception:
+                # Ignore individual post failures; continue
+                pass
+        # Synthesize a minimal result for logging/display
+        res = {"content": [{"type": "image", "uri": u} for u in images]}
 
     # Best-effort user feedback
     if isinstance(res, dict):
@@ -167,4 +224,3 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
