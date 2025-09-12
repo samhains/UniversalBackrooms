@@ -418,6 +418,69 @@ def run_media_agent(
     body = f"Mode: {mode}{dbg}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
     log_media_result(filename, header, body)
 
+    # Helper: extract as many image/media URLs as possible from a tool result
+    def _extract_all_image_urls(obj: dict) -> list[str]:
+        urls: list[str] = []
+        def _add(u):
+            if isinstance(u, str) and u and u not in urls:
+                urls.append(u)
+        try:
+            content = obj.get("content")
+            if isinstance(content, list):
+                for item in content:
+                    _add(item.get("uri") or item.get("url") or item.get("path"))
+                    t = item.get("text")
+                    if isinstance(t, str):
+                        import re as _re
+                        for m in _re.finditer(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif|mp4|webm|mov|m4v|mp3|wav|flac|ogg)", t, _re.I):
+                            _add(m.group(0))
+            elif isinstance(content, str):
+                import re as _re
+                for m in _re.finditer(r"https?://\S+\.(?:png|jpg|jpeg|webp|gif|mp4|webm|mov|m4v|mp3|wav|flac|ogg)", content, _re.I):
+                    _add(m.group(0))
+        except Exception:
+            pass
+        # Common top-level keys and arrays
+        for key in ("image_url", "url", "uri", "result_url", "output_url", "outputUrl"):
+            _add(obj.get(key))
+        for key in ("image_urls", "images", "urls", "result_urls", "output_urls", "outputUrls"):
+            arr = obj.get(key)
+            if isinstance(arr, list):
+                for it in arr:
+                    if isinstance(it, str):
+                        _add(it)
+                    elif isinstance(it, dict):
+                        _add(it.get("imageUrl") or it.get("url") or it.get("uri"))
+        # Nested API response shapes
+        try:
+            nested_resp = (obj.get("response", {}) or {}).get("data", {})
+            for key in ("imageUrl", "url", "uri", "resultUrl", "outputUrl"):
+                _add(nested_resp.get(key))
+            for key in ("imageUrls", "urls", "images", "resultUrls", "outputUrls"):
+                arr = nested_resp.get(key)
+                if isinstance(arr, list):
+                    for it in arr:
+                        if isinstance(it, str):
+                            _add(it)
+                        elif isinstance(it, dict):
+                            _add(it.get("imageUrl") or it.get("url") or it.get("uri"))
+        except Exception:
+            pass
+        # local_task nesting (FastMCP servers)
+        try:
+            lt = obj.get("local_task", {}) or {}
+            for key in ("result_url", "image_url", "url", "uri"):
+                _add(lt.get(key))
+            for key in ("result_urls", "image_urls", "urls", "output_urls", "outputUrls", "images"):
+                arr = lt.get(key)
+                if isinstance(arr, list):
+                    for it in arr:
+                        if isinstance(it, str):
+                            _add(it)
+        except Exception:
+            pass
+        return urls
+
     # 5) Try to extract an image ref; if missing, poll status tool when task_id is present
     ref = parse_result_for_image_ref(result)
     # If this is an EDIT call and the immediate result echoes the input image URL,
@@ -651,12 +714,23 @@ def run_media_agent(
     except Exception:
         pass
 
-    # 9) Optionally post image directly to Discord (media-only responsibility)
+    # 9) Optionally post image(s) directly to Discord (media-only responsibility)
     try:
         if ref and media_cfg.get("post_image_to_discord", True):
-            # Avoid duplicate posts if configured (default: true)
+            # Collect multiple image URLs when requested
+            try:
+                top_k = int(media_cfg.get("post_top_k", 1))
+            except Exception:
+                top_k = 1
+            urls_to_post = [ref]
+            if top_k > 1 and isinstance(result, dict):
+                try:
+                    urls_to_post = _extract_all_image_urls(result)[: top_k]
+                except Exception:
+                    urls_to_post = [ref]
+            # Avoid duplicate single-posts if configured (default: true)
             dedupe = bool(media_cfg.get("dedupe_discord_posts", True))
-            if dedupe and (
+            if len(urls_to_post) == 1 and dedupe and (
                 (task_id and state.last_posted_task_id == task_id)
                 or (state.last_posted_ref == ref)
             ):
@@ -672,11 +746,12 @@ def run_media_agent(
                 with open(filename, "a") as f:
                     f.write("\n### Media Agent (Discord Post) ###\n")
                     f.write(f"Channel: {media_cfg.get('discord_channel') or 'media'}\n")
-                    f.write(f"Media: {ref}\n")
+                    for u in urls_to_post:
+                        f.write(f"Media: {u}\n")
                     f.write("Result: DRY RUN (not posted)\n")
                 # Skip actual Discord call
                 # Update last_posted markers so subsequent rounds don't re-attempt
-                state.last_posted_ref = ref
+                state.last_posted_ref = urls_to_post[-1]
                 state.last_posted_task_id = task_id
                 state.save()
                 return result
@@ -688,37 +763,42 @@ def run_media_agent(
             channel = media_cfg.get("discord_channel") or ddefaults.get("channel", "media")
             # Optional caption
             caption = media_cfg.get("discord_caption", "")
-            dargs = {"channel": channel, "message": caption, "mediaUrl": ref}
-            if "server" in ddefaults:
-                dargs["server"] = ddefaults["server"]
-            # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
-            try:
-                _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
-                if _ov_env:
-                    _ov = json.loads(_ov_env)
-                    if isinstance(_ov, dict):
-                        if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
-                            dargs["server"] = _ov.get("server").strip()
-                        if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
-                            dargs["channel"] = _ov.get("channel").strip()
-            except Exception:
-                pass
-            # Load discord MCP server config
-            mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
-            if not os.path.exists(mcp_config_path):
-                alt = "mcp_servers.json"
-                if os.path.exists(alt):
-                    mcp_config_path = alt
-            d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
-            # Fire and log minimal outcome
-            d_res = call_tool(d_server_cfg, dtool_name, dargs)
-            with open(filename, "a") as f:
-                f.write("\n### Media Agent (Discord Post) ###\n")
-                f.write(f"Channel: {channel}\n")
-                f.write(f"Media: {ref}\n")
-                f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+            caption_to_use = caption if isinstance(caption, str) else ""
+            last_posted_ref_local = None
+            for u in urls_to_post:
+                dargs = {"channel": channel, "message": caption_to_use, "mediaUrl": u}
+                if "server" in ddefaults:
+                    dargs["server"] = ddefaults["server"]
+                # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
+                try:
+                    _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
+                    if _ov_env:
+                        _ov = json.loads(_ov_env)
+                        if isinstance(_ov, dict):
+                            if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
+                                dargs["server"] = _ov.get("server").strip()
+                            if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
+                                dargs["channel"] = _ov.get("channel").strip()
+                except Exception:
+                    pass
+                # Load discord MCP server config
+                mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+                if not os.path.exists(mcp_config_path):
+                    alt = "mcp_servers.json"
+                    if os.path.exists(alt):
+                        mcp_config_path = alt
+                d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
+                # Fire and log minimal outcome
+                d_res = call_tool(d_server_cfg, dtool_name, dargs)
+                with open(filename, "a") as f:
+                    f.write("\n### Media Agent (Discord Post) ###\n")
+                    f.write(f"Channel: {dargs.get('channel')}\n")
+                    f.write(f"Media: {u}\n")
+                    f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+                last_posted_ref_local = u
             # Remember last posted ref after a successful call
-            state.last_posted_ref = ref
+            if last_posted_ref_local:
+                state.last_posted_ref = last_posted_ref_local
             state.last_posted_task_id = task_id
             state.save()
     except Exception as _e:

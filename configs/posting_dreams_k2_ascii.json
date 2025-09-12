@@ -8,7 +8,7 @@
   "max_context_frac": 0.0,
   "context_window": 128000,
   "integrations": {
-    "discord": ["dream_header", "ascii_director", "transcripts"]
+    "discord": ["dream_header", "ascii_director", "simple_director"]
   },
   "data_source": {
     "kind": "supabase",
