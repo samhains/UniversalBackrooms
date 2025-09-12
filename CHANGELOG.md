@@ -56,3 +56,16 @@
 
 - Discord ASCII director
   - Added `discord/ascii_director.json`: an ASCII-art-focused variant of the simple director that outputs a compact `prompt:` line followed by a readable ASCII panel (single fenced code block, clear layout, no meta/emojis).
+
+- Media (Eagle DB top 3)
+  - Added `media/eagle_top3.json`: prompts a single SQL statement (via K2) to fetch up to 3 images from `eagle_images` and returns `imageUrl` fields; posts all results to Discord.
+  - Enabled the preset in posting configs: `configs/posting_dreams.json`, `configs/posting_dreams_k2.json`, and `configs/posting_dreams_k2_ascii.json` via `"media": "eagle_top3"`.
+  - Routed image posts to `#lucid` using `integrations.media_overrides: { "discord_channel": "lucid" }` so only media goes to that channel; text updates remain unchanged.
+
+- Media agent improvements
+  - Supports posting multiple media URLs from a single tool result using `post_top_k` in media presets.
+  - Extracts multiple URLs robustly from common MCP result shapes (content arrays, response.data, local_task, etc.).
+  - Maintains duplicate-post protection for single-image results and preserves dry-run behavior.
+
+- MCP servers
+  - Added a `cv-art` server entry to `mcp.config.json` (points to `../cv-art-mcp`); no runtime coupling yet, prepared for future captioning/vibe prompts per image.
