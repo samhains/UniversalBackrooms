@@ -325,6 +325,7 @@ def _post_images_to_discord(
     media_cfg: Dict[str, Any],
     mcp_cfg_path: Path,
     filename: str,
+    try_batch: bool = True,
 ) -> None:
     """Robustly post a list of image URLs to Discord via MCP.
 
@@ -342,6 +343,8 @@ def _post_images_to_discord(
     posted = 0
     # URL sanitizer (match a single valid-looking image URL)
     _pat = re.compile(r"https?://[^\s\)\"']+\.(?:png|jpg|jpeg|webp|gif)(?:\?[^\s\"']*)?", re.I)
+    # Sanitize and dedupe
+    clean_urls: List[str] = []
     for u in urls:
         # Sanitize to a clean image URL
         clean_u = None
@@ -354,6 +357,37 @@ def _post_images_to_discord(
                 f.write("\n### Discord Post Skip (no clean URL) ###\n")
                 f.write(f"Raw: {repr(u)}\n")
             continue
+        if clean_u not in clean_urls:
+            clean_urls.append(clean_u)
+
+    # Try to post all attachments in a single message if supported
+    if try_batch and len(clean_urls) > 1:
+        first = clean_urls[0]
+        msg = caption if caption else ""
+        try:
+            batch_args = {
+                "channel": channel,
+                "message": msg,
+                "mediaUrl": first,
+                "imageUrl": first,
+                "attachments": clean_urls,
+            }
+            d_res = call_tool(d_server, dtool_name, batch_args)
+            posted = len(clean_urls)
+            with open(filename, "a") as f:
+                f.write("\n### Discord Post (batch) ###\n")
+                f.write(f"Channel: {channel}\n")
+                f.write(f"Media: {', '.join(clean_urls)}\n")
+                f.write(f"Args: {json.dumps({k:v for k,v in batch_args.items() if k in ['channel','message','mediaUrl','imageUrl','attachments']}, ensure_ascii=False)}\n")
+                f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+            return
+        except Exception as e:
+            with open(filename, "a") as f:
+                f.write("\n### Discord Post (batch) failed, falling back per-image ###\n")
+                f.write(f"Error: {repr(e)}\n")
+
+    # Per-image fallback
+    for clean_u in clean_urls:
         dargs = {"channel": channel, "message": caption, "mediaUrl": clean_u}
         dargs.setdefault("imageUrl", clean_u)
         dargs.setdefault("attachments", [clean_u])
