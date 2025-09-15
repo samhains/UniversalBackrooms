@@ -1,5 +1,14 @@
 ## Changelog
 
+### 2025-09-15
+- scripts/post_lucid_images.py: new minimal posting flow using `search_eagle_images.search_images_semantic`.
+  - Default `min_similarity` is 0.0 so semantic search always returns candidates; then we top-off from recent images to ensure exactly N URLs are posted.
+  - Strict `.env` usage for `OPENAI_API_KEY`, `SUPABASE_URL` and one of `SUPABASE_KEY`/`SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`. No hardcoded fallbacks.
+  - Logs each posted image with its similarity when available, e.g. `sim: 0.842 (semantic)` or `sim: n/a (topoff)`.
+  - Posts each image individually to Discord `#lucid` via MCP `discord` server using `mediaUrl`/`imageUrl`.
+  - Fix: add project root to `sys.path` so script can import `search_eagle_images.py` when executed from `scripts/`.
+  - Fix: resolved NameError after refactor (use `items` instead of `urls`).
+
 ### 2025-09-12 (later)
 - scripts/post_lucid_images.py: switch to embedding-first retrieval (OpenAI embeddings + pgvector) with automatic fallback to deterministic FTS+trigram; LLM path only via `--use-llm`.
 - Add CLI options: `--semantic`, `--vector-column`, `--embed-model`; prefer semantic when `OPENAI_API_KEY` present.
