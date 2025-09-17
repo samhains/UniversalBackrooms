@@ -6,6 +6,7 @@ default:
 
 # Current working directory from environment (if needed)
 pwd := env_var('PWD')
+backrooms_logs := 'var/backrooms_logs'
 
 ## Quick direct Backrooms (still supported)
 dreamsim2 q="":
@@ -87,11 +88,11 @@ dreams-search query="" limit="200" json="false":
 
 # Backfill: upsert backrooms from JSONL + transcripts
 sync-backrooms:
-    # Scan all BackroomsLogs/*/_meta.jsonl, skip runs with <3 replies (size filter off), then upsert to Supabase
+    # Scan all var/backrooms_logs/*/_meta.jsonl, skip runs with <3 replies (size filter off), then upsert to Supabase
     python scripts/sync_backrooms.py
 
 # Prune DB rows for template not present in cleaned metadata
-prune-backrooms template="dreamsim3" meta="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl":
+prune-backrooms template="dreamsim3" meta="{{backrooms_logs}}/dreamsim3/dreamsim3_meta.jsonl":
     python scripts/prune_backrooms_db.py --template "{{template}}" --meta "{{meta}}" --delete-not-in-meta
 
 # Export Supabase backrooms to Obsidian folder
@@ -140,4 +141,4 @@ dreamsim4-pairs pairs turns="30":
 # Sync DreamSim4 runs to Supabase (fixed metadata path)
 # Usage: just sync-dreamsim4
 sync-dreamsim4:
-    python scripts/sync_backrooms.py --meta "BackroomsLogs/dreamsim4/dreamsim4_meta.jsonl"
+    python scripts/sync_backrooms.py --meta "{{backrooms_logs}}/dreamsim4/dreamsim4_meta.jsonl"

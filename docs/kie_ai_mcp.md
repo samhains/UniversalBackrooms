@@ -7,7 +7,7 @@ Prerequisites
 - Kie.ai API key
 
 Configuration (mcp.config.json)
-- Recommended: set working directory so the server’s SQLite DB (tasks.db) is created in this repo.
+- Recommended: set working directory so the server’s SQLite DB (tasks.db) stays under `var/tasks/`.
 
   "mcpServers": {
     "kie-ai-mcp-server": {
@@ -28,7 +28,7 @@ Configuration (mcp.config.json)
       "args": ["-y", "@andrewlwn77/kie-ai-mcp-server"],
       "env": {
         "KIE_AI_API_KEY": "YOUR_KEY",
-        "KIE_AI_DB_PATH": "/Users/samhains/Code/UniversalBackrooms/tasks.db"
+        "KIE_AI_DB_PATH": "/Users/samhains/Code/UniversalBackrooms/var/tasks/tasks.db"
       }
     }
   }

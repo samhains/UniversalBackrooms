@@ -36,6 +36,8 @@ SCRIPTS_DIR = ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
+from paths import BACKROOMS_LOGS_DIR
+
 # Optional dotenv
 try:
     from dotenv import load_dotenv
@@ -265,7 +267,7 @@ def run_single(cfg: Dict[str, Any]) -> None:
 
     # Where to write meta JSONL (default per-template path)
     out_cfg = cfg.get("output") or {}
-    out_path = Path(out_cfg.get("meta_jsonl") or f"BackroomsLogs/{template}/{template}_meta.jsonl")
+    out_path = Path(out_cfg.get("meta_jsonl") or _default_meta_jsonl(template))
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     meta = {
@@ -410,7 +412,7 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         pairs_static = [(m, m) for m in models_list]
 
     out = cfg.get("output") or {}
-    out_path = Path(out.get("meta_jsonl") or f"BackroomsLogs/{template}/{template}_meta.jsonl")
+    out_path = Path(out.get("meta_jsonl") or _default_meta_jsonl(template))
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     tvars_map = cfg.get("template_vars_from_item") or {"DREAM_TEXT": "content"}
@@ -621,6 +623,10 @@ def main():
         run_batch(cfg)
     else:
         raise SystemExit("Config 'type' must be 'single' or 'batch'")
+
+
+def _default_meta_jsonl(template: str) -> Path:
+    return BACKROOMS_LOGS_DIR / template / f"{template}_meta.jsonl"
 
 
 def _append_meta_jsonl(path: Path, meta: Dict[str, Any]) -> None:

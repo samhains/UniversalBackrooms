@@ -14,7 +14,7 @@ This doc summarizes the JSON config formats used by `scripts/run_config.py` and 
   - `discord`: Profile name (string) or list of profile names under `discord/`.
   - `media`: Preset name (string) or list under `media/`.
 - `output` (batch only):
-  - `meta_jsonl`: Path for metadata, default `BackroomsLogs/<template>/<template>_meta.jsonl`.
+  - `meta_jsonl`: Path for metadata, default `var/backrooms_logs/<template>/<template>_meta.jsonl`.
 
 ## Model Selection
 

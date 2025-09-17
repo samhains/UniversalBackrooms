@@ -10,10 +10,10 @@ Features:
 
 Usage examples:
   # Dry-run: show counts only
-  python scripts/prune_backrooms_db.py --template dreamsim3 --meta BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl
+  python scripts/prune_backrooms_db.py --template dreamsim3 --meta var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl
 
   # Delete rows not in metadata (scoped to template)
-  python scripts/prune_backrooms_db.py --template dreamsim3 --meta BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl --delete-not-in-meta
+  python scripts/prune_backrooms_db.py --template dreamsim3 --meta var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl --delete-not-in-meta
 
   # Delete rows with tiny transcripts (<128 bytes)
   python scripts/prune_backrooms_db.py --template dreamsim3 --delete-tiny --min-bytes 128
@@ -185,4 +185,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

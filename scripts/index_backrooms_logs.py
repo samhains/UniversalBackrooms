@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Index BackroomsLogs for a given template into a metadata JSONL.
+Index Backrooms logs for a given template into a metadata JSONL.
 
-This scans a logs directory (default: BackroomsLogs/<template>) for *.txt
+This scans a logs directory (default: var/backrooms_logs/<template>) for *.txt
 transcripts produced by backrooms.py and writes/updates a JSONL file with
 minimal metadata used by scripts/sync_backrooms.py.
 
@@ -25,8 +25,15 @@ import argparse
 import datetime as dt
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from paths import BACKROOMS_LOGS_DIR
 
 
 def read_jsonl(path: Path) -> List[Dict]:
@@ -141,17 +148,17 @@ def index_logs(logs_dir: Path, template: str, existing: Set[str], *, default_pro
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Index BackroomsLogs/<template> into <template>_meta.jsonl")
+    ap = argparse.ArgumentParser(description="Index var/backrooms_logs/<template> into <template>_meta.jsonl")
     ap.add_argument("--template", required=True, help="Template name to index (e.g., dreamsim4)")
-    ap.add_argument("--logs-dir", default="", help="Logs directory (default: BackroomsLogs/<template>)")
-    ap.add_argument("--out", default="", help="Output JSONL (default: BackroomsLogs/<template>/<template>_meta.jsonl)")
+    ap.add_argument("--logs-dir", default="", help="Logs directory (default: var/backrooms_logs/<template>)")
+    ap.add_argument("--out", default="", help="Output JSONL (default: var/backrooms_logs/<template>/<template>_meta.jsonl)")
     ap.add_argument("--reindex", action="store_true", help="Rebuild JSONL from scratch (ignore existing entries)")
     ap.add_argument("--prompt", default="AI GENERATED", help="Default prompt to store for each log (default: 'AI GENERATED')")
     args = ap.parse_args()
 
     template = args.template
-    logs_dir = Path(args.logs_dir) if args.logs_dir else Path("BackroomsLogs") / template
-    out_path = Path(args.out) if args.out else Path("BackroomsLogs") / template / f"{template}_meta.jsonl"
+    logs_dir = Path(args.logs_dir) if args.logs_dir else BACKROOMS_LOGS_DIR / template
+    out_path = Path(args.out) if args.out else BACKROOMS_LOGS_DIR / template / f"{template}_meta.jsonl"
 
     logs_dir.mkdir(parents=True, exist_ok=True)
     out_path.parent.mkdir(parents=True, exist_ok=True)

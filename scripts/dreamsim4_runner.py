@@ -12,7 +12,7 @@ model pairs. You can:
 For each run, the script:
 - Invokes backrooms.py with the specified models and template
 -, by default, runs for 30 turns
-- Writes a metadata JSONL entry to BackroomsLogs/dreamsim4/dreamsim4_meta.jsonl
+- Writes a metadata JSONL entry to var/backrooms_logs/dreamsim4/dreamsim4_meta.jsonl
   including timing and the discovered log file path
 
 Examples:
@@ -51,8 +51,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from model_config import get_model_info
+from paths import BACKROOMS_LOGS_DIR
 
-BACKROOMS_LOGS = Path("BackroomsLogs")
+BACKROOMS_LOGS = BACKROOMS_LOGS_DIR
 
 
 def validate_models(aliases: List[str]):
@@ -157,7 +158,7 @@ def main():
     ap.add_argument("--template", default="dreamsim4", help="Template name (default: dreamsim4)")
     ap.add_argument(
         "--out",
-        default="BackroomsLogs/dreamsim4/dreamsim4_meta.jsonl",
+        default=str(BACKROOMS_LOGS / "dreamsim4" / "dreamsim4_meta.jsonl"),
         help="Metadata JSONL output path",
     )
     ap.add_argument("--no-stream", action="store_true", help="Do not stream logs; capture output silently")
@@ -234,4 +235,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

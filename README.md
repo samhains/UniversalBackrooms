@@ -49,7 +49,7 @@ Templates live under `templates/<name>/template.json` referencing Markdown files
 Run DreamSim3 over all dreams matching a query in your Supabase DB.
 
 - Script: `scripts/dreamsim3_dataset.py`
-- Logs: `BackroomsLogs/dreamsim3/*.txt` (and `BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl` metadata)
+- Logs: `var/backrooms_logs/dreamsim3/*.txt` (and `var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl` metadata)
 
 Examples:
 
@@ -71,12 +71,12 @@ Troubleshooting:
 
 Optional: sync accumulated runs back to Supabase (table `backrooms`):
 
-- After runs: `python scripts/sync_backrooms.py --meta BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl`
+- After runs: `python scripts/sync_backrooms.py --meta var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl`
 - Or set `BACKROOMS_AUTO_SYNC=1` to upsert each run as it completes.
 
 ## Logging
-The script now logs conversations to folders within a main "BackroomsLogs" directory:
-- BackroomsLogs/
+The script now logs conversations to folders within a main `var/backrooms_logs` directory:
+- var/backrooms_logs/
   - OpusExplorations/
   - SonnetExplorations/
   - GPT4oExplorations/

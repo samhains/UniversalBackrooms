@@ -17,7 +17,7 @@ Changes
   - .env: added KIE_AI_DB_PATH for consistency when running the MCP server manually.
 
 - Logging
-  - BackroomsLogs updated with latest runs confirming edit posting.
+  - var/backrooms_logs updated with latest runs confirming edit posting.
 
 - Discord
   - Added `pre_message` banner/separator to `discord/dream_header.json` and profile handling so a header can post before any content each dream. Uses the same channel/server defaults and respects chunking limits.

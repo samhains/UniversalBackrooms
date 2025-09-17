@@ -2,14 +2,14 @@
 """
 Sync Backrooms runs into Supabase.
 
-Reads one or more JSONL metadata files (default: BackroomsLogs/; scans **/*_meta.jsonl)
+Reads one or more JSONL metadata files (default: var/backrooms_logs/; scans **/*_meta.jsonl)
 and upserts rows into public.backrooms, attaching the transcript from each
 log_file if present. Safe to re-run; uses on_conflict=log_file to merge.
 
 Usage:
-  python scripts/sync_backrooms.py                      # sync all *_meta.jsonl under BackroomsLogs/
+  python scripts/sync_backrooms.py                      # sync all *_meta.jsonl under var/backrooms_logs/
   python scripts/sync_backrooms.py --meta path/to.jsonl # custom file
-  python scripts/sync_backrooms.py --meta BackroomsLogs # scan a directory
+  python scripts/sync_backrooms.py --meta var/backrooms_logs # scan a directory
   python scripts/sync_backrooms.py --dry-run            # preview only
 
 Env:
@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 from typing import List, Dict, Optional, Iterable
 import re
@@ -31,6 +32,12 @@ try:
     from dotenv import load_dotenv  # type: ignore
 except Exception:  # optional
     load_dotenv = None
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from paths import BACKROOMS_LOGS_DIR
 
 
 def _load_env_from_file(path: Path) -> None:
@@ -394,8 +401,8 @@ def main():
     ap = argparse.ArgumentParser(description="Sync Backrooms runs into Supabase")
     ap.add_argument(
         "--meta",
-        default="BackroomsLogs",
-        help="Path to JSONL meta file or a directory to scan (default: BackroomsLogs)",
+        default=str(BACKROOMS_LOGS_DIR),
+        help="Path to JSONL meta file or a directory to scan (default: var/backrooms_logs)",
     )
     ap.add_argument("--dry-run", action="store_true", help="Print actions without writing to Supabase")
     ap.add_argument("--no-clean", action="store_true", help="Skip tiny/missing log cleanup before syncing")

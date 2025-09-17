@@ -1,0 +1,304 @@
+{
+  "description": "Tool definitions for ComfyUI MCP Server. Each tool defines how to interact with ComfyUI workflows.",
+  "tools": {
+    "generate_image": {
+      "description": "Generates images using Qwen-Image workflow through ComfyUI",
+      "workflow_id": "image_qwen_image",
+      "parameters": {
+        "prompt": {
+          "required": true,
+          "type": "string",
+          "description": "Text description of the image to generate"
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Image width in pixels"
+        },
+        "height": {
+          "required": false,
+          "type": "integer", 
+          "description": "Image height in pixels"
+        }
+      }
+    },
+    "edit_image": {
+      "description": "Edits an image using Qwen Image Edit workflow through ComfyUI",
+      "workflow_id": "image_qwen_image_edit",
+      "parameters": {
+        "image_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the source image to edit. Must be a valid HTTP/HTTPS URL."
+        },
+        "prompt": {
+          "required": true,
+          "type": "string",
+          "description": "Edit instruction prompt (what to change in the image)."
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Output image width in pixels. Defaults to workflow value if not specified."
+        },
+        "height": {
+          "required": false,
+          "type": "integer",
+          "description": "Output image height in pixels. Defaults to workflow value if not specified."
+        }
+      },
+      "notes": [
+        "Uses LoadImageFromUrlOrPath to fetch the source image by URL",
+        "Maps prompt to TextEncodeQwenImageEdit node for instruction conditioning",
+        "Output is a single edited image from SaveImage node"
+      ]
+    },
+    "generate_video": {
+      "description": "Generates videos using WAN 2.2 T2V workflow through ComfyUI",
+      "workflow_id": "wan2.2-t2v-sd",
+      "parameters": {
+        "prompt": {
+          "required": true,
+          "type": "string",
+          "description": "Text description of the video content to generate"
+        },
+        "audio_prompt": {
+          "required": true,
+          "type": "string",
+          "description": "Text description of the audio/sound to generate for the video"
+        },
+        "frame_length": {
+          "required": false,
+          "type": "integer",
+          "description": "Number of frames for the video. Defaults to config value if not specified."
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Video width in pixels. Defaults to config value if not specified."
+        },
+        "height": {
+          "required": false,
+          "type": "integer",
+          "description": "Video height in pixels. Defaults to config value if not specified."
+        }
+      },
+      
+      "notes": [
+        "This workflow generates both video and audio using MMAudio",
+        "The audio prompt is embedded in the workflow itself",
+        "Video includes frame interpolation using RIFE",
+        "Output format is MP4 with embedded audio"
+      ]
+    },
+    "remix_image": {
+      "description": "Generates images using 2 input images with Flux Redux style conditioning through ComfyUI",
+      "workflow_id": "flux-2-redux",
+      "parameters": {
+        "image1_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the first reference image for style conditioning. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, etc.)."
+        },
+        "image2_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the second reference image for style conditioning. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, etc.)."
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Image width in pixels. Defaults to 720 if not specified."
+        },
+        "height": {
+          "required": false,
+          "type": "integer",
+          "description": "Image height in pixels. Defaults to 720 if not specified."
+        }
+      },
+      
+      "notes": [
+        "This workflow uses Flux Redux for style conditioning with 2 reference images",
+        "Images are downloaded from URLs and processed through CLIP Vision encoding",
+        "The workflow applies dual style conditioning before generating the final image",
+        "Output is a single image that blends styles from both input images"
+      ]
+    },
+    "generate_3_image_video": {
+      "description": "Generates videos using 3 input image URLs with Flux Redux and WAN 2.2 I2V workflow through ComfyUI. Passes 3 image URLs to LoadImageFromUrlOrPath nodes (@IMAGE_1, @IMAGE_2, @IMAGE_3) for style conditioning, then generates video with WAN 2.2 image-to-video and MMAudio for synchronized audio.",
+      "workflow_id": "flux-3-redux-wan2.2-i2v-sd",
+      "parameters": {
+        "image1_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the first reference image. This image will be used as the primary style reference for Flux Redux conditioning. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, etc.)."
+        },
+        "image2_url": {
+          "required": true,
+          "type": "string", 
+          "description": "URL to the second reference image. This image will be used as additional style conditioning for Flux Redux. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, etc.)."
+        },
+        "image3_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the third reference image. This image will be used as additional style conditioning for Flux Redux. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, etc.)."
+        },
+        "frame_length": {
+          "required": false,
+          "type": "integer",
+          "description": "Number of frames for the video. Defaults to workflow configuration (150 frames). Higher values create longer videos but take more time to process."
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Video width in pixels. Defaults to workflow configuration (1280px). Must be compatible with the model requirements."
+        },
+        "height": {
+          "required": false,
+          "type": "integer",
+          "description": "Video height in pixels. Defaults to workflow configuration (720px). Must be compatible with the model requirements."
+        }
+      },
+      
+      "notes": [
+        "This workflow combines Flux Redux (3-image style conditioning) + WAN 2.2 I2V + MMAudio",
+        "Uses LoadImageFromUrlOrPath nodes to load images directly from URLs (@IMAGE_1, @IMAGE_2, @IMAGE_3)",
+        "The workflow generates an intermediate styled image using Flux Redux, then converts to video", 
+        "Automatic prompt generation using Qwen2.5VL for motion and audio prompts",
+        "Video includes frame interpolation using RIFE for smooth motion",
+        "Output format is MP4 with embedded audio generated by MMAudio",
+        "Uses hardcoded output node 125 (SAVE_VIDEO) for reliable video output",
+        "Processing time depends on frame_length and resolution settings"
+      ],
+      "api_integration": {
+        "description": "Instructions for agents accessing this tool",
+        "image_requirements": {
+          "format": "URLs must point to valid image files (JPG, PNG, WebP, etc.)",
+          "accessibility": "URLs must be publicly accessible or include proper authentication headers",
+          "size": "Images will be automatically resized to fit workflow requirements",
+          "processing": "Images are downloaded temporarily during workflow execution"
+        },
+        "example_call": {
+          "image1_url": "https://your-storage.supabase.co/bucket/images/style1.jpg",
+          "image2_url": "https://your-storage.supabase.co/bucket/images/style2.jpg", 
+          "image3_url": "https://your-storage.supabase.co/bucket/images/style3.jpg",
+          "prompt": "A dynamic scene transitions from static to animated, with characters moving through a vibrant environment",
+          "audio_prompt": "Upbeat electronic music with ambient spatial effects and character movement sounds",
+          "frame_length": 120,
+          "width": 1280,
+          "height": 720
+        },
+        "error_handling": [
+          "Invalid URLs will return error before workflow execution",
+          "Inaccessible images will cause workflow failure",
+          "Large images may cause memory issues - consider resizing before upload",
+          "Network timeouts during download will abort the workflow"
+        ]
+      }
+    },
+    "generate_f2f_video": {
+      "description": "Generates videos using frame-to-frame animation between 2 input images with WAN 2.2 I2V workflow through ComfyUI. Creates smooth transitions between two images using advanced AI interpolation and automatic audio generation.",
+      "workflow_id": "wan2.2-f2f-loop",
+      "parameters": {
+        "image1_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the first/starting frame image. This image will be the beginning state of the animation. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, WebP, etc.)."
+        },
+        "image2_url": {
+          "required": true,
+          "type": "string",
+          "description": "URL to the second/ending frame image. This image will be the final state of the animation. Must be a valid HTTP/HTTPS URL pointing to an image file (JPG, PNG, WebP, etc.)."
+        },
+        "width": {
+          "required": false,
+          "type": "integer",
+          "description": "Video width in pixels. Defaults to 720 if not specified. Must be compatible with the model requirements. Recommended values: 720, 1280, 1920."
+        },
+        "height": {
+          "required": false,
+          "type": "integer",
+          "description": "Video height in pixels. Defaults to 720 if not specified. Must be compatible with the model requirements. Recommended values: 720, 1080."
+        },
+        "frame_length": {
+          "required": false,
+          "type": "integer",
+          "description": "Number of frames for the video. Defaults to 81 frames (~2.5 seconds at 32fps). Higher values create longer videos but take more time to process. Typical range: 25-200 frames."
+        },
+        "prompt": {
+          "required": false,
+          "type": "string",
+          "description": "Custom motion prompt describing the desired animation between the two images. If empty, uses default behavior."
+        }
+      },
+      
+      "notes": [
+        "This workflow creates smooth frame-to-frame animation between two input images using WAN 2.2 I2V technology",
+        "Uses LoadImageFromUrlOrPath nodes to load images directly from URLs (@IMAGE_START, @IMAGE_END)",
+        "Generates audio prompts to match the visual content",
+        "Includes RIFE frame interpolation for ultra-smooth motion between frames",
+        "Output format is MP4 with embedded audio generated by MMAudio for immersive experience",
+        "Uses hardcoded output node 125 (SAVE_VIDEO) for reliable video output",
+        "Processing time scales with frame_length - expect 30s-5min depending on complexity and length"
+      ],
+      "api_integration": {
+        "description": "Instructions for agents accessing this tool",
+        "image_requirements": {
+          "format": "URLs must point to valid image files (JPG, PNG, WebP, GIF, etc.)",
+          "accessibility": "URLs must be publicly accessible or include proper authentication headers",
+          "size": "Images will be automatically resized to fit workflow requirements - no size limits",
+          "processing": "Images are downloaded directly by ComfyUI server using LoadImageFromUrlOrPath nodes - no local download required",
+          "content": "Works best with images that have clear visual differences for smooth animation"
+        },
+        "example_call": {
+          "image1_url": "https://storage.supabase.co/bucket/images/start_frame.jpg",
+          "image2_url": "https://storage.supabase.co/bucket/images/end_frame.jpg",
+          "width": 720,
+          "height": 720,
+          "frame_length": 81
+        },
+        "use_cases": [
+          "Transform one image into another with smooth animation",
+          "Create morphing effects between similar objects or scenes",
+          "Generate transition videos for presentations or social media",
+          "Animate static artwork or photographs",
+          "Create seamless loops by using similar start/end images"
+        ],
+        "error_handling": [
+          "Invalid URLs will return error during ComfyUI workflow execution",
+          "Inaccessible images will cause workflow failure when ComfyUI attempts to load them",
+          "Network timeouts during ComfyUI image fetching will abort the workflow",
+          "Incompatible image formats will be automatically converted by ComfyUI",
+          "Very large images may cause memory issues on ComfyUI server - automatic resizing applied",
+          "Frame length > 200 may cause timeout - consider shorter videos for testing"
+        ],
+        "performance_expectations": {
+          "short_videos": "25-50 frames: ~5-10 minutes processing",
+          "medium_videos": "51-100 frames: ~10-20 minutes processing",
+          "long_videos": "100+ frames: ~20-30 minutes processing",
+          "factors": "Processing time depends on resolution, frame count, server load, and model complexity. WAN 2.2 + RIFE + MMAudio requires significant compute time. Expect longer times for high-resolution or complex scenes."
+        }
+      }
+    }
+  },
+  "workflow_files": {
+    "description": "Location of ComfyUI workflow JSON files",
+    "directory": "workflows/",
+    "naming_convention": "{workflow-name}.json",
+    "examples": {
+      "image_qwen_image": "workflows/image_qwen_image.json",
+      "flux-dev-workflow": "workflows/flux-dev-workflow.json",
+      "mmaudio-workflow": "workflows/mmaudio-workflow.json"
+    }
+  },
+  "adding_new_tools": {
+    "description": "Steps to add a new tool/workflow",
+    "steps": [
+      "1. Create workflow JSON file in workflows/ directory",
+      "2. Add tool definition to this file (tools.json)",
+      "3. Set the workflow_id to select the workflow",
+      "4. Add per-workflow mapping in comfyui_client.py (single source of truth)",
+      "5. Test the integration"
+    ]
+  }
+}

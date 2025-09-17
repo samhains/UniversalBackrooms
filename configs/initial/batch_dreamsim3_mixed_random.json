@@ -11,7 +11,7 @@
   "template_vars_from_item": { "DREAM_TEXT": "content" },
   "shuffle": true,
   "seed": 42,
-  "output": { "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl" },
+  "output": { "meta_jsonl": "var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl" },
   "auto_sync": false
 }
 

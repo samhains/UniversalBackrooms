@@ -32,4 +32,4 @@ Notes
 - Ensure the `discord` MCP server is configured in `mcp.config.json` and exposes a `send-message` tool.
 
 Future improvements
-- Optional log file under `BackroomsLogs/oneoff/` summarizing query, results, similarities, and post outcomes.
+- Optional log file under `var/backrooms_logs/oneoff/` summarizing query, results, similarities, and post outcomes.

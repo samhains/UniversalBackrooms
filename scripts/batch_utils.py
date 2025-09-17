@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from model_config import get_model_info
+from paths import BACKROOMS_LOGS_DIR
 
 
 # --- Supabase helpers ---
@@ -118,7 +119,7 @@ def write_dreamsim3_vars(dream_text: str) -> None:
 
 # --- Backrooms log helpers ---
 
-BACKROOMS_LOGS = Path("BackroomsLogs")
+BACKROOMS_LOGS = BACKROOMS_LOGS_DIR
 
 
 def latest_log_for(models: List[str], template: str) -> Optional[Path]:

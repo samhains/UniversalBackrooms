@@ -13,6 +13,7 @@ import signal
 from pathlib import Path
 from model_config import get_model_choices, get_model_info
 from typing import Optional
+from paths import BACKROOMS_LOGS_DIR
 
 # Local imports for optional media agent
 try:
@@ -551,16 +552,15 @@ def main():
 
     # (moved) Template loading and context setup occurs later to allow CLI var overlays
 
-    logs_folder = "BackroomsLogs"
+    logs_folder = BACKROOMS_LOGS_DIR
     # Group logs by template for easier organization
-    template_logs_folder = os.path.join(logs_folder, args.template)
-    if not os.path.exists(template_logs_folder):
-        os.makedirs(template_logs_folder, exist_ok=True)
+    template_logs_folder = logs_folder / args.template
+    template_logs_folder.mkdir(parents=True, exist_ok=True)
 
     # Track run start (UTC) for DB metadata
     run_start = datetime.datetime.now(datetime.timezone.utc)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{template_logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
+    filename = template_logs_folder / f"{'_'.join(models)}_{args.template}_{timestamp}.txt"
     # Write a concise run header for easier forensics/search
     try:
         with open(filename, "a", encoding="utf-8") as f:

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Clean BackroomsLogs and metadata JSONL by removing tiny/empty logs.
+Clean var/backrooms_logs and metadata JSONL by removing tiny/empty logs.
 
-- Scans JSONL entries (default: BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl).
+- Scans JSONL entries (default: var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl).
 - Flags entries whose `log_file` is missing or smaller than --min-bytes.
 - Optionally deletes those tiny/missing logs from disk and rewrites JSONL
   without the bad entries.
 
 Usage examples:
   # Preview what would be removed (no writes)
-  python scripts/clean_backrooms_logs.py --meta BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl
+  python scripts/clean_backrooms_logs.py --meta var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl
 
   # Use a stricter size threshold
   python scripts/clean_backrooms_logs.py --min-bytes 128
@@ -28,6 +28,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_META = ROOT / "var" / "backrooms_logs" / "dreamsim3" / "dreamsim3_meta.jsonl"
 
 
 @dataclass
@@ -123,7 +126,11 @@ def clean(
 
 def main():
     ap = argparse.ArgumentParser(description="Remove tiny/empty logs and clean JSONL metadata")
-    ap.add_argument("--meta", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Path to metadata JSONL")
+    ap.add_argument(
+        "--meta",
+        default=str(DEFAULT_META),
+        help="Path to metadata JSONL (default: var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl)",
+    )
     ap.add_argument("--min-bytes", type=int, default=64, help="Minimum file size in bytes to be considered a valid log (default: 64)")
     ap.add_argument("--delete-logs", action="store_true", help="Delete tiny log files on disk")
     where = ap.add_mutually_exclusive_group()
@@ -161,4 +168,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

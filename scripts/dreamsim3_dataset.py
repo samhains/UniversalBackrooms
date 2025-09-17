@@ -74,7 +74,9 @@ try:
 except Exception:
     load_dotenv = None  # optional dependency
 
-BACKROOMS_LOGS = Path("BackroomsLogs")
+from paths import BACKROOMS_LOGS_DIR
+
+BACKROOMS_LOGS = BACKROOMS_LOGS_DIR
 
 
 # CSV support removed — we rely solely on Supabase now.
@@ -170,7 +172,11 @@ def main():
     ap.add_argument("--max-turns", type=int, default=30, help="Maximum turns per run (default: 30)")
     ap.add_argument("--max-dreams", type=int, default=0, help="Limit number of dreams processed (0 = all)")
     ap.add_argument("--template", default="dreamsim3", help="Template name (default: dreamsim3)")
-    ap.add_argument("--out", default="BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl", help="Metadata JSONL output path")
+    ap.add_argument(
+        "--out",
+        default=str(BACKROOMS_LOGS / "dreamsim3" / "dreamsim3_meta.jsonl"),
+        help="Metadata JSONL output path",
+    )
     ap.add_argument("--mixed", action="store_true", help="Mix models into pairs (see --mixed-mode)")
     ap.add_argument(
         "--mixed-mode",

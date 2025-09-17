@@ -9,6 +9,6 @@
   "data_source": { "kind": "supabase", "query": "", "limit": 200, "source": "mine" },
   "template_vars_from_item": { "DREAM_TEXT": "content" },
   "max_items": 200,
-  "output": { "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl" }
+  "output": { "meta_jsonl": "var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl" }
 }
 

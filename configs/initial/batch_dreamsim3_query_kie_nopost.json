@@ -21,7 +21,7 @@
     "DREAM_TEXT": "content"
   },
   "output": {
-    "meta_jsonl": "BackroomsLogs/dreamsim3/dreamsim3_meta.jsonl"
+    "meta_jsonl": "var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl"
   },
   "shuffle": false,
   "seed": null,
