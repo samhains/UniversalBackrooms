@@ -9,13 +9,16 @@
   "context_window": 128000,
   "integrations": {
     "discord": [
-      "dream_header",
-      "ascii_director_wild"
+      "dream_header"
     ],
     "media": [
       "eagle_semantic"
     ],
-    "media_overrides": { "discord_channel": "logs" }
+    "media_overrides": {
+      "discord_channel": "logs",
+      "n": 3,
+      "discord_include_prompt": true
+    }
   },
   "data_source": {
     "kind": "supabase",

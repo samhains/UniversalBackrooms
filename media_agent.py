@@ -492,8 +492,13 @@ def run_media_agent(
                 row_payload["similarity"] = entry.get("similarity")
             rows_payload.append(row_payload)
 
+        # Include all images in the content array so downstream tools can consume arrays directly
         result = {
-            "content": ([{"type": "image", "uri": items[0]["url"]}] if items else []),
+            "content": (
+                [{"type": "image", "uri": entry["url"]} for entry in items]
+                if items
+                else []
+            ),
             "response": {"data": {"rows": rows_payload}},
             "semantic": {
                 "query": semantic_query,
@@ -1036,69 +1041,153 @@ def run_media_agent(
             # Optional caption
             caption = media_cfg.get("discord_caption", "")
             caption_to_use = caption if isinstance(caption, str) else ""
+            include_prompt = bool(media_cfg.get("discord_include_prompt", False))
+            prompt_line = ""
+            try:
+                if include_prompt and isinstance(prompt_text, str):
+                    prompt_line = prompt_text.strip()
+            except Exception:
+                prompt_line = ""
+            # Build final message body
+            if caption_to_use and prompt_line:
+                message_body = f"{caption_to_use}\n{prompt_line}"
+            else:
+                message_body = caption_to_use or prompt_line or ""
+
             last_posted_ref_local = None
-            for u in urls_to_post:
-                dargs = {"channel": channel, "message": caption_to_use, "mediaUrl": u}
-                # Maximize compatibility with different Discord MCP servers
-                # by also providing common alternative keys.
-                dargs.setdefault("imageUrl", u)
-                dargs.setdefault("attachments", [u])
+
+            # Load discord MCP server config once
+            mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+            if not os.path.exists(mcp_config_path):
+                alt = "mcp_servers.json"
+                if os.path.exists(alt):
+                    mcp_config_path = alt
+            d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
+
+            # Prepare common override application
+            def _apply_overrides(args_dict: dict) -> None:
                 if "server" in ddefaults:
-                    dargs["server"] = ddefaults["server"]
-                # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
+                    args_dict["server"] = ddefaults["server"]
                 try:
                     _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
                     if _ov_env:
                         _ov = json.loads(_ov_env)
                         if isinstance(_ov, dict):
                             if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
-                                dargs["server"] = _ov.get("server").strip()
+                                args_dict["server"] = _ov.get("server").strip()
                             if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
-                                dargs["channel"] = _ov.get("channel").strip()
+                                args_dict["channel"] = _ov.get("channel").strip()
                 except Exception:
                     pass
-                # Load discord MCP server config
-                mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
-                if not os.path.exists(mcp_config_path):
-                    alt = "mcp_servers.json"
-                    if os.path.exists(alt):
-                        mcp_config_path = alt
-                d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
-                # Fire and log minimal outcome with fallback strategy
+
+            # Post as a single array payload (one message) when multiple URLs
+            post_as_array = len(urls_to_post) > 1
+            if post_as_array:
+                dargs = {"channel": channel, "message": message_body, "mediaUrl": urls_to_post}
+                # Add compatibility keys
+                if urls_to_post:
+                    dargs.setdefault("imageUrl", urls_to_post[0])
+                dargs.setdefault("attachments", urls_to_post)
+                dargs.setdefault("imageUrls", urls_to_post)
+                _apply_overrides(dargs)
                 try:
                     d_res = call_tool(d_server_cfg, dtool_name, dargs)
                     with open(filename, "a") as f:
                         f.write("\n### Media Agent (Discord Post) ###\n")
                         f.write(f"Channel: {dargs.get('channel')}\n")
-                        f.write(f"Media: {u}\n")
-                        f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                        f.write(f"Media (array): {json.dumps(urls_to_post, ensure_ascii=False)}\n")
+                        f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl','attachments']}, ensure_ascii=False)}\n")
                         f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
-                    last_posted_ref_local = u
-                except Exception as _post_err:
-                    # Fallback: append URL to the message and try a plain text post
+                    last_posted_ref_local = urls_to_post[-1]
+                except Exception as _post_err_arr:
+                    # Fallback to per-URL posts if array post fails
+                    with open(filename, "a") as f:
+                        f.write("\n### Media Agent (Discord Post) ###\n")
+                        f.write("Array post failed; falling back to per-URL posts.\n")
+                        f.write(f"Error: {repr(_post_err_arr)}\n")
+                    for u in urls_to_post:
+                        dargs_u = {"channel": channel, "message": message_body, "mediaUrl": u}
+                        dargs_u.setdefault("imageUrl", u)
+                        dargs_u.setdefault("attachments", [u])
+                        _apply_overrides(dargs_u)
+                        try:
+                            d_res_u = call_tool(d_server_cfg, dtool_name, dargs_u)
+                            with open(filename, "a") as f:
+                                f.write("\n### Media Agent (Discord Post) ###\n")
+                                f.write(f"Channel: {dargs_u.get('channel')}\n")
+                                f.write(f"Media: {u}\n")
+                                f.write(f"Args: {json.dumps({k:v for k,v in dargs_u.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                                f.write(f"Result: {json.dumps(d_res_u, ensure_ascii=False)}\n")
+                            last_posted_ref_local = u
+                        except Exception as _post_err:
+                            # Fallback: append URL to the message and try a plain text post
+                            try:
+                                alt_args = dict(dargs_u)
+                                url_text = f"\n{u}" if message_body else u
+                                alt_args.pop("mediaUrl", None)
+                                alt_args.pop("imageUrl", None)
+                                alt_args.pop("attachments", None)
+                                alt_args["message"] = (message_body + url_text) if message_body else url_text
+                                d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
+                                with open(filename, "a") as f:
+                                    f.write("\n### Media Agent (Discord Post) ###\n")
+                                    f.write(f"Channel: {alt_args.get('channel')}\n")
+                                    f.write(f"Media: {u}\n")
+                                    f.write(f"Args: {json.dumps({k:v for k,v in alt_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
+                                    f.write(f"Result (fallback): {json.dumps(d_res2, ensure_ascii=False)}\n")
+                                last_posted_ref_local = u
+                            except Exception as _post_err2:
+                                with open(filename, "a") as f:
+                                    f.write("\n### Media Agent (Discord Post) ###\n")
+                                    f.write(f"Channel: {dargs_u.get('channel')}\n")
+                                    f.write(f"Media: {u}\n")
+                                    f.write(f"Args: {json.dumps({k:v for k,v in dargs_u.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                                    f.write(f"Error: {repr(_post_err)}\n")
+                                    f.write(f"Error (fallback): {repr(_post_err2)}\n")
+            else:
+                # Default behavior: post each URL individually with the composed message
+                for u in urls_to_post:
+                    dargs = {"channel": channel, "message": message_body, "mediaUrl": u}
+                    # Maximize compatibility with different Discord MCP servers
+                    # by also providing common alternative keys.
+                    dargs.setdefault("imageUrl", u)
+                    dargs.setdefault("attachments", [u])
+                    _apply_overrides(dargs)
+                    # Fire and log minimal outcome with fallback strategy
                     try:
-                        alt_args = dict(dargs)
-                        url_text = f"\n{u}" if caption_to_use else u
-                        alt_args.pop("mediaUrl", None)
-                        alt_args.pop("imageUrl", None)
-                        alt_args.pop("attachments", None)
-                        alt_args["message"] = (caption_to_use + url_text) if caption_to_use else url_text
-                        d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
-                        with open(filename, "a") as f:
-                            f.write("\n### Media Agent (Discord Post) ###\n")
-                            f.write(f"Channel: {alt_args.get('channel')}\n")
-                            f.write(f"Media: {u}\n")
-                            f.write(f"Args: {json.dumps({k:v for k,v in alt_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
-                            f.write(f"Result (fallback): {json.dumps(d_res2, ensure_ascii=False)}\n")
-                        last_posted_ref_local = u
-                    except Exception as _post_err2:
+                        d_res = call_tool(d_server_cfg, dtool_name, dargs)
                         with open(filename, "a") as f:
                             f.write("\n### Media Agent (Discord Post) ###\n")
                             f.write(f"Channel: {dargs.get('channel')}\n")
                             f.write(f"Media: {u}\n")
                             f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
-                            f.write(f"Error: {repr(_post_err)}\n")
-                            f.write(f"Error (fallback): {repr(_post_err2)}\n")
+                            f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+                        last_posted_ref_local = u
+                    except Exception as _post_err:
+                        # Fallback: append URL to the message and try a plain text post
+                        try:
+                            alt_args = dict(dargs)
+                            url_text = f"\n{u}" if message_body else u
+                            alt_args.pop("mediaUrl", None)
+                            alt_args.pop("imageUrl", None)
+                            alt_args.pop("attachments", None)
+                            alt_args["message"] = (message_body + url_text) if message_body else url_text
+                            d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
+                            with open(filename, "a") as f:
+                                f.write("\n### Media Agent (Discord Post) ###\n")
+                                f.write(f"Channel: {alt_args.get('channel')}\n")
+                                f.write(f"Media: {u}\n")
+                                f.write(f"Args: {json.dumps({k:v for k,v in alt_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
+                                f.write(f"Result (fallback): {json.dumps(d_res2, ensure_ascii=False)}\n")
+                            last_posted_ref_local = u
+                        except Exception as _post_err2:
+                            with open(filename, "a") as f:
+                                f.write("\n### Media Agent (Discord Post) ###\n")
+                                f.write(f"Channel: {dargs.get('channel')}\n")
+                                f.write(f"Media: {u}\n")
+                                f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                                f.write(f"Error: {repr(_post_err)}\n")
+                                f.write(f"Error (fallback): {repr(_post_err2)}\n")
             # Remember last posted ref after a successful call
             if last_posted_ref_local:
                 state.last_posted_ref = last_posted_ref_local
