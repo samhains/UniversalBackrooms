@@ -59,14 +59,17 @@ def _row_to_image_url(row: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def _post_image_to_discord(
+def _post_media_to_discord(
     *,
-    media_url: str,
+    media_urls: List[str],
     channel: str = "lucid",
     message: str = "",
     server_name: str = "discord",
     mcp_config_path: Optional[str] = None,
 ) -> Dict[str, Any]:
+    urls = [u for u in media_urls if isinstance(u, str) and u.strip()]
+    if not urls:
+        raise ValueError("No media URLs provided for Discord post")
     cfg_path = (
         mcp_config_path
         or os.getenv("MCP_CONFIG")
@@ -81,13 +84,17 @@ def _post_image_to_discord(
 
     server_cfg: MCPServerConfig = load_server_config(cfg_path, server_name)
 
+    payload_value: Any = urls[0] if len(urls) == 1 else urls
     # Many Discord MCP servers accept both mediaUrl and imageUrl; include both
     args = {
         "channel": channel,
         "message": message or "",
-        "mediaUrl": media_url,
-        "imageUrl": media_url,
+        "mediaUrl": payload_value,
     }
+    # Preserve backward compatibility for servers expecting imageUrl while
+    # allowing arrays now that send-message supports batching.
+    if len(urls) == 1:
+        args["imageUrl"] = urls[0]
     return call_tool(server_cfg, "send-message", args)
 
 
@@ -176,17 +183,19 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
             print(f" {i:2d}. {u} (sim: {sim:.3f}, {src})")
         else:
             print(f" {i:2d}. {u} (sim: n/a, {src})")
-        if dry_run:
-            continue
-        try:
-            _ = _post_image_to_discord(media_url=u, channel=channel, message="")
-        except Exception as e:
-            print(f"    -> Failed to post: {e}")
+    urls_to_post = [it["url"] for it in items]
 
     if dry_run:
         print("Dry run complete — no posts made.")
-    else:
-        print("Done.")
+        return 0
+
+    try:
+        _ = _post_media_to_discord(media_urls=urls_to_post, channel=channel, message="")
+    except Exception as e:
+        print(f"Failed to post to Discord: {e}")
+        return 1
+
+    print("Done.")
     return 0
 
 

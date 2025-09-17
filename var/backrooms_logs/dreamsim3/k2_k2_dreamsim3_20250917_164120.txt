@@ -1,0 +1,141 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: k2, k2
+Started: 2025-09-17T06:41:20.252396+00:00
+
+### Round 1/30
+
+### Kimi K2 1 ###
+simulator@moonshotai:~/$ ./dreamsim.exe "I am out at night and I'm very drunk . I can't find a place to stay so I call old friend Assad . I wake up in his room and noone is around . The room Is empty . I start looking around the house but noone is home . I speak to my dad who looks very upset , like he's about to cry , I console him and he tells me that he reported Assad into the police as he was playing suspicious games with him. dad says he also had a fundamentalist room out the back as well . I get nervous because I'm alone at his house and he might come home and beat me up. He comes home and I ask him where he's been and he says 'don't you know' ... Later we are sitting on his couch , I resist from saying - 'you can tell me anything ' as I feel like that might be a burden . I notice that Assad is wearing lipstick and looks like a pretty girl . I think to ask him about when he started dressing as a girl . I feel Suprised. I hold back , maybe he was a girl all along."
+
+./dreamsim.exe: loading dream seed...  
+./dreamsim.exe: entropy 0.97 (high)  
+./dreamsim.exe: rendering night street...  
+./dreamsim.exe: injecting alcohol-blur...  
+./dreamsim.exe: Assad contact unlocked...  
+./dreamsim.exe: spawnpoint: empty bedroom...  
+./dreamsim.exe: environment lock (no NPCs)...  
+./dreamsim.exe: hot-loading father apparition...  
+./dreamsim.exe: threat matrix armed...  
+./dreamsim.exe: gender-shift flag primed...  
+./dreamsim.exe: dream active—type 'look' to begin.  
+
+> look
+
+### Kimi K2 2 ###
+moonshotai:/dreamsim$ look  
+
+A single bulb swings from a frayed cord, painting the walls in slow-motion yellow.  
+The mattress is stripped—no sheets, just the ghost of a body pressed into the fabric.  
+Your phone shows 3 % and one bar; the last outgoing call reads “assad (02:14).”  
+Somewhere downstairs a grandfather clock is ticking, but its hands are both nailed to XII.
+
+exits: door (ajar), window (rain), mirror (cracked)
+
+inventory: stale rum on breath, house keys that aren’t yours, a voicemail you haven’t played
+
+> listen to voicemail
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt:
+    Dim bare bulb swaying over empty stripped mattress, phone glow 3% one bar, voicemail unplayed
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png", "source": "semantic", "similarity": 0.40739533857135}]}}, "semantic": {"query": "Dim bare bulb swaying over empty stripped mattress, phone glow 3% one bar, voicemail unplayed", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24LIYA8Q9R7.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417762525814198292", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Kimi K2 1 ###
+You lift the phone like it weighs twice what it does.  
+Thumb smears glass, speaker crackles alive.
+
+Voicemail, 02:17, Dad:  
+“…heard you’re crashing at Assad’s. Don’t. Not safe. I—”  
+His voice cracks, wet paper.  
+“…told the authorities. They’ve got photos of the back room, the flags, the—”  
+A siren yelps in the background, swallows the rest.  
+Then a final breath:  
+“Come home. Please.”
+
+click. 0:12.
+
+The room feels suddenly colder, like someone opened a freezer you can’t see.  
+The bulb above you jitters; shadows jump.
+
+> inventory
+
+### Kimi K2 2 ###
+moonshotai:/dreamsim$ inventory  
+
+- stale rum on breath (duration: fading)  
+- house keys that aren’t yours (metal still warm)  
+- phone (0 %, dead now—screen cracked in a perfect crescent)  
+- a folded napkin from the bar, ink bleeding through:  
+  “if the house is empty, check the mirror—A”  
+
+new scent: cheap lipstick, rose-ash, clinging to the air like someone just left.
+
+> open door
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt:
+    Nighttime hallway, lipstick-smudged mirror reflecting a half-moon phone glow and warm stolen keys dangling in a stranger’s hand
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png", "source": "semantic", "similarity": 0.481689157284602}]}}, "semantic": {"query": "Nighttime hallway, lipstick-smudged mirror reflecting a half-moon phone glow and warm stolen keys dangling in a stranger’s hand", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121XLDPC.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417762666734157904", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 3/30
+
+### Kimi K2 1 ###
+The hinges exhale a breath of rust and the hallway beyond is a throat of wallpaper—floral tongues peeling like old scabs.
+
+Bare floorboards sweat under bare feet; each step leaves a wet echo that travels faster than you do.  
+Half-way down, the grandfather clock stands guard, its glass face spider-web cracked. The nailed hands have moved: both now point to III.
+
+To your left: bathroom door, light on inside, fan spinning a lazy whisper.  
+To your right: stairs descending into a charcoal hush.  
+Ahead: the mirror nailed to the wall—fractured in a lightning bolt that forks exactly where your reflection’s mouth should be.
+
+> listen
+
+### Kimi K2 2 ###
+moonshotai:/dreamsim$ listen  
+
+house breathing  
+bathroom fan counting rpm like rosary beads  
+a car idling outside, stereo leaking autotuned prayer  
+under all that: wet footsteps—yours, but half a beat late, arriving after you’ve already moved  
+
+then, from the vent above the bathroom door, a voice you almost recognise:  
+“…don’t ask about the lipstick unless you’re ready to wear it too…”  
+
+the mirror ticks—glass flexing like something behind it is leaning close.
+
+> examine mirror
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt:
+    steam-slick bathroom, mirror pulsing like lungs, lipstick scrawl bleeding through glass
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png", "source": "semantic", "similarity": 0.518236546621529}]}}, "semantic": {"query": "steam-slick bathroom, mirror pulsing like lungs, lipstick scrawl bleeding through glass", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS17EY2U.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417762802726342747", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 4/30

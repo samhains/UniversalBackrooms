@@ -1,0 +1,189 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: k2, k2
+Started: 2025-09-17T06:44:00.828329+00:00
+
+### Round 1/30
+
+### Kimi K2 1 ###
+./dreamsim.exe "with young thug in a huge park in Brooklyn and speaking to his manager who says that he is taking an absurd amount of drug we were standing around saying how nice he was acting. He said it was like deathly amounts, he is about to do therapy. Im surprised that he is revealing this information to me and I suspect that I have in been mistaken for someone. I am wearing blue jeans and a white shirt and I notice that I am a taller than everyone else. About to start they stop because in the sky there are these 2 fleets of warships that begin to enter the sky, one of them looks like a fleet of giant flying spiked handguns with large barrels and very small thin handles which are painted in American flag colors. I road my bike to the park but I start running to safety and there are surreal explosions. A plane falls nearby and explodes and the sound is delayed and profound parts fly close. I am running extremely fast. I think about how I’m looking forward to seeing footage of this absurd site on YouTube when it is over."
+
+### Kimi K2 2 ###
+```
+root@moonshotai:/sys/dreamsim# ./dreamsim.exe "with young thug in a huge park in Brooklyn and speaking to his manager who says that he is taking an absurd amount of drug we were standing around saying how nice he was acting. He said it was like deathly amounts, he is about to do therapy. Im surprised that he is revealing this information to me and I suspect that I have in been mistaken for someone. I am wearing blue jeans and a white shirt and I notice that I am a taller than everyone else. About to start they stop because in the sky there are these 2 fleets of warships that begin to enter the sky, one of them looks like a fleet of giant flying spiked handguns with large barrels and very small thin handles which are painted in American flag colors. I road my bike to the park but I start running to safety and there are surreal explosions. A plane falls nearby and explodes and the sound is delayed and profound parts fly close. I am running extremely fast. I think about how I’m looking forward to seeing footage of this absurd site on YouTube when it is over."
+```
+
+DreamSim v1.9.2 - loading...
+[+] Parsing input... done.
+[+] Stabilizing dream topology... done.
+[+] Initializing entities... done.
+[+] Tuning atmosphere... done.
+[+] Spawning park... done.
+=====================================
+
+> You are in a vast, open park in Brooklyn. The grass is impossibly green, almost electric, and stretches farther than it should. Trees sway in slow motion, their leaves whispering in a language you almost understand. The air smells like ozone and burnt sugar.
+
+> Young Thug is here. He is wearing a flowing, translucent poncho that shifts colors like oil on water. His eyes are wide, pupils dilated into black coins. He smiles at you, gentle, almost fragile.
+
+> His manager stands beside him, a man in a suit made of static. His voice crackles like a broken radio:  
+**"He's taking deathly amounts. It's for the therapy. He's being *nice* because the dose is so high it's rewiring kindness into his spine."**
+
+> Young Thug nods slowly, as if underwater.  
+**"I’m about to go in. They’re waiting for me. But first... you’re tall. Like, *really* tall. You sure you’re supposed to be here?"**
+
+> You look down. Your white shirt is stained with something iridescent. Your blue jeans shimmer faintly, like denim made of moonlight. You *are* taller. Everyone else seems compressed, like they’ve been slightly squashed by the sky.
+
+> Suddenly, the sky *撕裂s*.  
+Two fleets descend.  
+One is a formation of giant flying handguns, spiked and militarized, barrels like cathedral bells, handles like brittle twigs. They are painted in bleeding American flags, the stars pulsing like warning lights. They hover, humming a low, dental drill tone.
+
+> The manager looks up.  
+**"Ah. They’re early."**
+
+> Young Thug turns to you.  
+**"You should run now. The footage will be incredible."**
+
+> A distant plane tilts silently, then drops.  
+It hits the ground three seconds *before* the sound arrives.  
+The explosion is a *color*, not a noise. A deep, bruised violet that knocks the wind out of you. A turbine wheel spins past your head, whispering your name.
+
+> You run.  
+Your legs move faster than biology allows. Each stride stretches the ground behind you like taffy. The park folds inward as you flee, the trees curling into question marks. The sky guns begin to *cock themselves*, slow and ceremonial.
+
+> Behind you, Young Thug is still standing, arms out, eyes closed, as if welcoming the fallout.
+
+> You think:  
+**"This is going to break YouTube."**
+
+> The dream is unstable.  
+You can:
+- **run faster** (into the folding city)
+- **look back** (risk fragmentation)
+- **hide** (behind the unreal)
+- **record** (with your eyes)
+
+> What do you do?
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt:
+    Brooklyn park with Young Thug, giant American-flag flying spiked handguns in sky, surreal explosions, dreamlike chase
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg", "source": "semantic", "similarity": 0.403533458709728}]}}, "semantic": {"query": "Brooklyn park with Young Thug, giant American-flag flying spiked handguns in sky, surreal explosions, dreamlike chase", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg
+Args: {"channel": "logs", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO2470EY8XTW2.jpg"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1417763462054019073", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Kimi K2 1 ###
+> record
+
+> You blink—once, hard—and your vision *catches*.  
+A soft *click* inside your skull.  
+The scene freezes, rasterizes, saves.  
+A red dot blinks in the corner of your sight: **REC 0:00**
+
+> You keep running.  
+The footage is already uploading somewhere.  
+You feel the wind of the upload—hot, metallic—spiraling up through your optic nerve.
+
+> Behind you, the sky guns *fire*.  
+Not bullets.  
+They fire *segments of time*.  
+A round tears past you and you age three days in a single step. Another clips your shoulder and you *remember* a wedding you haven’t attended yet.
+
+> You duck.  
+The folded city looms ahead: buildings made of stacked subway cars, windows breathing, fire escapes dripping like wet paint. A bodega sign reads **“WE SELL TIME, CHEAP.”**
+
+> The red dot ticks: **0:27**
+
+> Your phone buzzes in your pocket—except you didn’t bring a phone.  
+You pull it out anyway.  
+It’s a cracked iPhone 4, Home button missing.  
+On the screen: a YouTube upload in progress.  
+Title auto-generated:  
+**“young thug therapy session interrupted by american flag gunships (NOT CLICKBAIT) (GONE TEMPORAL)”**
+
+> Views: 7.  
+> Comments:  
+**“i was there. he was nice.”**  
+**“this is what happens when you dose kindness intravenously.”**  
+**“i saw my death in the reflection of the barrel.”**
+
+> A third fleet *unfolds* overhead—this one shaped like giant syringes, plunging slowly into the clouds, drawing out weather and injecting static.
+
+> The dream stutters.  
+Frame-rate drops.  
+Your jeans buffer.
+
+> You can:
+- **duck into the bodega** (trade time for shelter)
+- **keep recording** (risk memory overflow)
+- **throw the phone** (see what uploads without you)
+- **wake up** (not recommended, exit wound is large)
+
+> What do you do?
+
+### Kimi K2 2 ###
+> throw the phone
+
+> You wind up—elbow high, wrist loose—and *hurl* the iPhone 4 into the violet air.  
+It spins once, cracked screen catching the light of an explosion that hasn’t happened yet, then *hangs*.  
+Mid-arc, it *unfolds* like a paper crane, glass wings flapping once before it *catches fire upward*.
+
+> The upload *detaches* from you.  
+You feel it *leave your skull*—a hot, wet *pop* behind your eyes.  
+The red dot blinks out.  
+**REC 0:45 — UPLOAD COMPLETE**
+
+> The phone is gone, but the stream is live.  
+You can *see* the chat scrolling across the sky in thin white contrails:  
+
+**“he’s free”**  
+**“the tall one escaped the dosage”**  
+**“this is the prequel to the therapy”**  
+**“america is a loaded gun with a fragile handle”**
+
+> Behind you, the park *collapses* into a single point—like a vacuum swallowing a postcard.  
+Young Thug is still at the center, arms wide, now *levitating*, poncho flapping like a flag made of cough syrup.  
+He looks straight into the *lens that is no longer yours* and says:  
+**“tell them i was polite.”**
+
+> The syringe-fleet *plunges*.  
+A thick, clear fluid *rains*—not water, not time, but *context*.  
+Where it lands, things *make too much sense*.  
+A fire hydrant *explains itself*.  
+A sidewalk crack *apologizes for your childhood*.  
+You *understand* the war, and it *hurts*.
+
+> You keep running.  
+The bodega is ahead, but its sign now reads:  
+**“WE BOUGHT YOUR TIME. NO REFUNDS.”**
+
+> The door is a mouth.  
+It’s *chewing* something that looks like your bike—tires still spinning, chain whispering your name in a voice like your mother’s, but *younger*.
+
+> You can:
+- **enter the mouth** (trade memory for momentum)
+- **run past it** (into the unzipped borough)
+- **turn around** (face the therapy)
+- **become the upload** (merge with the footage)
+
+> What do you do?
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt:
+    Violet sky, burning iPhone crane, Thug levitating, syringe rain of context, bodega mouth chewing a whispering bike
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png", "source": "semantic", "similarity": 0.425041237468575}]}}, "semantic": {"query": "Violet sky, burning iPhone crane, Thug levitating, syringe rain of context, bodega mouth chewing a whispering bike", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png
+Args: {"channel": "logs", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2WWP3KT.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1417763650298581052", "annotations": null, "_meta": null}], "isError": false, "model": null}
