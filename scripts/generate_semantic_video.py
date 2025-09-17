@@ -457,7 +457,7 @@ def main() -> int:
             discord_message=(
                 args.discord_message
                 if isinstance(args.discord_message, str) and args.discord_message.strip()
-                else f"Semantic video for '{args.query}'"
+                else f"{args.query}"
             ),
             discord_server_name=str(args.discord_server or "discord"),
             discord_config_path=args.discord_config,
