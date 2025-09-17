@@ -1,5 +1,11 @@
 ## Changelog
 
+### 2025-09-16
+- Restructure runtime footprint:
+  - All Backrooms transcripts and metadata now live under `var/backrooms_logs/` (shared helper in `paths.py`).
+  - `tasks.db` moved to `var/tasks/tasks.db`; `KIE_AI_DB_PATH` and `DISCORD_TOKEN` pulled from `.env`.
+  - Scripts, configs, and docs updated to read defaults via `paths` so the repo root stays tidy.
+
 ### 2025-09-15
 - scripts/post_lucid_images.py: new minimal posting flow using `search_eagle_images.search_images_semantic`.
   - Default `min_similarity` is 0.0 so semantic search always returns candidates; then we top-off from recent images to ensure exactly N URLs are posted.
