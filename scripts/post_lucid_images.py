@@ -184,13 +184,20 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
         else:
             print(f" {i:2d}. {u} (sim: n/a, {src})")
     urls_to_post = [it["url"] for it in items]
+    # Discord MCP server rejects completely empty message payloads — use the
+    # query as a lightweight caption/fallback so attachment-only posts succeed.
+    message_text = query.strip() or " "
 
     if dry_run:
         print("Dry run complete — no posts made.")
         return 0
 
     try:
-        _ = _post_media_to_discord(media_urls=urls_to_post, channel=channel, message="")
+        _ = _post_media_to_discord(
+            media_urls=urls_to_post,
+            channel=channel,
+            message=message_text,
+        )
     except Exception as e:
         print(f"Failed to post to Discord: {e}")
         return 1

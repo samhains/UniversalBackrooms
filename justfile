@@ -8,11 +8,6 @@ default:
 pwd := env_var('PWD')
 backrooms_logs := 'var/backrooms_logs'
 
-## Quick direct Backrooms (still supported)
-dreamsim2 q="":
-    python backrooms.py --lm "{{q}}" "{{q}}" --template dreamsim2
-backrooms:
-    python backrooms.py --lm hermes hermes --template roleplay --discord chronicle_fp --media chronicle_fp
 
 # Seed dreamsim3 initiator from Supabase (optional query)
 # Usage:
@@ -31,35 +26,6 @@ dreamsim3-one query="" model="gpt5":
     # Print the dream content to the console before the run
     python scripts/seed_dreamsim3.py --query "{{query}}" --print
     python backrooms.py --lm {{model}} {{model}} --template dreamsim3
-
-## DreamSim3 presets via config runner
-dreamsim3-default:
-    python scripts/run_config.py --config configs/batch_dreamsim3_default.json
-dreamsim3-mine:
-    python scripts/run_config.py --config configs/batch_dreamsim3_default.json
-dreamsim3-rsos:
-    python scripts/run_config.py --config configs/batch_dreamsim3_rsos.json
-dreamsim3-all:
-    python scripts/run_config.py --config configs/batch_dreamsim3_all.json
-dreamsim3-pairs:
-    python scripts/run_config.py --config configs/batch_dreamsim3_pairs_example.json
-dreamsim3-mixed:
-    python scripts/run_config.py --config configs/batch_dreamsim3_mixed_all.json
-dreamsim3-mixed-random:
-    python scripts/run_config.py --config configs/batch_dreamsim3_mixed_random.json
-dreamsim3-query:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query.json
-dreamsim3-query-rsos:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query_rsos.json
-dreamsim3-query-kie:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query_kie.json
-dreamsim3-query-kie-nopost:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query_kie_nopost.json
-dreamsim3-query-multi-media:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query_multi_media.json
-
-dreamsim3-query-multi-discord:
-    python scripts/run_config.py --config configs/batch_dreamsim3_query_multi_discord.json
 
 # Import RSOS TSV into Supabase (date + content only)
 # Usage:
