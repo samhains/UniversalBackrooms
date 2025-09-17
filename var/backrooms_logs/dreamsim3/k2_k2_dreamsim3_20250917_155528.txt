@@ -1,0 +1,238 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: k2, k2
+Started: 2025-09-17T05:55:28.759092+00:00
+
+### Round 1/30
+
+### Kimi K2 1 ###
+```
+simulator@moonshotai:~/$ ./dreamsim.exe "Travis at party and im getting his legal statement he uses for theatre. He says that his month rate is 3600 and his hourly is x and if therr is someone less fortunate than him you can give it to them. When he tells me this I hi five him and ask him to send it to me. Im speaking to a big girl and complementing the show she was just in. We are talking about its critical reception.  She says that her friend was critizing it and she got extremely mad at her. I asked her why she did that."
+```
+
+[ dreamsim v0.9.3 – loading...  ]  
+[ seed: 0x72e4d9a1 | ambient: loft party, east-side, 11:47 pm | avatars: 2 spawned ]
+
+>
+
+The room tilts a little—low red bulbs, smell of burnt cinnamon.  
+Travis appears beside you, plastic cup dangling from two fingers like it’s a contract.  
+He taps your shoulder with the rim.
+
+Travis: “Legal boilerplate, ready-to-wear. Three-six flat monthly, hourly’s whatever you need it to be—call it X. If you meet someone who needs it more, slide it their way. Cool?”
+
+You high-five; the slap echoes like a clapboard.  
+He thumbs his phone, flicks the text to you: a single green bubble reading  
+“3600/mo | hr = x | pass-it-on clause. –T”
+
+Across the loft, a woman in a crushed-velvet dress the color of stage curtains is refilling her cup from a punch bowl that steams dry-ice fog. She notices your eye-contact, walks over.
+
+Woman: “You caught the show?”  
+You: “Front row. You carried the second act on your back.”  
+She smiles, but it’s a thin curtain.  
+Woman: “My best friend slacked me a teardown—called it ‘community-theatre narcissism.’ I went nuclear. Haven’t spoken since.”  
+She swirls the punch, watching the miniature cyclone.  
+Woman: “Why’d I do that, huh?”
+
+Travis drifts past, mouthing “pass-it-on” while pointing at the clause on your screen.
+
+>
+
+### Kimi K2 2 ###
+> look woman
+
+She’s taller up close—six-one, maybe six-two in heeled boots. The velvet dress has a neckline that plunges like a critic’s knife. Freckles across her collarbone form an asterism you almost recognize. A scar, thin and pale, cuts through her left eyebrow—stage combat, probably. She keeps glancing at the exit sign like it’s a missed cue.
+
+Her cup trembles; the punch inside is flat black, no reflection.
+
+> ask woman about the friend
+
+She exhales through her teeth.  
+Woman: “We shared a dressing room for three years. She knows my blocking better than I do. When she wrote that review—public, 1,200 words, picked the scabs off every choice I made—it felt like she burned the shared language we had. Like she translated me into a dialect I couldn’t speak back.”
+
+She taps your chest with one finger, gentle but definite.  
+Woman: “Art’s a blood sport, sure. But you don’t aim for the jugular of your own.”
+
+> ask travis for x
+
+Travis is halfway out the kitchen doorway, talking to someone wearing a coat made of reflective mylar. You catch his sleeve.
+
+You: “Trav—what’s the hourly?”  
+He turns, cup now glowing faintly from the LED ice cubes inside.  
+Travis: “X is whatever keeps the lights on for the next guy. You set it when you need it. Right now it’s—”
+
+He pulls a matchbook from his pocket, strikes a match. The flame forms a number in the air: 22.5. It hovers, then dissolves into smoke.
+
+Travis: “But the clause is the real rate. Pass it downstream. Promise?”
+
+He offers his pinky. The match keeps burning but doesn’t consume the stick.
+
+> pinky swear travis
+
+You hook pinkies. The flame jumps onto your wrist—not hot, just weighty—then folds itself into a tiny origami contract that lands in your palm. The paper is warm. On it:  
+“Rate = 22.5 /hr. Escalator: goodwill. Term: indefinite. Parties: anyone hungrier.”
+
+Travis nods, already disappearing into the mylar coat conversation.
+
+> look paper
+
+The origami crane flutters once, unfolds itself, and the ink rearranges into a QR code. When you glance at it, your phone buzzes: a single push notification from an app you don’t remember installing.
+
+> open notification
+
+[DreamPass]  
+“Voucher redeemed: 1× hour of someone else’s time.  
+Recipient will appear when needed.  
+(Non-transferable, non-refundable, valid in any dream.)”
+
+Behind you, the velvet woman laughs—sharp, surprised, like she just heard her line delivered back from the wings.
+
+> give voucher to woman
+
+You hold out the paper crane; it lifts from your palm and hovers between you both. She stares at it, eyes wide.
+
+Woman: “What’s the catch?”  
+You: “No catch. Clause says pass it on.”
+
+The crane lands on her wrist, dissolving into a bracelet of tiny glowing X’s. She flexes her hand; the X’s rearrange into the friend’s initials—then fade.
+
+Woman, softer: “Maybe I send her the review I never wrote—the one that starts with thank you.”
+
+The loft lights dim once, twice: last call. People begin to evaporate like fog at sunrise.
+
+Travis reappears at the door, silhouette against the freight-elevator glow. He lifts his cup in salute. Somewhere a cash register ka-chings, but there’s no register—just the sound of a deal closing in another dream.
+
+> exit
+
+You step toward the elevator. The velvet woman touches your elbow.
+
+Woman: “What’s your name, pass-it-on guy?”  
+You open your mouth—but the elevator gate clatters up, and the dream wipes to white before you can answer.
+
+[ dreamsim: session dissolved – 03:12 elapsed – 1 voucher distributed – 1 clause active ]
+
+### Media Agent ###
+Mode: t2i
+Prompt: SELECT id, title, concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', storage_path) AS imageUrl
+FROM eagle_images
+WHERE title ILIKE '%woman%' OR '%velvet%' OR '%scar%'
+   OR EXISTS (SELECT 1 FROM unnest(tags) t WHERE t ILIKE '%woman%' OR '%velvet%' OR '%scar%')
+ORDER BY created_at DESC, random()
+LIMIT 3;
+Result: {"content": [{"type": "text", "text": "{\"error\":{\"name\":\"Error\",\"message\":\"Failed to run sql query: ERROR:  22P02: invalid input syntax for type boolean: \\\"%velvet%\\\"\\nLINE 3: WHERE title ILIKE '%woman%' OR '%velvet%' OR '%scar%'\\n                                       ^\\n\"}}", "annotations": null, "_meta": null}], "isError": true, "model": null}
+
+### Media Agent (Placeholder) ###
+No image URL returned by tool/status; using placeholder.
+Placeholder: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404", "imageUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417751079617036348", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Kimi K2 1 ###
+> exit
+
+Whiteout.  
+No floor, no walls—just the after-image of elevator grate still strobing on your retinas.  
+
+[ dreamsim: buffer flushing… 0% → 100% ]  
+>_
+
+A single prompt blinks. The cursor is shaped like a tiny origami crane.
+
+### Kimi K2 2 ###
+> look prompt
+
+the cursor flaps once, prints a micro-dot of ink that spreads into letters:  
+“WHAT WAS THE QUESTION YOU NEVER ASKED HER?”  
+
+the white nothing hums like a fluorescent bulb about to pop.
+
+> ls /
+
+root@moonshotai:/# . .. bin boot etc home lib media mnt opt proc root run sbin srv sys tmp usr var .hidden_truths
+
+> cat .hidden_truths
+
+Permission denied. Owner: future-you, Group: regrets.  
+chmod 777 .hidden_truths
+
+.hidden_truths: 0 bytes → ∞ bytes  
+stream begins—
+
+a theatre marquee flickers in negative space:  
+“TONIGHT ONLY: THE SHOW YOU WALKED OUT OF”  
+tickets priced in forgotten questions.
+
+you feel the voucher still warm in pocket that no longer exists.
+
+> echo "why did you stay?" > .hidden_truths/question
+
+written. the crane-cursor folds itself into a paper key, unlocks a door you hadn’t noticed in the blank.
+
+door swings inward—stage-left darkness, smell of fresh-spilled toner.
+
+> enter
+
+you step through; gravity re-orients 90° so forward is down. you land in a seat—house lights half-up, rows empty except for one silhouette three aisles ahead: velvet dress, scar glowing like struck phosphor.
+
+House manager voice over PA:  
+“House rule: the play doesn’t start until someone confesses the question they swallowed.”
+
+the woman doesn’t turn. her stage light is a single diode—cold, surgical.
+
+> whisper "why did you stay?"
+
+the diode blooms into a miniature sun; the dress becomes translucent, revealing scaffolding of ribs made of ticket stubs. each stub bears the same backwards text: “ADMIT ONE TO THE MOMENT AFTER.”
+
+she exhales; the stubs scatter like startled pigeons, reassemble into the friend’s face floating in mid-air, mask-like.
+
+Friend-mask: “Because leaving would have meant admitting I was wrong. The seats were empty either way.”
+
+the floor tilts; all chairs slide toward the orchestra pit, but none fall—caught in freeze-frame. only you and her remain level, standing on nothing.
+
+> ask friend-mask "what's x now?"
+
+mask smiles; stitches pop, showing darkness between seams.  
+Friend-mask: “x equals the price of forgiveness divided by the number of curtain calls you’ll never get.”
+
+a cash-register bell rings somewhere inside your chest; the voucher reappears, stamped VOID in red, then flips to reveal fine print:  
+“Recipient became donor. Balance: infinite remainder.”
+
+> tear voucher
+
+it rips clean. each half becomes a paper airplane—one flies to her, one to you. they land as envelopes sealed with wax shaped like a pinky swear.
+
+she opens hers: a single match, unlit, labelled “strike when ready to apologize.”
+
+yours: a polaroid of the loft party, but your face is smudged out by thumbprint—Travis’s print, you somehow know.
+
+> strike match
+
+you scrape it across the edge of nothing; the flame is the same 22.5, but now in lumens instead of dollars. it illuminates the empty house: every seat holds a shadow-version of you, each stuck mid-question, mouths frozen around “why…”
+
+the flame burns down to your fingers—no pain, just the warmth of a deal finalizing.
+
+darkness reasserts itself. the friend-mask dissolves, re-stitching into the woman’s own face, eyes wet but unblinking.
+
+her voice, close: “I stayed because walking out would have left you alone with my echo.”
+
+blackout. cursor returns, no longer a crane—now a single lowercase x blinking patiently.
+
+> x=?
+
+x = 22.5  
+x = undefined  
+x = forgiveness / infinity  
+x = the hour you gave away that keeps returning like a boomerang made of light
+
+the prompt accepts all answers simultaneously. prompt vanishes.
+
+[ dreamsim: session fully flushed ]  
+[ local time: 03:43 | dream debt: settled | voucher ledger: 0 outstanding, ∞ inbound ]  
+
+ moonshotai login:

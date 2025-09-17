@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional
 from mcp_cli import load_server_config  # reuse config loader
 from mcp_client import MCPServerConfig, call_tool, list_tools
 
+from search_eagle_images import get_supabase_client, search_images_semantic
+
 
 def load_media_config(template_name: str) -> Optional[Dict[str, Any]]:
     """Load media config from flat media/ folder first, then fallbacks.
@@ -76,6 +78,26 @@ def build_edit_prompt(
     lines.append("")
     lines.append("Return only the edit instruction.")
     return "\n".join(lines)
+
+
+def _supabase_public_base() -> Optional[str]:
+    base = os.getenv("SUPABASE_URL", "").rstrip("/")
+    if not base:
+        return None
+    return f"{base}/storage/v1/object/public/eagle-images/"
+
+
+def _row_to_image_url(row: Dict[str, Any]) -> Optional[str]:
+    for key in ("image_url", "imageUrl", "imageurl"):
+        val = row.get(key)
+        if isinstance(val, str) and val.strip():
+            return val.strip()
+    storage_path = row.get("storage_path") or row.get("path")
+    if isinstance(storage_path, str) and storage_path.strip():
+        base = _supabase_public_base()
+        if base:
+            return base + storage_path.strip().lstrip("/")
+    return None
 
 
 class MediaAgentState:
@@ -352,120 +374,249 @@ def run_media_agent(
 
     prompt_text = generate_text_fn(system_prompt, api_model, user_content).strip()
 
-    # 2) Prepare MCP tool call
-    # Select tool depending on mode, allowing dedicated tools for each stage.
-    if mode == "edit":
-        tool = media_cfg.get("edit_tool") or media_cfg.get("tool")
-        # If we somehow lack a prior image, fallback to t2i tool for robustness
-        if not state.last_image_ref:
-            tool = media_cfg.get("t2i_tool") or media_cfg.get("tool")
-            mode = "t2i"
-    else:
-        tool = media_cfg.get("t2i_tool") or media_cfg.get("tool")
-    if not isinstance(tool, dict):
-        err = "Media config must declare a 'tool' with 'server' and 'name'. No defaults are assumed."
-        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
-        body = f"Error: {err}"
-        log_media_result(filename, header, body)
-        return {"isError": True, "content": [{"type": "text", "text": err}]}
+    strategy = str(media_cfg.get("strategy") or media_cfg.get("media_strategy") or "tool").lower()
+    use_semantic_strategy = strategy in {
+        "semantic",
+        "semantic_search",
+        "semantic-embedding",
+        "semantic_embeddings",
+    }
 
-    server_name = tool.get("server")
-    tool_name = tool.get("name")
-    if not server_name or not tool_name:
-        err = "Media tool must include both 'server' and 'name'."
-        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
-        body = f"Error: {err}"
-        log_media_result(filename, header, body)
-        return {"isError": True, "content": [{"type": "text", "text": err}]}
-
-    defaults = tool.get("defaults", {})
-    prompt_param = media_cfg.get("prompt_param", "prompt")
-
-    # If the LLM wrapped the output in Markdown code fences (e.g., ```sql ... ```),
-    # strip the fences so SQL/commands execute cleanly. Apply when we're likely
-    # sending a query/command (common for Supabase SQL tools).
-    try:
-        if isinstance(prompt_text, str) and any(k in (prompt_param or "") for k in ("query", "sql", "command")):
-            s = prompt_text.strip()
-            if s.startswith("```"):
-                # Remove leading triple backticks and optional language tag
-                s = re.sub(r"^```[a-zA-Z0-9_-]*\s*\n?", "", s)
-                # Remove trailing triple backticks if present
-                s = re.sub(r"\n?```$", "", s.strip())
-            else:
-                # Handle inline fenced blocks by extracting the first fenced section
-                m = re.search(r"```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```", s)
-                if m:
-                    s = m.group(1).strip()
-            prompt_text = s
-    except Exception:
-        pass
-
-    args = {prompt_param: prompt_text, **defaults}
+    tool: Optional[Dict[str, Any]] = None
+    server_name: Optional[str] = None
+    tool_name: Optional[str] = None
     debug_args_summary = ""
-    # For edit mode, attach the prior image reference using configurable param name/shape
-    if mode == "edit" and state.last_image_ref:
-        img_param_cfg = tool.get("image_param")
-        # Support either a simple string (param name) or an object { name, as_list }
-        if isinstance(img_param_cfg, dict):
-            param_name = img_param_cfg.get("name") or "image_url"
-            as_list = bool(img_param_cfg.get("as_list"))
-        elif isinstance(img_param_cfg, str):
-            param_name = img_param_cfg
-            as_list = False
-        else:
-            param_name = "image_url"
-            as_list = False
-        ref_to_use = state.last_image_ref
-        args[param_name] = [ref_to_use] if as_list else ref_to_use
-        # Keep a short debug summary for logs
+
+    if use_semantic_strategy:
+        # Normalize prompt into a compact single-line query suited for semantic search
+        semantic_query = prompt_text.strip() if isinstance(prompt_text, str) else str(prompt_text)
         try:
-            shown = ref_to_use if not isinstance(ref_to_use, str) else (ref_to_use[:120] + ("…" if len(ref_to_use) > 120 else ""))
-            debug_args_summary = f"EditParam: {param_name}={'list' if as_list else 'str'} -> {shown}"
+            target_n = int(media_cfg.get("n") or media_cfg.get("post_top_k") or 1)
+        except Exception:
+            target_n = 1
+        target_n = max(1, target_n)
+        try:
+            min_similarity = float(media_cfg.get("min_similarity") or 0.0)
+        except Exception:
+            min_similarity = 0.0
+        folders_cfg = media_cfg.get("folders")
+        folders: Optional[List[str]]
+        if isinstance(folders_cfg, str):
+            folders = [folders_cfg]
+        elif isinstance(folders_cfg, (list, tuple)):
+            folders = [str(f).strip() for f in folders_cfg if isinstance(f, str) and str(f).strip()]
+            folders = folders or None
+        else:
+            folders = None
+        try:
+            raw_limit = int(media_cfg.get("semantic_limit") or 0)
+        except Exception:
+            raw_limit = 0
+        if raw_limit <= 0:
+            raw_limit = max(target_n * 3, target_n)
+        semantic_limit = max(raw_limit, target_n)
+
+        items: List[Dict[str, Any]] = []
+        seen_urls: set[str] = set()
+        seen_ids: set[str] = set()
+        semantic_notes: List[str] = []
+        try:
+            semantic_rows = search_images_semantic(
+                query=semantic_query,
+                limit=semantic_limit,
+                min_similarity=min_similarity,
+                folders=folders,
+            )
+            semantic_notes.append(f"semantic_hit_count={len(semantic_rows)}")
+        except Exception as e:
+            semantic_rows = []
+            semantic_notes.append(f"semantic_error={e}")
+        for row in semantic_rows:
+            rid = str(row.get("id") or row.get("eagle_id") or "").strip()
+            if rid:
+                seen_ids.add(rid)
+            url = _row_to_image_url(row)
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                items.append(
+                    {
+                        "url": url,
+                        "similarity": row.get("similarity_score"),
+                        "source": "semantic",
+                    }
+                )
+            if len(items) >= target_n:
+                break
+        if len(items) < target_n:
+            try:
+                sb = get_supabase_client()
+                extra_limit = max(target_n * 3, 30)
+                res = (
+                    sb.table("eagle_images")
+                    .select("id, eagle_id, image_url, storage_path, created_at")
+                    .order("created_at", desc=True)
+                    .limit(extra_limit)
+                    .execute()
+                )
+                rows = res.data or []
+                for r in rows:
+                    rid = str(r.get("id") or r.get("eagle_id") or "").strip()
+                    if rid and rid in seen_ids:
+                        continue
+                    url = _row_to_image_url(r)
+                    if not url or url in seen_urls:
+                        continue
+                    seen_urls.add(url)
+                    if rid:
+                        seen_ids.add(rid)
+                    items.append(
+                        {
+                            "url": url,
+                            "similarity": None,
+                            "source": "topoff",
+                        }
+                    )
+                    if len(items) >= target_n:
+                        break
+            except Exception as e:
+                semantic_notes.append(f"topoff_error={e}")
+        semantic_notes.append(f"resolved_count={len(items)}/{target_n}")
+
+        rows_payload: List[Dict[str, Any]] = []
+        for entry in items:
+            row_payload: Dict[str, Any] = {
+                "imageUrl": entry["url"],
+                "source": entry.get("source"),
+            }
+            if entry.get("similarity") is not None:
+                row_payload["similarity"] = entry.get("similarity")
+            rows_payload.append(row_payload)
+
+        result = {
+            "content": ([{"type": "image", "uri": items[0]["url"]}] if items else []),
+            "response": {"data": {"rows": rows_payload}},
+            "semantic": {
+                "query": semantic_query,
+                "target": target_n,
+                "min_similarity": min_similarity,
+                "folders": folders,
+                "notes": semantic_notes,
+            },
+        }
+        if items:
+            result["images"] = [entry["url"] for entry in items]
+        server_name = "semantic"
+        tool_name = "search_images_semantic"
+        debug_args_summary = f"Strategy: semantic_search (n={target_n}, min_sim={min_similarity:.3f})"
+    else:
+        if mode == "edit":
+            tool = media_cfg.get("edit_tool") or media_cfg.get("tool")
+            if not state.last_image_ref:
+                tool = media_cfg.get("t2i_tool") or media_cfg.get("tool")
+                mode = "t2i"
+        else:
+            tool = media_cfg.get("t2i_tool") or media_cfg.get("tool")
+        if not isinstance(tool, dict):
+            err = "Media config must declare a 'tool' with 'server' and 'name'. No defaults are assumed."
+            header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
+            body = f"Error: {err}"
+            log_media_result(filename, header, body)
+            return {"isError": True, "content": [{"type": "text", "text": err}]}
+
+        server_name = tool.get("server")
+        tool_name = tool.get("name")
+        if not server_name or not tool_name:
+            err = "Media tool must include both 'server' and 'name'."
+            header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+            body = f"Error: {err}"
+            log_media_result(filename, header, body)
+            return {"isError": True, "content": [{"type": "text", "text": err}]}
+
+        defaults = tool.get("defaults", {})
+        prompt_param = media_cfg.get("prompt_param", "prompt")
+
+        try:
+            if isinstance(prompt_text, str) and any(k in (prompt_param or "") for k in ("query", "sql", "command")):
+                s = prompt_text.strip()
+                if s.startswith("```"):
+                    s = re.sub(r"^```[a-zA-Z0-9_-]*\s*\n?", "", s)
+                    s = re.sub(r"\n?```$", "", s.strip())
+                else:
+                    m = re.search(r"```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```", s)
+                    if m:
+                        s = m.group(1).strip()
+                prompt_text = s
         except Exception:
             pass
 
-    # Load MCP server config (support multiple common envs/filenames)
-    mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
-    if not os.path.exists(mcp_config_path):
-        # Fallback to alternate default commonly used by CLI
-        alt = "mcp_servers.json"
-        if os.path.exists(alt):
-            mcp_config_path = alt
-    server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
+        args = {prompt_param: prompt_text, **defaults}
+        # For edit mode, attach the prior image reference using configurable param name/shape
+        if mode == "edit" and state.last_image_ref:
+            img_param_cfg = tool.get("image_param")
+            if isinstance(img_param_cfg, dict):
+                param_name = img_param_cfg.get("name") or "image_url"
+                as_list = bool(img_param_cfg.get("as_list"))
+            elif isinstance(img_param_cfg, str):
+                param_name = img_param_cfg
+                as_list = False
+            else:
+                param_name = "image_url"
+                as_list = False
+            ref_to_use = state.last_image_ref
+            args[param_name] = [ref_to_use] if as_list else ref_to_use
+            try:
+                shown = ref_to_use if not isinstance(ref_to_use, str) else (
+                    ref_to_use[:120] + ("…" if len(ref_to_use) > 120 else "")
+                )
+                debug_args_summary = f"EditParam: {param_name}={'list' if as_list else 'str'} -> {shown}"
+            except Exception:
+                pass
 
-    # 3) Validate tool exists and call
-    # Try to list tools first to provide a clearer error if mis-typed
-    tool_exists = True
-    try:
-        available = list_tools(server_cfg)
-        names = {t.get("name") for t in available if isinstance(t, dict)}
-        tool_exists = tool_name in names
-    except Exception:
-        # If listing fails, proceed to attempt the call (original behavior)
+        mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+        if not os.path.exists(mcp_config_path):
+            alt = "mcp_servers.json"
+            if os.path.exists(alt):
+                mcp_config_path = alt
+        server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
+
         tool_exists = True
+        try:
+            available = list_tools(server_cfg)
+            names = {t.get("name") for t in available if isinstance(t, dict)}
+            tool_exists = tool_name in names
+        except Exception:
+            tool_exists = True
 
-    if not tool_exists:
-        err = (
-            f"Media tool '{tool_name}' not found on server '{server_name}'. "
-            f"Run: python mcp_cli.py --config {mcp_config_path} --server {server_name} list-tools"
-        )
-        header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
-        body = f"Mode: {mode}\nPrompt: {prompt_text}\nError: {err}"
-        log_media_result(filename, header, body)
-        state.save()
-        return {"isError": True, "content": [{"type": "text", "text": err}]}
+        if not tool_exists:
+            err = (
+                f"Media tool '{tool_name}' not found on server '{server_name}'. "
+                f"Run: python mcp_cli.py --config {mcp_config_path} --server {server_name} list-tools"
+            )
+            header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
+            body = f"Mode: {mode}\nPrompt: {prompt_text}\nError: {err}"
+            log_media_result(filename, header, body)
+            state.save()
+            return {"isError": True, "content": [{"type": "text", "text": err}]}
 
-    # Many FastMCP servers define a single parameter named 'params'.
-    # Wrap arguments accordingly for compatibility.
-    wrap_params = tool.get("wrap_params", True)
-    payload = {"params": args} if wrap_params else args
-    result = call_tool(server_cfg, tool_name, payload)
+        wrap_params = tool.get("wrap_params", True)
+        payload = {"params": args} if wrap_params else args
+        result = call_tool(server_cfg, tool_name, payload)
 
     # 4) Log
     header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
     dbg = ("\n" + debug_args_summary) if debug_args_summary else ""
-    body = f"Mode: {mode}{dbg}\nPrompt: {prompt_text}\nResult: {json.dumps(result, ensure_ascii=False)}"
+    if isinstance(prompt_text, str):
+        if "\n" in prompt_text:
+            prompt_for_log = "\n".join(f"    {line}" for line in prompt_text.splitlines())
+        else:
+            prompt_for_log = f"    {prompt_text}"
+    else:
+        prompt_for_log = f"    {prompt_text!r}"
+    body = (
+        f"Mode: {mode}{dbg}\n"
+        f"Prompt:\n{prompt_for_log}\n"
+        f"Result: {json.dumps(result, ensure_ascii=False)}"
+    )
     log_media_result(filename, header, body)
 
     # Helper: extract as many image/media URLs as possible from a tool result
@@ -583,7 +734,7 @@ def run_media_agent(
             if task_id:
                 break
 
-    if not ref and task_id:
+    if not ref and task_id and not use_semantic_strategy:
         status_cfg = tool.get("status_tool") or {"name": "get_task_status"}
         status_name = status_cfg.get("name")
         poll_cfg = tool.get("poll", {})
