@@ -39,8 +39,8 @@ def resolve_media_model_api(media_cfg: Dict[str, Any], selected_models: List[str
         for m in selected_models:
             if m in model_info:
                 return model_info[m]["api_name"]
-        # No implicit fallback; require explicit declaration
-        raise ValueError("Unable to resolve media model from selected models; declare 'model' explicitly in media config.")
+        # fallback to sonnet if nothing suitable
+        return model_info["sonnet"]["api_name"]
     if model_key in model_info:
         return model_info[model_key]["api_name"]
     return model_key
@@ -415,7 +415,6 @@ def run_media_agent(
         if raw_limit <= 0:
             raw_limit = max(target_n * 3, target_n)
         semantic_limit = max(raw_limit, target_n)
-
         items: List[Dict[str, Any]] = []
         seen_urls: set[str] = set()
         seen_ids: set[str] = set()
@@ -517,14 +516,16 @@ def run_media_agent(
         else:
             tool = media_cfg.get("t2i_tool") or media_cfg.get("tool")
         if not isinstance(tool, dict):
-            err = "Media config must declare a 'tool' with 'server' and 'name'. No defaults are assumed."
-            header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (media)\033[0m"
-            body = f"Error: {err}"
-            log_media_result(filename, header, body)
-            return {"isError": True, "content": [{"type": "text", "text": err}]}
+            # Provide a gentle fallback so legacy configs keep working
+            tool = {
+                "server": "comfyui",
+                "name": "generate_image",
+                "defaults": {"width": 768, "height": 768},
+            }
+            mode = "t2i"
 
-        server_name = tool.get("server")
-        tool_name = tool.get("name")
+        server_name = tool.get("server") or "comfyui"
+        tool_name = tool.get("name") or "generate_image"
         if not server_name or not tool_name:
             err = "Media tool must include both 'server' and 'name'."
             header = "\n\033[1m\033[38;2;180;130;255mMedia Agent (image)\033[0m"
@@ -532,7 +533,7 @@ def run_media_agent(
             log_media_result(filename, header, body)
             return {"isError": True, "content": [{"type": "text", "text": err}]}
 
-        defaults = tool.get("defaults", {})
+        defaults = tool.get("defaults") or {"width": 768, "height": 768}
         prompt_param = media_cfg.get("prompt_param", "prompt")
 
         try:

@@ -573,6 +573,7 @@ def main():
 
     # Optional media agent configs: support multiple presets
     media_cfgs = []
+    seen_media: set[str] = set()
     # Read global per-run overrides for media presets from env (JSON)
     media_overrides_env = os.getenv("BACKROOMS_MEDIA_OVERRIDES")
     media_overrides: dict[str, object] = {}
@@ -583,7 +584,35 @@ def main():
                 media_overrides = _mov
         except Exception:
             pass
-    if args.media and load_media_config:
+    def _register_media_preset(name: str, warn_missing: bool = True) -> None:
+        if not load_media_config or not name or name in seen_media:
+            return
+        cfg = load_media_config(name)
+        if cfg:
+            cfg.setdefault("__name__", name)
+            if media_overrides:
+                try:
+                    for k, v in media_overrides.items():
+                        cfg[k] = v
+                except Exception:
+                    pass
+            media_cfgs.append(cfg)
+            seen_media.add(name)
+        elif warn_missing:
+            try:
+                media_dir = Path("media")
+                choices = []
+                if media_dir.exists():
+                    for p in media_dir.iterdir():
+                        if p.is_file() and p.suffix == ".json":
+                            choices.append(p.stem)
+                print(
+                    f"Warning: media preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                )
+            except Exception:
+                print(f"Warning: media preset '{name}' not found.")
+
+    if args.media:
         # Flatten possible comma-separated values across repeated flags
         raw_media: list[str] = []
         for m in (args.media or []):
@@ -591,35 +620,11 @@ def main():
                 raw_media.extend([x.strip() for x in m.split(",") if x.strip()])
             elif isinstance(m, str):
                 raw_media.append(m.strip())
-        seen = set()
         for name in raw_media:
-            if not name or name in seen:
-                continue
-            seen.add(name)
-            cfg = load_media_config(name)
-            if cfg:
-                cfg.setdefault("__name__", name)
-                # Apply shallow overrides from env if provided
-                if media_overrides:
-                    try:
-                        for k, v in media_overrides.items():
-                            cfg[k] = v
-                    except Exception:
-                        pass
-                media_cfgs.append(cfg)
-            else:
-                try:
-                    media_dir = Path("media")
-                    choices = []
-                    if media_dir.exists():
-                        for p in media_dir.iterdir():
-                            if p.is_file() and p.suffix == ".json":
-                                choices.append(p.stem)
-                    print(
-                        f"Warning: media preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
-                    )
-                except Exception:
-                    print(f"Warning: media preset '{name}' not found.")
+            _register_media_preset(name)
+    else:
+        # Fallback to template-named preset if present
+        _register_media_preset(args.template, warn_missing=False)
 
     # Optional Discord agent configs: support multiple profiles
     discord_cfgs = []
