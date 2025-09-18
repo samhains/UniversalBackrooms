@@ -1,0 +1,11 @@
+{
+  "goal": "Summarize the latest Universal Backrooms scenario for the Discord logs channel.",
+  "settings": {
+    "model": "nousresearch/hermes-4-405b",
+    "temperature": 0.2,
+    "max_loops": 4,
+    "discord_channel": "logs",
+    "discord_server": "discord",
+    "mcp_config": "mcp.config.json"
+  }
+}

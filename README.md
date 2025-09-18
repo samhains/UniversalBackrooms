@@ -26,6 +26,7 @@ I removed references to the fact that the user will be guiding the conversation 
 10. Changed the default maximum number of turns to infinity.
 
 ## Setup
+- Use Python 3.10–3.12 (tokenizers currently has no prebuilt wheel for 3.13, making installs fail without a Rust toolchain).
 - Copy .env.example to .env
 - Add your Anthropic and/or OpenAI API keys to the .env file, depending on which models you plan to use. Optionally add an OpenRouter API key to try Hermes 405B.
 - Install packages.  ```pip install -r requirements.txt```
@@ -126,6 +127,16 @@ Older CLI-interface templates have been removed from the default set. If you nee
 ## MCP Client (connect to existing MCP servers)
 
 This repo includes a minimal MCP client to connect to any MCP-compliant server (e.g., your ComfyUI MCP server) over stdio.
+
+## LangGraph Scenario Agent
+
+- Looping agent built with LangGraph that reasons with an OpenRouter model, calls MCP tools, and posts updates to Discord.
+- Configure environment: set `OPENROUTER_API_KEY`, optionally `LANGGRAPH_AGENT_MODEL`, `LANGGRAPH_AGENT_MAX_LOOPS`, and `LANGGRAPH_AGENT_DISCORD_CHANNEL` (falls back to `DISCORD_CHANNEL_ID`). It reads servers from `mcp.config.json` by default; override with `LANGGRAPH_AGENT_MCP_CONFIG`.
+- Run once: `python -m langgraph_agent.runner "Dream of neon fog"`.
+- Stream intermediate state updates: `python -m langgraph_agent.runner "Dream of neon fog" --stream`.
+- Reuse presets via config: `python -m langgraph_agent.runner --config configs/langgraph_logs.json` (optional positional goal overrides the config's goal).
+- The agent plans → acts via MCP (default `discord.send-message`) → observes, repeating up to the configured loop count or until it decides to stop.
+- `discord_channel` values should match what your MCP Discord server expects (channel ID or name).
 
 ### Batch Runner (DreamSim3)
 
