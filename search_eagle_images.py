@@ -185,6 +185,7 @@ def search_images_by_image_embedding(
     min_similarity: float = 0.3,
     folders: Optional[List[str]] = None,
     supabase: Optional[Client] = None,
+    exclude_ids: Optional[List[int]] = None,
 ) -> List[Dict[str, Any]]:
     """Run the image-to-image similarity RPC using a prepared embedding."""
     if not embedding:
@@ -199,6 +200,7 @@ def search_images_by_image_embedding(
                 "match_limit": limit,
                 "folder_filter": folders,
                 "similarity_threshold": min_similarity,
+                "excluded_ids": exclude_ids,
             },
         ).execute()
     except Exception as exc:  # pragma: no cover - network dependent
@@ -219,12 +221,19 @@ def search_images_by_image_url(
     embedding, matched_row, cached = get_image_embedding_for_url(
         image_url, supabase=sb
     )
+    exclude_ids = None
+    if matched_row and matched_row.get("id"):
+        try:
+            exclude_ids = [int(matched_row["id"])]
+        except (TypeError, ValueError):
+            exclude_ids = None
     results = search_images_by_image_embedding(
         embedding,
         limit=limit,
         min_similarity=min_similarity,
         folders=folders,
         supabase=sb,
+        exclude_ids=exclude_ids,
     )
     metadata = {
         "embedding_source": "cache" if cached else "vertex",
