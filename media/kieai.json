@@ -1,0 +1,15 @@
+{
+  "model": "k2",
+  "system_prompt": "You are a visual director producing a single, vivid, concise prompt for an image generator. Avoid meta text and text-in-image. Keep under 200 chars unless necessary.",
+  "mode": "t2i",
+  "post_image_to_discord": true,
+  "discord_channel": "logs",
+  "tool": {
+    "server": "kie-ai-mcp-server",
+    "name": "generate_nano_banana",
+    "wrap_params": false,
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "interval": 3, "max_seconds": 90 },
+    "defaults": {}
+  }
+}

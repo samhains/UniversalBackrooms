@@ -38,7 +38,7 @@ else:
 - Post gating: `backrooms.py` around the Discord agent call (look for `run_discord_agent(...)`). Intercept the candidate text from the discord preset before invoking the MCP tool.
 - Actor alignment: Extend the discord preset `user_template` with `{last_actor}` and update `discord_agent.py` prompt assembly (it already exposes `last_actor`/`last_text`).
 - Media pairing: This is already partially wired; `media_url` is passed into `run_discord_agent`. Nudge the preset system prompt to reference visuals without links/meta.
-- Persona memory: Store last 1–2 posted lines to a small file in `BackroomsLogs/` and thread them into the chronicler preset as an extra field (e.g., `{voice_memory}`).
+- Persona memory: Store last 1–2 posted lines to a small file in `var/backrooms_logs/` and thread them into the chronicler preset as an extra field (e.g., `{voice_memory}`).
 
 ## Testing Checklist
 
@@ -46,4 +46,3 @@ else:
 - `[POST]/[HOLD]` logic prevents accidental empty or low‑confidence posts.
 - Chronicler’s tone remains stable across 3–5 rounds.
 - Media prompt references are POV/scene‑anchored, never meta.
-

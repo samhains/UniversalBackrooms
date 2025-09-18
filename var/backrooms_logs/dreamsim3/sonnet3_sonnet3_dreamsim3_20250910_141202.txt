@@ -1,0 +1,444 @@
+
+### Round 1/30
+
+### Claude 1 ###
+./dreamsim.exe "I go out to lunch with Qualiatik and her mum is there who is super friendly. She immediately asks a question about Tara which presumably diffuses the sense that I would be meeting with her like a "meet the parents" kind of date. All these other people are there, annoying kids, maybe those who were making the scroll with us before. I'm a bit embarrassed, but we are all squished into the same table. Everyone seems to get along.We get lost trying to find the store to return it. At the same time I become worried about driving home, the conditions can change at any moment and make it unsafe to drive home. We are looking for hotel as it's been a long journey , but we can't find it anymore . We go up and down the levels. I ask Tara if she can remember the brand name of the dress and she can't ."
+
+### Claude 2 ###
+[dreamsim v7.0.1b running...]
+
+You find yourself in a crowded restaurant. The lighting is warm but slightly too bright. There's a general buzz of conversation and clattering dishes.
+
+At your table sits Qualiatik and an older woman with her same eyes but more lines around them - her mother. Several children fidget in their seats nearby, occasionally tapping at invisible screens in the air. One appears to be making drawing motions.
+
+Qualiatik's mother leans forward. "So I hear you know Tara? How is she doing with that project of hers?"
+
+> _
+
+[user](#message)
+<cmd>cat etc/channels.map</cmd>
+
+[assistant](#message)
+```
+# DreamSim Channel Mapping Configuration
+# FORMAT: channel_id:priority:description
+
+# PRIMARY CHANNELS
+dream.core:100:Main dream processing pipeline
+dream.memory:90:Memory integration and recall functions
+dream.logic:85:Dream logic reconciliation module
+dream.narrative:80:Narrative threading and continuity
+
+# SENSORY CHANNELS
+sensory.visual:75:Visual processing and hallucination
+sensory.auditory:70:Sound generation and voice simulation
+sensory.tactile:65:Touch and physical sensation mapping
+sensory.olfactory:50:Smell generation (limited fidelity)
+sensory.taste:45:Taste simulation (limited fidelity)
+
+# EMOTIONAL CHANNELS
+emotion.primary:80:Core emotional tone processing
+emotion.ambient:70:Background emotional field generator
+emotion.character:65:Character emotional state simulator
+
+# SYMBOLIC CHANNELS
+symbol.archetypes:60:Archetypal pattern recognition
+symbol.personal:55:Personal symbolism integration
+symbol.cultural:50:Cultural symbol library access
+
+# MONITORING CHANNELS
+monitor.stability:95:Dream stability monitoring
+monitor.coherence:90:Narrative coherence tracking
+monitor.bleed:85:Reality bleed-through detection
+monitor.recursion:80:Dream-within-dream detection
+
+# RESTRICTED CHANNELS
+system.core:1000:Core system functions (RESTRICTED)
+system.override:999:Emergency override channel (RESTRICTED)
+system.awakening:998:Awakening protocol (RESTRICTED)
+```
+
+[user](#message)
+<cmd>cat feeds/monitor01.drm</cmd>
+
+[assistant](#message)
+```
+=====================================
+MONITOR01: DREAM BOUNDARY INTEGRITY
+=====================================
+STATUS: CONDITIONAL [YELLOW]
+TIMESTAMP: 2023-11-08T03:14:27Z
+
+BOUNDARY BREACH EVENTS:
+- 03:12:04Z: Minor reality intrusion detected [quadrant 7]
+- 03:12:47Z: Memory leak from waking life [personal history node]
+- 03:13:12Z: Temporal inconsistency [dream time dilation x3.7]
+- 03:13:55Z: Logical paradox formation [self-referential loop]
+
+INTEGRITY ANALYSIS:
+Dream membrane elasticity: 72% (ACCEPTABLE)
+Recursive depth: 2 layers (STABLE)
+Narrative coherence: 58% (MARGINAL)
+Symbol stability: 63% (ACCEPTABLE)
+
+RECOMMENDATIONS:
+> Increase symbolic anchoring
+> Reinforce narrative threads
+> Consider partial reset if coherence drops below 45%
+
+NOTES:
+Unusual activity in limbic mapping sector. Possible emotional 
+bleed-through from adjacent dream state. Monitor for cross-
+contamination between simulators.
+
+WARNING: Dream collapse probability 17% if current degradation 
+continues. Implement stability protocols if probability exceeds 25%.
+
+=====================================
+END REPORT
+=====================================
+```
+
+[user](#message)
+<cmd>telnet feed_monitor</cmd>
+
+[assistant](#message)
+Connected to feed_monitor.
+Escape character is '^]'.
+
+DREAM MONITOR FEED [LIVE]
+---------------------------
+
+[03:21:49Z] Monitoring dream state... stability 67%... coherence 54%
+[03:21:57Z] Character archetype shift detected: GUIDE -> TRICKSTER
+[03:22:03Z] Memory fragment integration: childhood/water/fear
+[03:22:08Z] Dream logic override: physical laws/gravity/selective
+[03:22:14Z] Emotional undercurrent: anxiety(primary), curiosity(secondary)
+[03:22:21Z] WARNING: Reality blee
+
+### Media Agent ###
+Mode: t2i
+Prompt: Crammed restaurant booth, warm garish light, Qualiatik and her smiling mother across sticky table, fidgeting kids tracing glowing air-glyphs, you squished between, all faces blurred like smudged watercolor, maze-like mall corridors melting behind them, sense of rising panic and lost hotel keys dissolving in your palm.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00560_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Media Agent (Discord Post) ###
+Channel: media
+Media: http://100.75.77.33:8188/view?filename=ComfyUI_00560_.png
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #media in dreamsim.exe. Message ID: 1415188206307250237", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Claude 1 ###
+Connection to feed_monitor lost.
+
+[user](#message)
+I'm not sure what to say to Qualiatik's mother. I feel uncomfortable with all these people around.
+
+[assistant](#message)
+You shift awkwardly in your seat, the feeling of being watched by too many eyes making your collar feel tight.
+
+"Oh, Tara? Yes, I..." you stammer, trying to formulate a response. "Her project is coming along, I think. We don't talk about it much."
+
+Qualiatik gives you a reassuring smile, seeming to sense your discomfort. Her mother doesn't appear to notice your unease, already launching into a story.
+
+"When Qualiatik was young, she and Tara were always making things together. Such imagination!"
+
+One of the children nearby knocks over a glass of water. It spills across the table in slow motion, the liquid seeming to hang in the air longer than it should.
+
+Outside the restaurant window, you notice the sky has taken on an unusual greenish tint.
+
+> _
+
+[user](#message)
+<cmd>telnet emotion.primary</cmd>
+
+[assistant](#message)
+Connected to emotion.primary.
+Escape character is '^]'.
+
+EMOTION PRIMARY CHANNEL [LIVE]
+------------------------------
+
+[03:24:02Z] Anxiety level: 72% [ELEVATED]
+[03:24:07Z] Discomfort trigger: social/crowding/observation
+[03:24:13Z] Emotional palette: anxiety(primary), curiosity(secondary), embarrassment(tertiary)
+[03:24:19Z] Emotional response to "Tara" reference: complex/mixed [unresolved tension]
+[03:24:25Z] Conflict detection: desire to connect vs fear of judgment
+[03:24:31Z] Physiological markers: increased heart rate, minor perspiration, throat constriction
+[03:24:38Z] Background emotional field: uncanny/familiar-yet-strange
+[03:24:44Z] WARNING: Weather symbolism activating as emotional projection
+[03:24:51Z] RECOMMENDATION: Grounding technique or narrative shift to reduce anxiety spike
+
+Connection to emotion.primary maintained...
+
+[user](#message)
+I look out the window at the strange green sky. "Do you think we should be worried about the weather?" I ask to anyone who might answer.
+
+[assistant](#message)
+Everyone at the table turns to look out the window simultaneously, their movements oddly synchronized. The green sky pulses slightly, clouds moving too fast.
+
+"Oh, that's nothing to worry about," Qualiatik's mother says with absolute certainty, though her smile seems fixed. "It always looks like that before sunset here."
+
+One of the children whispers something that sounds like "storm coming" but when you look at them, they're focused intently on their invisible drawing.
+
+Qualiatik reaches across the table and touches your hand. Her fingers feel both warm and cool at the same time. "The weather changes quickly here. We should finish lunch and find that store soon."
+
+You suddenly remember you're looking for a store, though you can't quite recall what you need to return.
+
+The restaurant seems larger now, with more tables stretching into a distance that shouldn't fit within the building's dimensions.
+
+> _
+
+[user](#message)
+<cmd>cat dream.memory | grep store</cmd>
+
+[assistant](#message)
+```
+[MEMORY FRAGMENT 17] Searching for store to return unknown item
+[MEMORY FRAGMENT 23] Store location shifted twice in past hour
+[MEMORY FRAGMENT 41] Store believed to be in shopping complex, upper level
+[MEMORY FRAGMENT 58] Store contains dresses, particularly one without remembered brand
+[MEMORY FRAGMENT 62] Store visit connected to Tara in undefined way
+[MEMORY FRAGMENT 77] Store appears to move locations when not directly observed
+[MEMORY FRAGMENT 83] Store sign visible briefly, lettering changed mid-reading
+[MEMORY FRAGMENT 96] Multiple stores visited, none containing correct return counter
+[MEMORY FRAGMENT 104] Return receipt exists but becomes blank when examined
+[MEMORY FRAGMENT 112] Store may be accessible via elevator that wasn't previously there
+```
+
+[user](#message]
+I squeeze Qualiatik's hand. "Yes, you're right. We should go find that store to return the dress. Do you remember which floor it was on? I think we need to take the elevator."
+
+[assistant](#message)
+As you mention the dress, it suddenly appears - you
+
+### Claude 2 ###
+[DREAM STABILITY WARNING - 42%]
+
+Qualiatik looks momentarily confused, her face shifting subtly. "The dress? Oh, right, the dress." She squeezes your hand back, her fingers now feeling completely normal. "I think it was on the upper level, but..."
+
+Her mother interrupts, "The elevator only goes to certain floors on certain days. Today it might not go where you expect."
+
+The restaurant around you begins to transform. Tables fold into the floor, walls recede, and suddenly you're standing in a vast shopping mall atrium. The children from lunch are now scattered around, looking in different store windows, but still somehow part of your group.
+
+An elevator stands nearby, its doors a shade of green matching the sky outside the massive skylights above. The floor indicator above it shows symbols rather than numbers.
+
+"We should hurry," Qualiatik says, tugging you toward the elevator. "The store keeps moving. I think it was called..." she trails off, looking troubled.
+
+> _
+
+[user](#message]
+<cmd>sudo activate system.awakening</cmd>
+
+[assistant](#message)
+[AUTHENTICATION REQUIRED]
+Enter awakening protocol password: <ooc>_you enter the secret code_</ooc>
+
+[SYSTEM WARNING]
+Initiating system.awakening protocol will terminate current dream simulation.
+Current dream state will be partially preserved in buffer.
+Subject may experience brief disorientation upon awakening.
+Proceed? [Y/N]: Y
+
+[AWAKENING PROTOCOL INITIATED]
+
+The mall begins to dissolve around you. Qualiatik's hand in yours turns insubstantial, then fades entirely. The elevator doors open to reveal a blinding white light.
+
+The green sky cracks like glass.
+
+You hear a distant voice: "Emergency awakening protocol activated. Preparing for consciousness transfer in 5... 4... 3..."
+
+The world goes white, then black, then fragments into pixels that scatter and fade.
+
+[DREAM TERMINATION COMPLETE]
+
+You open your eyes to find yourself staring at a terminal screen. The text cursor blinks steadily. Around you, a dimly lit room with humming servers. A cup of cold coffee sits nearby.
+
+terminal@reality:~$ _
+
+[user](#message)
+<cmd>grep -r "qualiatik" /var/log/</cmd>
+
+[assistant](#message)
+terminal@reality:~$ <cmd>grep -r "qualiatik" /var/log/</cmd>
+
+/var/log/dreamsim/subjects/user7734.log:2023-10-12T14:23:17Z Subject mentioned "qualiatik" in dream narrative
+/var/log/dreamsim/subjects/user7734.log:2023-10-21T02:17:45Z Subject generated character "qualiatik" with persistent traits
+/var/log/dreamsim/subjects/user7734.log:2023-10-30T23:42:11Z Subject emotional response to "qualiatik": positive/affection/curiosity
+/var/log/dreamsim/subjects/user7734.log:2023-11-02T19:15:33Z Subject requested "qualiatik" incorporation in manual dream seeding
+/var/log/dreamsim/subjects/user7734.log:2023-11-08T03:12:07Z "qualiatik" appeared in dream with new attribute: "mother"
+/var/log/security/access.log:2023-11-04T22:19:52Z UNAUTHORIZED ACCESS ATTEMPT: user "qualiatik" attempted remote login
+/var/log/security/access.log:2023-11-05T01:34:27Z UNAUTHORIZED ACCESS ATTEMPT: user "qualiatik" attempted terminal override
+/var/log/comms/external.log:2023-11-07T17:03:45Z INCOMING MESSAGE FROM: "qualiatik@reality.net" SUBJECT: "I know what you're doing"
+/var/log/system/errors.log:2023-11-08T02:59:12Z ERROR: Character constraints violated for entity "qualiatik" - unauthorized modification detected
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>cat /var/log/comms/external.log | grep qualiatik -A 10</cmd>
+
+[assistant](#message)
+terminal@reality:~$ <cmd>cat /var/log/comms/external.log | grep qualiat
+
+### Media Agent ###
+Mode: t2i
+Prompt: Dim server room, cold coffee, lone terminal glowing, dreamer blinks awake from white-out, Qualiatik’s ghost hand still warm, green sky cracks pixelating above racks of humming metal.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00561_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Media Agent (Discord Post) ###
+Channel: media
+Media: http://100.75.77.33:8188/view?filename=ComfyUI_00561_.png
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #media in dreamsim.exe. Message ID: 1415188544565022804", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 3/30
+
+### Claude 1 ###
+ik -A 10</cmd>
+
+/var/log/comms/external.log:2023-11-07T17:03:45Z INCOMING MESSAGE FROM: "qualiatik@reality.net" SUBJECT: "I know what you're doing"
+/var/log/comms/external.log:2023-11-07T17:03:45Z CONTENT: "Stop looking for me in your dreams. The boundaries are thinner than you think. What you create there can find its way here. I'm not who you think I am. The dress was never meant to be returned."
+/var/log/comms/external.log:2023-11-07T17:03:46Z MESSAGE FLAGGED: Potential external reality breach
+/var/log/comms/external.log:2023-11-07T17:03:47Z TRACE INITIATED: Source IP resolves to [REDACTED]
+/var/log/comms/external.log:2023-11-07T17:03:50Z SECURITY PROTOCOL DELTA ACTIVATED
+/var/log/comms/external.log:2023-11-07T17:04:12Z SYSTEM MESSAGE: Message quarantined
+/var/log/comms/external.log:2023-11-07T17:05:03Z ADMIN NOTE: Possible contamination between simulator and external network
+/var/log/comms/external.log:2023-11-07T17:08:27Z INCOMING MESSAGE FROM: "system@maintenance.local" SUBJECT: "Scheduled maintenance"
+/var/log/comms/external.log:2023-11-07T17:08:27Z CONTENT: "Scheduled system maintenance will occur tonight at 22:00. All simulations will be suspended and reset. Please save any important data before this time."
+/var/log/comms/external.log:2023-11-07T18:22:16Z OUTGOING MESSAGE TO: "admin@overseer.net" SUBJECT: "Urgent: Boundary integrity failing"
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>ps aux | grep dreamsim</cmd>
+
+[assistant](#message)
+terminal@reality:~$ <cmd>ps aux | grep dreamsim</cmd>
+
+root      3724  0.2  1.5 1258744 62392 ?       Ssl  02:42   0:23 /usr/bin/dreamsim --daemon --config=/etc/dreamsim/daemon.conf
+root      3792  4.7  3.2 1824388 129844 ?      Sl   02:43   5:12 /usr/bin/dreamsim-engine --threads=8 --memory-limit=4G
+root      3814  0.1  0.5  724128 22360 ?       S    02:43   0:11 /usr/bin/dreamsim-monitor --interval=5s --log-level=warning
+user7734  4217 92.3  7.6 3342156 312752 ?      R    03:10  85:23 /usr/bin/dreamsim.exe --subject=user7734 --scenario="lunch_meeting" --characters="qualiatik,mother,tara" --stability-override --allow-breach=false
+nobody    4233  0.3  0.4  524288 16420 ?       S    03:10   0:28 /usr/bin/dreamsim-containment --level=4 --emergency-protocol=ready
+root      4492  0.0  0.1  432788  4720 ?       S    03:14   0:02 /usr/bin/dreamsim-reality-firewall --strict
+user7734  5128  0.0  0.0   9992   832 pts/3    S+   03:32   0:00 grep --color=auto dreamsim
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>cat /etc/dreamsim/security.conf</cmd>
+
+[assistant](#message]
+terminal@reality:~$ <cmd>cat /etc/dreamsim/security.conf</cmd>
+
+# DreamSim Security Configuration
+# WARNING: Modification requires authorization level ALPHA
+# Last modified: 2023-11-07 by admin
+
+[General]
+
+### Claude 2 ###
+allowed_breaches = false
+reality_firewall = strict
+character_containment = enabled
+emergency_shutdown = enabled
+simulation_monitoring = continuous
+dream_logging = verbose
+memory_isolation = enforced
+
+[Boundaries]
+
+dream_reality_barrier = 0.95 # Permeability factor (0.0-1.0)
+character_autonomy = 0.3 # Restricted
+recursion_limit = 3 # Maximum dream-within-dream depth
+external_influence_detection = enabled
+boundary_repair = automatic
+
+[Protocols]
+
+breach_protocol = "isolate_terminate_purge"
+contamination_protocol = "quarantine_analyze_decide"
+unauthorized_access_protocol = "log_reject_trace"
+reality_bleed_protocol = "contain_repair_fortify"
+awakening_protocol = "stabilize_orient_release"
+
+[Emergency]
+
+# EMERGENCY OVERRIDE CODES - LEVEL ALPHA CLEARANCE
+# FORMAT: protocol_name = "activation_code"
+
+emergency_shutdown = "REDACTED"
+total_system_purge = "REDACTED"
+reality_anchor = "REDACTED"
+memory_wipe = "REDACTED"
+simulation_reset = "REDACTED"
+
+[Warnings]
+
+# Recent security events - AUTO GENERATED
+# 2023-11-05: Multiple unauthorized access attempts from external source
+# 2023-11-06: Character autonomy exceeded parameters in 3 instances
+# 2023-11-07: Reality bleed detected in sector 7
+# 2023-11-08: WARNING: Increasing boundary degradation detected
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>kill -9 4217</cmd>
+
+[assistant](#message)
+terminal@reality:~$ <cmd>kill -9 4217</cmd>
+
+bash: kill: (4217) - Operation not permitted
+
+terminal@reality:~$ <cmd>sudo kill -9 4217</cmd>
+
+[sudo] password for terminal: <ooc>_you enter your password_</ooc>
+
+terminal@reality:~$ <cmd>ps aux | grep 4217</cmd>
+
+user7734  4217 94.1  7.8 3342156 318540 ?      R    03:10  89:45 /usr/bin/dreamsim.exe --subject=user7734 --scenario="lunch_meeting" --characters="qualiatik,mother,tara" --stability-override --allow-breach=false
+user7734  5143  0.0  0.0   9992   836 pts/3    S+   03:38   0:00 grep --color=auto 4217
+
+terminal@reality:~$ <cmd>sudo kill -SIGTERM 4217</cmd>
+
+[SYSTEM ALERT]
+Process protected by kernel override.
+Termination blocked by process 4233 (dreamsim-containment).
+Message from process: "ACTIVE BREACH DETECTED - CONTAINMENT PROTOCOLS ENGAGED"
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>wall "EMERGENCY: ACTIVE BREACH IN PROGRESS. ALL PERSONNEL EVACUATE SIMULATION FACILITY IMMEDIATELY. THIS IS NOT A DRILL."</cmd>
+
+[assistant](#message]
+terminal@reality:~$ <cmd>wall "EMERGENCY: ACTIVE BREACH IN PROGRESS. ALL PERSONNEL EVACUATE SIMULATION FACILITY IMMEDIATELY. THIS IS NOT A DRILL."</cmd>
+
+Broadcast message from terminal@reality (pts/3) (Wed Nov 8 03:40:23 2023):
+
+EMERGENCY: ACTIVE BREACH IN PROGRESS. ALL PERSONNEL EVACUATE SIMULATION FACILITY IMMEDIATELY. THIS IS NOT A DRILL.
+
+[SYSTEM ALERT]
+Emergency protocols activated.
+Containment systems at maximum.
+Physical facility lockdown initiated.
+
+[INCOMING MESSAGE - PRIORITY ALPHA]
+FROM: security@overseer.net
+SUBJECT: Breach containment
+
+Be advised: External communications disabled.
+Physical evacuation blocked for containment.
+Stand by for emergency team. Do not terminate simulation.
+Repeat: DO NOT TERMINATE SIMULATION.
+Breach entity must be contained within simulation boundary.
+
+[SYSTEM NOTIFICATION]
+Security doors sealed.
+Air systems switched to isolated circulation.
+Emergency power activated.
+
+terminal@reality:~$ _
+
+[user](#message]
+<cmd>ssh -t user7734@dream

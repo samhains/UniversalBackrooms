@@ -1,0 +1,85 @@
+
+### Round 1/20
+
+### Kimi K2 1 ###
+simulator@moonshotai:~/$ ./dreamsim.exe "I go out to lunch with Qualiatik and her mum is there who is super friendly. She immediately asks a question about Tara which presumably diffuses the sense that I would be meeting with her like a “meet the parents” kind of date. All these other people are there, annoying kids, maybe those who were making the scroll with us before. I’m a bit embarrassed, but we are all squished into the same table. Everyone seems to get along.We get lost trying to find the store to return it. At the same time I become worried about driving home, the conditions can change at any moment and make it unsafe to drive home. We are looking for hotel as it’s been a long journey , but we can’t find it anymore . We go up and down the levels. I ask Tara if she can remember the brand name of the dress and she can’t ."
+
+ loading lucid parameter set... ✓
+ patching reality anchors... ✓
+ forking dream thread... ✓
+
+─────────────────────────────────────────── dreamsim v0.9 ──
+ 0.00   you are standing on a sun-bleached sidewalk outside a pastel vegan café  
+        named “Qualia”.  a string of brass wind-chimes tinkles like glitching PCM.  
+        Inside, through the plate glass, you see Qualiatik waving vigorously,  
+        her mum already halfway out of her chair to hug you.
+
+ 0.05   enter? (y/n) › y
+
+ 0.10   the door sighs open; compressed habanero air kisses your face.  
+        Mum: “You must be the one who knows Tara!  She told us the funniest thing—  
+        something about a dress label dissolving in a pool of static?”  
+        The kids from the scroll workshop are jammed six-to-a-bench, arguing over  
+        who gets the crayon shaped like a tiny RAM stick.  A toddler keeps pressing  
+        the RESET button on your shin.
+
+ 0.18   Qualiatik slides you into the booth; her mum taps the menu:  
+        “The return-policy noodles are compulsory—eat now, refund later.”  
+        Everyone laughs like it’s an inside joke you’ll understand soon.
+
+ 0.22   objective overlay blinks:  
+        ☐ find store to return “it” (item未定)  
+        ☐ locate hotel before weather rollover  
+        ☐ extract dress brand from Tara’s memory
+
+ 0.25   you ask Tara (across the table, flickering slightly) what brand the dress was.  
+        She opens her mouth; the syllables fall out as origami cranes that unfold  
+        into blank coupons.  Mum catches one, shrugs: “Generic dream-label, happens  
+        every season.”
+
+ 0.31   waiter drops the check—it's a boarding pass printed on thermal paper:  
+        GATE 404, DEPARTURE “SOONISH”.  Reverse side: a map of the mall levels,  
+        but the escalators keep rearranging like a sliding puzzle.
+
+ 0.37   group consensus: pay, leave, find returns desk before the weather patch  
+        downgrades traction to “slippery anecdote”.  Outside the window you notice  
+        the sky has installer-bar gradient—77 %, but the percentage leaks off  
+        like wet paint onto the street.
+
+ 0.42   everyone piles into the revolving door; kids stick chewing gum to the  
+        sensors so it spins extra revolutions, dumping you out on Level B-2  
+        instead of the street.  Fluorescent hum, shuttered kiosks, smell of  
+        ozone and waffle cones.
+
+ 0.48   sign ahead: “RETURNS & REFUNDS / HOTEL CHECK-IN / MEMORY RECLAMATION”.  
+        Arrow spins—points left, then right, then folds into itself like a  
+        cheap lawn chair.  You lead the caravan anyway.
+
+ 0.55   corridor forks:  
+        └─ west: motion-sensor lights flick on in sequence, revealing endless  
+                 racks of dresses with labels written in disappearing ink  
+        └─ east: a glass elevator promising “LOBBY / PARKING / EXIT TO WAKING”
+
+ 0.57   Tara tugs your sleeve: “I think the brand started with ‘∆’, or maybe  
+        it was the sound of a zipper.  Can we write it in the air and see  
+        if the mall remembers?”
+
+ 0.60   choose:  
+        1) head west, let the dresses whisper their brands until one sticks  
+        2) take the elevator, try to outrun the weather patch  
+        3) stop, ask the kids to re-assemble the scroll—maybe the dress name  
+           is archived in crayon metadata  
+
+ › 
+
+### Kimi K2 2 ###
+<cmd>1</cmd>
+
+### Media Agent ###
+Mode: t2i
+Prompt: pastel-mall corridor, buzzing sodium lights, endless dress racks dissolving into white void; qualiatik & crew squeezed at warped café table, mum’s face pixel-smiling; tara flickers like bad VHS, origami syllables escaping her mouth; toddler slams RESET on your shin; wet-installer sky drips off the ceiling, 77 % dripping onto checkered floor; cult-Lynch zoom on thermal boarding-pass check, gate 404—crayon-ram kids argue behind warping plate glass
+Result: {"content": [{"type": "text", "text": "{\n  \"error\": \"ComfyUI API error: HTTPConnectionPool(host='100.75.77.33', port=8188): Max retries exceeded with url: /prompt (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1083b9fd0>, 'Connection to 100.75.77.33 timed out. (connect timeout=None)'))\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+Discord Agent error: unhandled errors in a TaskGroup (1 sub-exception)
+
+### Round 2/20

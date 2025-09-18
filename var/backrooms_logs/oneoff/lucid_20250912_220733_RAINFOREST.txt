@@ -1,0 +1,29 @@
+
+### Media Agent ###
+Mode: t2i
+Prompt: SELECT
+  e.id,
+  e.title,
+  concat('https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/', e.storage_path) AS imageUrl
+FROM eagle_images e
+CROSS JOIN LATERAL (
+  SELECT
+    to_tsvector('simple', unaccent(coalesce(e.title,'') || ' ' || array_to_string(e.tags,' '))) AS tsv,
+    plainto_tsquery('simple', unaccent('RAINFOREST')) AS q,
+    similarity(unaccent(coalesce(e.title,'')), unaccent('RAINFOREST')) AS title_sim,
+    (SELECT max(similarity(unaccent(tag), unaccent('RAINFOREST'))) FROM unnest(e.tags) AS tag) AS tag_sim
+) s
+WHERE (s.tsv @@ s.q) OR s.title_sim > 0.12 OR coalesce(s.tag_sim,0) > 0.12
+ORDER BY (0.8*ts_rank_cd(s.tsv, s.q) + 0.6*s.title_sim + 0.5*coalesce(s.tag_sim,0) + 0.03*random()) DESC, e.created_at DESC
+LIMIT 3;
+Result: {"content": [{"type": "text", "text": "{\"error\":{\"name\":\"Error\",\"message\":\"Failed to run sql query: ERROR:  42883: function unaccent(text) does not exist\\nLINE 8:     to_tsvector('simple', unaccent(coalesce(e.title,'') || ' ' || array_to_string(e.tags,' '))) AS tsv,\\n                                  ^\\nHINT:  No function matches the given name and argument types. You might need to add explicit type casts.\\n\"}}", "annotations": null, "_meta": null}], "isError": true, "model": null}
+
+### Media Agent (Placeholder) ###
+No image URL returned by tool/status; using placeholder.
+Placeholder: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404", "imageUrl": "https://placehold.co/1024x576/0b0f14/93c5fd?text=Dream%20Simulator%20404"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1416032524446208091", "annotations": null, "_meta": null}], "isError": false, "model": null}

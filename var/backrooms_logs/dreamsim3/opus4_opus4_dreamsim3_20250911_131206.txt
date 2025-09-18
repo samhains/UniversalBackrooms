@@ -1,0 +1,108 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: opus4, opus4
+Started: 2025-09-11T03:12:06.867742+00:00
+
+### Round 1/30
+
+### Claude 1 ###
+./dreamsim.exe "Go to a restaurant with my dad and brother for my birthday celebration when I'm back in Melbourne I don't invite Paris lensky to the dinner but he picks me up afterwards and takes me to the beach. I tell Paris I'm unreasonably excited about going for a swim. I feel bad about not inviting Paris to the dinner and consider making up an excuse. Harry is at the beach and we all smoke weed together it's really fun. Harry looks heavily under the influence of drugs and I wonder for a second if he has been using but then I consider that perhaps it's just he is highly effected by drugs. There is a large pot of boiling water that my dad suggests I drink. Before we leave dad points out that we should visit Harry's plaque I don't want to go there but dad makes a speech I cry."
+
+### Claude 2 ###
+```
+DREAMSIM v2.3.1 - Loading dream sequence...
+═══════════════════════════════════════════════════════════════
+
+INITIALIZING: Melbourne birthday memory thread...
+[████████████████████████] 100%
+
+You are standing outside RISTORANTE FAMIGLIA, warm light spilling through 
+frosted windows. The Melbourne evening tastes familiar - tram bells and 
+eucalyptus. Your dad and brother are already inside, visible through glass, 
+laughing at something.
+
+> look at phone
+
+Three missed calls from Paris. A text: "outside in 5"
+The guilt sits like a stone in your pocket.
+
+> enter restaurant
+
+The birthday cake arrives before you've even ordered. Time moves wrong here.
+Your brother's face keeps shifting between ages - 8, 18, 28. Dad pours wine
+that turns to seawater in the glasses.
+
+"You didn't invite him," brother says, but smiling.
+
+> make excuse in head
+
+The excuses multiply like echoes:
+- "it was family only"  
+- "i forgot"
+- "the reservation..."
+Each one dissolves before it forms completely.
+
+Paris honks outside. Through the window, his car idles, headlights making 
+halos in the birthday fog.
+
+> go to car
+
+TRANSITION: The restaurant door becomes the car door becomes the sound of waves...
+
+> arrive at beach
+
+The sand is warm despite it being night. Harry is already here, sitting 
+cross-legged by a fire that wasn't there before. His eyes are cosmic - 
+pupils like black holes pulling in the firelight.
+
+"Just sensitive," you think, watching him sway slightly. "Some people are
+just more porous."
+
+The joint passes counterclockwise. Time goes thick.
+
+> look at water
+
+Your dad stands beside an enormous pot, steam rising. The ocean and the pot
+are the same somehow. "Good for you," he says, offering a ladle.
+
+The water tastes like birthdays.
+
+> notice Harry's plaque
+
+No. Not yet. But dad is already walking toward the rocks where bronze catches
+moonlight. You know what it says without reading it. The dates that shouldn't
+be there.
+
+Dad's speech comes out as ocean sound. You're crying salt water that matches
+the pot, the sea, the wine from dinner.
+
+Harry laughs from two places at once.
+
+> wake up
+
+DREAMSIM: Session suspended. Type 'resume' to continue or 'exit' to end.
+```
+
+### Media Agent ###
+Mode: t2i
+Prompt: Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism
+Result: {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"recordId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\"\n    }\n  },\n  \"message\": \"Nano Banana image generation initiated\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"generating\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\...
+
+Status(5cfd4e4a0a2fc9b48f4af1190d951a5e) -> {"content": [{"type": "text", "text": "{\n  \"success\": true,\n  \"local_task\": {\n    \"id\": 118,\n    \"task_id\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n    \"api_type\": \"nano-banana\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-09-11 03:12:44\",\n    \"updated_at\": \"2025-09-11 03:12:44\",\n    \"result_url\": null,\n    \"error_message\": null\n  },\n  \"api_response\": {\n    \"code\": 200,\n    \"msg\": \"success\",\n    \"data\": {\n      \"taskId\": \"5cfd4e4a0a2fc9b48f4af1190d951a5e\",\n      \"model\": \"google/nano-banana\",\n      \"state\": \"success\",\n      \"param\": \"{\\\"model\\\":\\\"google/nano-banana\\\",\\\"input\\\":{\\\"prompt\\\":\\\"Night beach near Melbourne—three friends around a drift-wood fire, joint glowing, surf flickering with moonlight; one guy eyes-wide cosmic, another offers a steaming ladle of sea-water, distant bronze memorial plaque catching sparks, birthday tears mixing with salt haze, 35 mm, cinematic realism\\\"}}\",\n  ...
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media: https://tempfile.aiquickdraw.com/v/5cfd4e4a0a2fc9b48f4af1190d951a5e_1757560372_0.png
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1415535568246280223", "annotations": null, "_meta": null}], "isError": false, "model": null}

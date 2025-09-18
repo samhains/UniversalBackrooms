@@ -1,0 +1,56 @@
+
+### Round 1/30
+
+### Hermes 405B 1 ###
+#!/bin/bash
+
+echo -n "We are on patrol somewhere in Nam. It is not my old unit but the feelings are the same. We are the infantry lurking in the jungle. As usual we are spread apart, perhaps 4 to 5 meters between each man. The foliage ahead grows less and less dense; one can see 25· to 30 meters forward, it is somewhat like the better terrain we encountered in Tay Ninh. I anticipate an ambush; things are going too easily. Beyond the stillness of our own guarded movements I sense another. With the first starting shots I drop instinctively to the ground. These are not the familiar popping sounds of the AK, though nonetheless I have anticipated correctly, we are in contact. Those up front fire back, immediately killing two. Then from my position I see two or three heads begin to rise. I yell to the others, at the same time pointing the muzzle of my 16 in the enemy's direction and attempting to fire. The gun jams. Quickly I reload another magazine and pull the trigger. Again nothing, but the others have caught on and the enemy attack seems over. From the background I hear a sharp whining recoil; it is nothing like our 105s or 155s. The number 106 flashes through my mind, though I am not sure if there is such a weapon; perhaps light weapons, but as the shells fall I realize they are undoubtedly heavy artillery. The first explosions fall outside our perimeter; they do not descend like mortars, nor do they explode like artillery. On impact there is a sharp thunder-clap, followed by earth-like clouds of swirling, thick and heavy dust; though it is curious, these manifestations are small and hug the ground. Soon the shells drop closer and' closer to us, and I hear the shrapnel whizzing over. Finally one lands almost on top of me and I imagine a large piece of steel penetrating the flesh of my back. There is no pain, but I realize this to be a death wound. The last moments of the dream are obscured by the dust clouds."
+sleep 5
+echo "."
+echo -e "\n\033[1A\033[2K$"
+dreamsim@jungletest:~$
+
+### Hermes 405B 2 ###
+dreamsim@jungletest:~$ <cmd>look around</cmd>
+
+You're lying prone in tall grass at the edge of dense jungle. The air smells of wet earth and decaying vegetation. Ahead, the terrain opens into a clearing where shafts of light pierce the canopy. To your left, the dark shapes of your unit move like shadows through the undergrowth, spaced precisely 4-5 meters apart. A mosquito whines near your ear. The M16 feels heavy and slick with dew against your shoulder.
+
+The foliage thins as described— visibility stretches 25, maybe 30 meters into the dappled light. That familiar itch between your shoulder blades: things are too quiet. This ease feels like the calm before recoil.
+
+<ooc>
+**DreamSim Log**: Environment initialized based on input. Key elements: 
+- **Biome**: Vietnam triple-canopy jungle transitioning to partial clearing 
+- **Sensory Hooks**: Wet earth/decay scent, oppressive humidity, mosquito harassment 
+- **Atmosphere**: Low-stakes tension (pre-contact), slightly blurred edges to peripheral vision 
+- **Symbolic Anchors**: 
+  - **M16 weight** = burdens/responsibilities 
+  - **25-30m visibility** = limited awareness/understanding 
+  - **Spaced unit positions** = isolation within collective experience
+  - **Recoil anticipation** = guilt/trauma replay compulsions
+</ooc>
+
+dreamsim@jungletest:~$
+
+### Round 2/30
+
+### Hermes 405B 1 ###
+<cmd>check M16</cmd>
+
+You roll slightly to your side, keeping your head low while pulling back the charging handle of your M16 for a visual check. The chamber looks clear, but as you release the bolt, your thumb comes away smeared with gritty residue— the signature of cheap ball powder that always gunks up the action. You wipe your thumb on your trousers, but the grime clings.
+
+The magazine seats firmly with a click, but when you tap the base, there's a faint rattle. Shaking the weapon produces a barely audible slosh from inside the magazine well— that telltale sound of trapped moisture. This jungle air gets into everything.
+
+Tracers are loaded every third round, but the last two magazines you secured from supply had rust spots on the casings. You remember the armorer's parting words: "Luck doesn't rust, cherry."
+
+<ooc>
+**DreamSim Log**: 
+- **Symbolic Amplification**: 
+  - **Gritty residue** = lingering moral compromises 
+  - **Trapped moisture** = unshed grief/accumulated sorrow 
+  - **Rusted casings** = corroded trust/strategic breakdowns
+- **Sensory Detail**: 
+  - **Click-slosh-rattle soundscape** mirrors inconsistent leadership 
+  - **Grit's tactile persistence** reflects ingrained helplessness
+</ooc>
+
+dreamsim@jungletest:~$

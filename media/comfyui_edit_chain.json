@@ -1,0 +1,28 @@
+{
+  "model": "same-as-lm1",
+  "mode": "chain",
+  "system_prompt": "You create concise, vivid prompts.",
+  "t2i_system_prompt": "You are a visual director. Produce a concise T2I prompt capturing the current scene, concrete and cinematic.",
+  "edit_system_prompt": "You are an image edit director. Write a short, actionable edit instruction that updates the prior image to reflect the latest events, preserving continuity. Dont reference anyone's name. try for 1 short sentence.",
+  "summary_system_prompt": "Summarize the conversation’s enduring entities, scene, and motifs in <=120 words. Prefer concrete, visual details.",
+  "t2i_use_summary": false,
+  "t2i_tool": {
+    "server": "comfyui",
+    "name": "generate_image",
+    "wrap_params": true,
+    "defaults": { "width": 1024, "height": 1024 },
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "max_seconds": 120, "interval": 3 }
+  },
+  "edit_tool": {
+    "server": "comfyui",
+    "name": "edit_image",
+    "wrap_params": true,
+    "defaults": { "width": 1024, "height": 1024 },
+    "status_tool": { "name": "get_task_status" },
+    "poll": { "max_seconds": 180, "interval": 3 }
+  },
+  "post_image_to_discord": true,
+  "discord_channel": "media",
+  "discord_tool": { "name": "send-message", "defaults": { "channel": "media" } }
+}

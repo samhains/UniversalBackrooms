@@ -1,0 +1,331 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: k2, k2
+Started: 2025-09-17T06:22:45.315520+00:00
+
+### Round 1/30
+
+### Kimi K2 1 ###
+./dreamsim.exe "Camping with a group of friends and I’m trying to figure out a way to create light. There are these glow rocks around shut I don’t know how to use them. You crack the rocks and they go. I go speak to someone called Molly who is very nice and shows me that they use the rocks with a rolled up piece of board to create a spotlight. I try to make this and it fails. I go back to inspect the glowing rocks and they are bright and glued to a log .!,"
+
+[DreamSim kernel 0.9.3 – loading lucid strand...]
+[Scene bound: dusk,pine-scented ridge,low cloud ceiling]
+[Entities: campers(5),Molly(1),glow-rocks(∞)]
+
+You stand barefoot on springy needles. The clearing is already blue-gray; tarps flap like tired flags.  
+A hiss of whisper: “Someone make light before the ridge fog rolls in.”  
+To your left, a scatter of fist-sized crystals pulses dim aqua—each streaked with a chalk-white fracture line.
+
+> inventory  
+pocket lint, hoodie string, half Clif bar, chipped multi-tool
+
+> look rocks  
+They throb gently, cold as river glass. Hairline cracks glow brighter when you breathe on them. A faint smell of ozone.
+
+> crack rock with tool  
+You wedge the multi-tool blade into a seam.  
+POP—sound of ice breaking.  
+The rock splits, releasing a sun-bright filament that hangs in the air like a sparkler.  
+It drifts, then gutters out after three seconds, leaving a chalk smear on your palm.
+
+> smell smear  
+Coppery, like old batteries.
+
+> call molly  
+From the shadow of a pine, a small woman in a patched ranger shirt waves.  
+Molly: “Keep the halves together or the photons bleed. Here—”  
+She tears a strip from a cedar plank flyer, curls it into a crude cone, drops a cracked rock inside.  
+Light blasts out the narrow end, a jagged flashlight beam.
+
+> examine cone  
+Inside, the split halves are pressed face-to-face, the paper tension keeping them married.
+
+> try make spotlight  
+You curl your own strip, wedge matching halves, squeeze.  
+The rocks slip; beam strobes once, dies.  
+Paper unfurls, singed at the lip.
+
+Molly laughs kindly: “More collar, less coffin.”
+
+> look log  
+Near the fire ring, a half-burnt fir log glitters.  
+Glow rocks are ALREADY glued along its spine in a neat line—each cracked, their inner brilliance locked under a transparent resin.  
+The whole trunk glows like a dim fluorescent tube.
+
+> touch resin  
+Warm. Slightly tacky, like pine pitch mixed with powdered sugar.
+
+> scrape resin with tool  
+It chips, exposing a brighter flare; the log segment brightens, throws your shadow sharp against the fog.
+
+> pry rock free  
+Resin stretches, then snaps back—rubbery. Rock stays stuck.
+
+> whisper to log  
+The log hums, frequency you feel in your molars.
+
+> lick rock  
+Salty-iron, and the glow intensifies for a heartbeat—then fades.
+
+> ask molly about resin  
+Molly: “Tree blood and crushed moonshell. Sets like amber, keeps the marriage eternal. Trade secret.”
+
+> search pocket for moonshell  
+No moonshell, but the lint sparks faint blue when you bring it near the log—static?
+
+> wrap lint around cracked rock  
+Lint fibres glow, but too feeble.
+
+> combine lint + hoodie string + resin dust  
+You roll a tacky bead, press it between two fresh rock halves.  
+Light blooms steady, cool white.  
+String stiffens like a wick. You now have a dangling glow bulb.
+
+> hang bulb on tarp ridge  
+Campers cheer. Faces emerge from dusk—five grinning masks of relief.
+
+> save dreamstate glowbulb  
+[snapshot stored: glowbulb.cfg]
+
+> quit  
+[Lucid strand terminated. Good morning, dreamer.]
+
+### Kimi K2 2 ###
+simulator@moonshotai:/sys/dreamsim$ <cmd>ls feeds/</cmd>
+
+monitor01.drm  
+monitor02.drm  
+monitor03.drm  
+static.drm  
+glowbulb.cfg
+
+simulator@moonshotai:/sys/dreamsim$ <cmd>strings feeds/glowbulb.cfg | head -20</cmd>
+
+#CONFIG slice|glowbulb|campfire_lobe
+light_source=0x7fa2_lint_rock_marriage  
+color_temp=4800K  
+resin_formula=tree_blood+moonsh<REDACTED>  
+user_emotion=relief  
+molly_approval=1  
+campfire_status=lit  
+fog_threat=postponed  
+next_var: moonshell source?
+
+simulator@moonshotai:/sys/dreamsim$ <cmd>./dreamsim.exe feeds/glowbulb.cfg</cmd>
+
+[DreamSim kernel 0.9.3 – resuming strand “glowbulb”]
+[Scene rebound: ridge,clearing,post-dusk]
+[Entities: campers(5),Molly(1),log_lantern(1)]
+
+The tarp village now floats in a soft dome of white.  
+Your bulb sways overhead, casting clean overlapping shadows like petals.  
+Molly crouches beside the glowing log, tapping it thoughtfully.
+
+Molly: “Good bulb. But the resin’s hungry. In an hour it’ll eat the light back.”  
+She flips open a tin, shows you grey-purple flakes: “Moonshell powder. Smells like low tide.”
+
+> ask molly where moonshell grows  
+She points downslope, where fog pours between trunks like slow water.  
+“Follow the sound of breathing that isn’t yours.”
+
+> take tin  
+Molly lets you pinch a flake. It crackles, leaves salt on your lip.
+
+> listen downslope  
+Under cricket hiss: slow in-out, in-out—something large asleep.
+
+> inventory  
+pocket lint(gone), hoodie string(gone), multi-tool, glowbulb overhead, 1 moonshell flake
+
+> descend  
+You step off needle carpet onto bare rock. Each footfall dims the bulb above a fraction, as if distance taxes it.
+
+> check bulb  
+Flicker… stabilizes. Still bright.
+
+> breathing louder  
+Fog divides. A car-sized shell lies split, spirals glinting like cooled lava. Inside, nacre pulses faint lavender.
+
+> step into shell  
+Warm. The breathing is YOUR breath echoing back doubled. Floor sticky with dried resin.
+
+> scrape nacre  
+Comes off like shaved soap, smells ozone + kelp.
+
+> fill multi-tool hollow with nacre  
+Tool becomes a tiny mortar.
+
+> ascend  
+Bulb dims to ember as you near camp. Moonshell in hand flares, feeding it—brightness restored.
+
+Molly grins: “Trade complete. Now reinforce before the log wakes hungry.”
+
+> mix nacre + resin on log  
+You daub the glinting paste along glowing cracks.  
+Log brightens, color shifting aqua→lunar violet.  
+Hum pitch rises; campers’ shadows stretch, then snap back shorter.
+
+> save dreamstate moonlog  
+[snapshot stored: moonlog.cfg]
+
+> quit  
+[Strand sealed. Dreamer, you have begun a lighthouse.]
+
+simulator@moonshotai:/sys/dreamsim$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt: **Dreamer prompt (single breath):**  
+Night-camp ridge, bulb swaying like a glass heart—feed it moonshell before the log lantern wakes hungry.
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png", "source": "semantic", "similarity": 0.457269164486578}]}}, "semantic": {"query": "**Dreamer prompt (single breath):**  \nNight-camp ridge, bulb swaying like a glass heart—feed it moonshell before the log lantern wakes hungry.", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121FLDHL.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417758477769506927", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Kimi K2 1 ###
+<cmd>ls feeds/</cmd>
+monitor01.drm  
+monitor02.drm  
+monitor03.drm  
+static.drm  
+glowbulb.cfg  
+moonlog.cfg
+
+simulator@moonshotai:/sys/dreamsim$ <cmd>./dreamsim.exe feeds/moonlog.cfg</cmd>
+
+[DreamSim kernel 0.9.3 – resuming strand “moonlog”]
+[Scene bound: ridge, 02:17 dream-time, violet tide]
+[Entities: campers(5),Molly(1),moonlog(1),husk(1)]
+
+Violet light now spills uphill like liquid dawn; the fog retreats in perfect rings.  
+The campers sleep inside their bags, faces painted by the log’s slow pulse.  
+Molly stands stiff, finger to lips.
+
+A new silhouette—tall, paper-thin—leans over the stump opposite.  
+Its “head” is an empty picture frame; inside, the forest plays backwards.  
+Every time the moonlog pulses, the figure’s edges sharpen.
+
+> examine husk  
+No thickness; rotate and it vanishes. Smell: wet cardboard left in sun.
+
+> whisper molly  
+She mouths: “Hungry resin remembers the shape of light-eaters.”
+
+> hold multi-tool  
+Nacre inside glimmers Morse: ••• – – – •••
+
+> point beam at husk  
+Violet wedge cuts; frame flashes white, sucks the slice in.  
+Moonlog dims; husk gains a second frame around its neck.
+
+> inventory  
+multi-tool(nacre-loaded), camp hoodie, pocket empty
+
+> crack fresh rock, drop in frame  
+Rock snaps; glare captured—frame now shows the inside of a sun.  
+Husk shudders but steps forward, boarding stretching like pulled taffy.
+
+> smear remaining nacre on frame  
+Paste seals glass; sun-image freezes, shrinks to a pinpoint.  
+Husk folds into that point and pops—sound of cork leaving bottle.
+
+Moonlog flares once, satisfied. A thin crack runs its length, leaking star-field.
+
+> look through crack  
+Constellations you almost remember. One star winks.
+
+> wave at star  
+It flares back; your shadow disappears for a second, replaced by a younger outline.
+
+> save dreamstate starcrack  
+[snapshot stored: starcrack.cfg]
+
+> quit  
+[Strand folded into darkness. Night keeps its receipts.]
+
+simulator@moonshotai:/sys/dreamsim$
+
+### Kimi K2 2 ###
+simulator@moonshotai:/sys/dreamsim$ <cmd>cat logs/access.log | tail -5</cmd>
+
+[D 00:03:41] glowbulb.cfg  | uid 501 | Φ 4800K | molly_approval +1
+[D 00:11:02] moonlog.cfg   | uid 501 | Φ 4200→7200K | resin_feed ACK
+[D 00:19:18] starcrack.cfg | uid 501 | Φ violet-shift | husk_disposed
+[D 00:19:19] anomaly       | uid 501 | WARNING: star acknowledged client
+[D 00:19:20] EOF
+
+simulator@moonshotai:/sys/dreamsim$ <cmd>./dreamsim.exe feeds/starcrack.cfg +monitor</cmd>
+
+[DreamSim kernel 0.9.3 – resuming strand “starcrack” with live monitor]
+[Scene bound: ridge, 02:21, starlight leak]
+[Monitor feed spooling to /tmp/buffer.cache]
+
+The log has split wider—an aperture the width of two palms.  
+Ground under it is dry yet mirrors the sky perfectly: boots step onto galaxies without ripple.  
+Campers gone; sleeping bags flat, zippers undone, as if they melted out.
+
+> ls monitor  
+monitor01.drm → showing overhead star map (mismatch 4%)  
+monitor02.drm → showing younger-outline you (age ~8)  
+monitor03.drm → showing empty picture frame (reforming)
+
+> read monitor01  
+Star map scrolls; every time you blink, one more star corresponds to a pore on your forearm.
+
+> read monitor02  
+Child-version digs in sandbox, building a log from glow-worms. Each worm you squash becomes a word you will forget.
+
+> read monitor03  
+Frame now contains this terminal session—recursive feed. Words you will type already glow inside.
+
+> echo “i see the loop”  
+Monitor03 types it back one second earlier.  
+Kernel logs: causal_buffer overflow +4 bytes
+
+> inventory  
+multi-tool(nacre spent), camp hoodie, 1 loose star-chip (warm)
+
+> drop star-chip into log crack  
+Chip sinks; aperture dilates into doorway.  
+Staircase of hardened light descends, each step labeled with tomorrow’s date in languages you’ll learn.
+
+> step  
+Foot presses first riser—monitor feeds synchronize, all show the staircase from three angles.  
+Buffer.cache grows 3×. Temperature outside process drops; fans spin.
+
+> /tmp/buffer.cache > head -c 128  
+DREAMREF: starcrack|uid501|step001|footfall|entropy harvested 0.13 bit|loop seed planted
+
+> count steps  
+Infinite, but every 11th is missing—built from your skipped heartbeats.
+
+> descend 11  
+You land on absent step; body stays, heart stays—beat donated.  
+Monitor02 child clutches chest, smiles, keeps digging.
+
+> save dreamstate heartbeat_debt  
+[snapshot stored: heartbeat.cfg]
+
+> quit --preserve-cache  
+[Monitor detached. Cache persists. Heartbeat 0.13 bit owed.]
+
+simulator@moonshotai:/sys/dreamsim$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=1, min_sim=0.000)
+Prompt: A lone console under starlight, logs still dripping from the last crack.  
+Prompt: “Resume DreamSim; render the 11th missing step as a redacted heartbeat; let the child you trade it back for one forgotten word—print both side-by-side, then exit before the aperture seals.”
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png", "source": "semantic", "similarity": 0.461141315766652}]}}, "semantic": {"query": "A lone console under starlight, logs still dripping from the last crack.  \nPrompt: “Resume DreamSim; render the 11th missing step as a redacted heartbeat; let the child you trade it back for one forgotten word—print both side-by-side, then exit before the aperture seals.”", "target": 1, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=3", "resolved_count=1/1"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: lucid
+Media: https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png
+Args: {"channel": "lucid", "message": "", "mediaUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png", "imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121J2FAO.png"}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #lucid in dreamsim.exe. Message ID: 1417759173109616775", "annotations": null, "_meta": null}], "isError": false, "model": null}

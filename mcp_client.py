@@ -21,6 +21,7 @@ class MCPServerConfig:
     command: str
     args: Optional[List[str]] = None
     env: Optional[Mapping[str, str]] = None
+    cwd: Optional[str] = None
 
 
 class MCPClientError(RuntimeError):
@@ -52,11 +53,20 @@ def _build_params(cfg: MCPServerConfig) -> StdioServerParameters:
         raise MCPClientError(
             f"Missing MCP client dependency: {_IMPORT_ERROR}. Install the 'mcp' package."
         )
-    return StdioServerParameters(
-        command=cfg.command,
-        args=cfg.args or [],
-        env=cfg.env or {},
-    )
+    # Prefer passing cwd when supported by the SDK; fall back if not.
+    try:
+        return StdioServerParameters(
+            command=cfg.command,
+            args=cfg.args or [],
+            env=cfg.env or {},
+            cwd=cfg.cwd,
+        )
+    except TypeError:
+        return StdioServerParameters(
+            command=cfg.command,
+            args=cfg.args or [],
+            env=cfg.env or {},
+        )
 
 
 async def list_tools_async(cfg: MCPServerConfig) -> List[Dict[str, Any]]:

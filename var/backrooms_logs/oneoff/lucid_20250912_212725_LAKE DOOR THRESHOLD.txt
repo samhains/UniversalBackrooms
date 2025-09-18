@@ -1,0 +1,5 @@
+
+### Media Agent ###
+Mode: t2i
+Prompt: A mystical wooden door standing at the edge of a misty lake, threshold between water and land, ancient weathered frame reflecting in still waters, fog drifting through doorway
+Error: Media tool 'sql' not found on server 'supabase'. Run: python mcp_cli.py --config /Users/samhains/Code/UniversalBackrooms/mcp.config.json --server supabase list-tools

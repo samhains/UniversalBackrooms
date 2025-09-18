@@ -30,44 +30,53 @@ I removed references to the fact that the user will be guiding the conversation 
 - Add your Anthropic and/or OpenAI API keys to the .env file, depending on which models you plan to use. Optionally add an OpenRouter API key to try Hermes 405B.
 - Install packages.  ```pip install -r requirements.txt```
 
-## To Run
-For a default conversation using Opus for both roles:
-```
-python backrooms.py
-```
+## Quickstart
 
-For a conversation between different models:
-```
-python backrooms.py --lm opus gpt4o
-```
+- Direct run (still supported):
+  - `python backrooms.py` (defaults from the template)
+  - `python backrooms.py --lm opus gpt4o --template roleplay`
 
-You can mix and match any combination of models for the LM roles:
-- opus
-- sonnet
-- gpt4o
-- o1-preview
-- o1-mini
-- hermes (via OpenRouter)
-- hermes_reasoning (Hermes with reasoning enabled)
-
-If you don't specify models, it defaults to using two Opus models. You can specify as many models as you want for n-way conversations, as long as your chosen template supports it.
+- Config runner (recommended):
+  - `just run config=configs/single_roleplay_hermes.json`
+  - DreamSim3 batches from Supabase: `just dreamsim3-default`, `just dreamsim3-query`, etc.
+  - DreamSim4 sequences: `just dreamsim4-cycle`, `just dreamsim4-pairs`
 
 ## Templates
-Templates are JSON specs pointing to Markdown files for reusable prompts and per‑agent chat history.
+Templates live under `templates/<name>/template.json` referencing Markdown files for system prompts and history. Use `--template <name>`. The number of agents must match `--lm` models. History is optional, but if all agents have empty histories the program exits with a helpful message.
 
-- Spec: `templates/<name>.json`
-- Prompts: `prompts/.../*.md` (Markdown)
-- Chat history: `chat_history/.../*.md` (Markdown)
+## DreamSim3 Batch (from Supabase)
 
-Pick a template with `--template <name>`. The CLI auto-discovers available templates from `templates/*.json`.
+Run DreamSim3 over all dreams matching a query in your Supabase DB.
 
-Notes:
-- A template’s `agents` list must match the number of `--lm` models.
-- History files are optional; an empty file means no initial history. If all agents have empty history, the program exits with a helpful message.
+- Script: `scripts/dreamsim3_dataset.py`
+- Logs: `var/backrooms_logs/dreamsim3/*.txt` (and `var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl` metadata)
+
+Examples:
+
+- Query “static” across all sources, using Sonnet 3 via OpenRouter, 30 turns:
+  `python scripts/dreamsim3_dataset.py --query "static" --source all --limit 1000 --models sonnet3 --max-turns 30`
+
+- Force a specific pairing (LM1 vs LM2):
+  `python scripts/dreamsim3_dataset.py --query "static" --pairs gpt5:hermes --max-turns 30`
+
+- Try all unique pairs from a set:
+  `python scripts/dreamsim3_dataset.py --query "static" --models gpt5,hermes,k2 --mixed --mixed-mode=all --max-turns 30`
+
+Troubleshooting:
+
+- Zero results is usually a source filter: the script defaults to `--source mine`. If your rows aren’t labeled `source = 'mine'`, use `--source all`.
+- Sanity-check before a batch:
+  `python scripts/search_dreams.py --query "static" --limit 200 --source all`
+- Model keys: `sonnet3` is routed via OpenRouter, so set `OPENROUTER_API_KEY`. For Anthropic direct, use `opus4` with `ANTHROPIC_API_KEY`.
+
+Optional: sync accumulated runs back to Supabase (table `backrooms`):
+
+- After runs: `python scripts/sync_backrooms.py --meta var/backrooms_logs/dreamsim3/dreamsim3_meta.jsonl`
+- Or set `BACKROOMS_AUTO_SYNC=1` to upsert each run as it completes.
 
 ## Logging
-The script now logs conversations to folders within a main "BackroomsLogs" directory:
-- BackroomsLogs/
+The script now logs conversations to folders within a main `var/backrooms_logs` directory:
+- var/backrooms_logs/
   - OpusExplorations/
   - SonnetExplorations/
   - GPT4oExplorations/
@@ -117,6 +126,47 @@ Older CLI-interface templates have been removed from the default set. If you nee
 ## MCP Client (connect to existing MCP servers)
 
 This repo includes a minimal MCP client to connect to any MCP-compliant server (e.g., your ComfyUI MCP server) over stdio.
+
+### Batch Runner (DreamSim3)
+
+The dataset runner `scripts/dreamsim3_dataset.py` batches DreamSim3 runs and now ensures:
+- `backrooms.py` runs from the repo root so relative paths (e.g., `discord/<name>.json`, `media/<name>.json`) resolve.
+- `MCP_SERVERS_CONFIG` points to the project `mcp.config.json` so MCP servers (Discord, ComfyUI, Kie.ai) load consistently.
+- By default, fetched dreams are shuffled (randomized) before processing to avoid biasing toward recent rows. Use `--no-shuffle` to preserve the Supabase order, and `--seed <int>` for reproducible shuffles.
+
+Example (Discord posts enabled):
+- `python scripts/dreamsim3_dataset.py --query "static" --limit 200 --source all --models sonnet3 --max-turns 30 --discord dreamsim`
+
+Notes on randomization
+- Default behavior randomizes the order of returned dreams for both recent and search queries.
+- Disable with: `--no-shuffle`
+- Reproduce a specific run with: `--seed 42` (or any integer)
+
+See `docs/dataset_runner.md` for more.
+
+### Media Agents (MCP)
+
+You can generate and post media via MCP servers (e.g., ComfyUI, Kie.ai).
+
+- Configure servers in `mcp.config.json` and verify with `mcp_cli.py`.
+- Select a media preset via `--media <name>` or `integrations.media` in configs.
+- Multiple media presets per round are supported; they execute sequentially.
+  - CLI: repeat `--media <name>` or comma-separate values.
+  - Config: set `integrations.media` to a list.
+
+Media presets (`media/<name>.json`) define:
+- `tool`: `{ server, name, wrap_params, status_tool, poll, defaults{...} }`
+- `model`, `system_prompt`, `mode`: t2i or edit
+- `post_image_to_discord`: attach image in Discord posts (default true)
+- `discord_channel` / `discord_server`: per-media override for where image posts go
+
+Examples:
+- `media/kieai.json` routes to the Kie.ai MCP tool; `media/cli.json` to a ComfyUI-like tool.
+- To avoid image attachment but still post summaries, set `post_image_to_discord: false` (see `media/kieai_no_discord.json`).
+
+Discord profiles
+- You can enable multiple Discord profiles at once; each posts a text update to its configured channel/server.
+- CLI: repeat `--discord <profile>` or comma-separate; Config: set `integrations.discord` to a list.
 
 - File: `mcp_client.py` (library)
 - CLI: `mcp_cli.py`
@@ -229,6 +279,12 @@ Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in
 
 ### Modes
 
+- chain (t2i → edit):
+  - First round generates a base image (t2i) and stores its URL.
+  - Subsequent rounds issue short edit instructions against the stored image URL.
+  - Configure separate tools for each stage via `t2i_tool` and `edit_tool`.
+  - Example preset: `media/comfyui_edit_chain.json` (uses ComfyUI `generate_image` and `edit_image`).
+
 - t2i (default):
   - Generates a concise text-to-image prompt from the latest round.
   - Optionally, set `"t2i_use_summary": true` to incorporate a short running conversation summary.
@@ -243,7 +299,7 @@ Note: The agent uses `MCP_CONFIG` env var if set, otherwise `mcp.config.json` in
 - edit (iterative updates):
   - Maintains a short conversation summary per run and the last generated image reference.
   - Produces an edit instruction that updates the image to reflect the latest round while staying true to the conversation’s overall essence.
-  - The prompt includes a `BASE_IMAGE: <url>` line when available. Ensure your MCP server/workflow (e.g., using Qwen Edit) understands this convention and applies edits based on the provided base image and instruction.
+  - For ComfyUI `edit_image`, the base image URL is passed as an explicit `image_url` param. The prompt text never includes the URL.
   - Example config:
     {
       "enabled": true,
@@ -296,25 +352,34 @@ Example:
   }
 }
 
+**Media Preset Config**
+- Files: `media/<preset>.json`, `templates/<template>/media.json`, or `templates/<template>.media.json`.
+- "model": `same-as-lm1` or any key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`). Set a concrete model if the preset cannot infer one.
+- "system_prompt": fallback system prompt for all stages; override with `t2i_system_prompt`, `edit_system_prompt`, or `summary_system_prompt` when you need mode-specific behavior.
+- "mode": `t2i`, `edit`, `chain`, or `auto`. `chain`/`auto` start with a t2i prompt and switch to edit once an image exists.
+- Tool configuration: single-stage (`t2i`/`edit`) presets use `tool.server`, `tool.name`, and optional `tool.defaults`; multi-stage (`chain`) presets declare both `t2i_tool` and `edit_tool`, and the agent passes the previous image via `image_url` (override with `image_param`).
+- Advanced options: `prompt_param` for non-`prompt` APIs, `run_every_n_rounds`, semantic-search `strategy`, and env-driven overrides via `BACKROOMS_MEDIA_OVERRIDES`.
+
 **Template Media Config**
-- File: `templates/<template>.media.json`
-- "enabled": set to true to activate.
-- "model": `same-as-lm1` or a key from `MODEL_INFO` (e.g., `opus`, `sonnet`, `gpt4o`).
-- "system_prompt": system prompt for generating the image prompt text.
-- "tool.server": MCP server key from `mcp.config.json` (e.g., `comfyui`).
-- "tool.name": MCP tool to call (e.g., `generate_image`).
-- "tool.defaults": default args merged into each call (e.g., width/height).
+- File: `templates/<template>.media.json`.
+- "enabled": toggle the agent per template without CLI flags.
+- "model": same options as presets; `same-as-lm1` reuses the first conversation model.
+- "system_prompt" (and `t2i_/edit_/summary_system_prompt` overrides) tailor prompt crafting per template.
+- "tool.server" / "tool.name" / "tool.defaults": default MCP target when invoked via the template alone.
+- Pair with CLI overrides (`--media <preset>`) to mix template defaults with ad-hoc presets.
 
 Example:
 {
   "enabled": true,
   "model": "same-as-lm1",
   "system_prompt": "You are a visual director…",
-  "tool": {
-    "server": "comfyui",
-    "name": "generate_image",
-    "defaults": { "width": 768, "height": 768 }
-  }
+  "mode": "chain",
+  "t2i_system_prompt": "Create a concise, cinematic T2I prompt…",
+  "edit_system_prompt": "Write a terse, targeted edit instruction…",
+  "summary_system_prompt": "Compress transcript into a visual summary…",
+  "t2i_tool": { "server": "comfyui", "name": "generate_image", "defaults": { "width": 768, "height": 768 } },
+  "edit_tool": { "server": "comfyui", "name": "edit_image", "defaults": { "width": 768, "height": 768 } },
+  "edit_image_url_param": "image_url"
 }
 
 **Execution Model**
@@ -336,3 +401,100 @@ Example:
 - Server not found: verify `command` is on PATH or use absolute paths.
 - Transport mismatch: only `stdio` is supported by this client.
 - Tool name mismatch: run `python mcp_cli.py --config mcp.config.json --server comfyui list-tools` to confirm tool names.
+## Discord Posting
+
+The project can optionally post round-by-round updates to a Discord channel using an MCP-compatible Discord server. Profiles live under `./discord/*.json` and can be selected with `--discord <profile>`.
+
+- Set `enabled: true` in the chosen profile to turn it on.
+- The tool defaults control where messages go. Example:
+
+```json
+{
+  "tool": {
+    "server": "discord",
+    "name": "send-message",
+    "defaults": { "channel": "backrooms" }
+  }
+}
+```
+
+### Transcript Posting
+
+To mirror each round verbatim to a separate channel (e.g., `#transcripts`), use a dedicated Discord preset so you don’t need to set options in two places.
+
+- Recommended: add the built-in preset `transcripts` alongside your normal summary preset(s):
+
+```
+python backrooms.py --lm sonnet3 sonnet3 --template dreamsim3 --discord status_feed --discord transcripts
+```
+
+- The `discord/transcripts.json` preset is configured to only post the verbatim entries (no summary) to the `transcripts` channel. You can copy/modify it if you need a different channel or server.
+
+- Advanced (optional/back‑compat): you can still override transcript behavior per run via config `integrations` (keys `post_transcript`, `transcript_channel`, and `transcript_tool`). This remains supported but using the `transcripts` preset is simpler and avoids duplication.
+
+When enabled, after each round the agent posts the normal summary (from your summary preset(s)) and also posts the verbatim round transcript (from the `transcripts` preset). Very long messages are split into multiple parts to respect Discord length limits.
+
+### Bot Memory (per-run)
+
+Discord profiles can optionally include their own prior posts from the current run as context for better continuity. This history is kept in memory per profile for the duration of a run and is only included when referenced explicitly in the template.
+
+- Template-controlled only: No hidden prompt injection occurs. Use `{bot_history}` in your `user_template` to include a bullet list of the bot’s prior posts (oldest to newest).
+
+- Optional window control (profile JSON):
+
+```json
+{
+  "bot_history_window": 5
+}
+```
+
+- Example placement inside a profile template:
+
+```
+"user_template": "Your prior posts (oldest to newest):\n{bot_history}\n\nLatest round:\n{latest_round_transcript}"
+```
+
+### Included Presets
+
+- `chronicle`: third‑person, concise atmospheric updates.
+- `chronicle_fp`: first‑person field notes from inside the world.
+- `cctv`: terse surveillance‑style captions.
+- `dreamsim`: terminal‑style status logs of current simulation state.
+- `narrative_terminal`: terminal‑style, cohesive narrative arc of events.
+- `transcripts`: posts verbatim round entries to a transcripts channel (no summary).
+
+Use a preset by passing its filename stem:
+
+`python backrooms.py --lm sonnet3 sonnet3 --template dreamsim3 --discord narrative_terminal`
+
+## Template Variables
+
+Override variables without editing `vars.json`:
+
+- `--var NAME=VALUE` (repeatable): sets template variables before formatting.
+- `--query "text"`: convenience alias that sets both `QUERY` and `DREAM_TEXT`.
+
+Examples:
+
+- `python backrooms.py --lm k2 k2 --template dreamsim3 --query "A dim hallway that hums like a refrigerator"`
+- `python backrooms.py --lm gpt5 hermes --template roleplay --var TOPIC=alchemy --var TONE=serious`
+
+In batch configs, map per-item fields to variables using `template_vars_from_item` (defaults to `DREAM_TEXT <- content`).
+
+## Config Runner (experimental)
+
+Define runs in JSON under `configs/` and execute them with a single command:
+
+- Single run: `just run config=configs/single_roleplay_hermes.json`
+- Batch from Supabase (DreamSim3): `just run config=configs/batch_dreamsim3_query_kie.json`
+
+Key fields:
+- `type`: `single` or `batch`
+- `template`: Backrooms template (e.g., `dreamsim3`, `roleplay`)
+- `models`/`pairs`/`mixed`: choose model selection plan
+- `integrations`: optional `{ "discord": name, "media": name }`
+- `data_source`: for batch (currently `{ kind: "supabase", query, limit, source }`)
+- `template_vars_from_item`: mapping for per-item variables (default `DREAM_TEXT <- content`)
+- `output.meta_jsonl`: metadata JSONL path for batch runs
+
+See `configs/` and `scripts/run_config.py` for examples and details.

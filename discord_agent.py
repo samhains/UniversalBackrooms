@@ -18,8 +18,7 @@ def load_discord_config(profile_name: Optional[str]) -> Optional[Dict[str, Any]]
         return None
     with open(path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
-    if not cfg.get("enabled", False):
-        return None
+    # Always treat profiles as enabled; no config flag required
     return cfg
 
 
@@ -54,6 +53,39 @@ def _build_round_summary_prompt(round_entries: List[Dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
+def _build_default_user_prompt(
+    *, round_entries: List[Dict[str, str]], transcript: List[Dict[str, str]], window: int
+) -> str:
+    """Default prompt builder when no user_template is provided.
+
+    Includes a recent transcript context window (if available) and the latest round.
+    """
+    lines: List[str] = [
+        "Summarize the latest round of the backrooms conversation in 1-3 sentences.",
+        "Be clear, concise, and evocative; avoid spoilers or meta commentary.",
+        "Write in present tense and speak as an observer. Use the recent context to maintain continuity.",
+    ]
+
+    # Append recent transcript context if provided
+    win = max(0, int(window))
+    if transcript and win > 0:
+        tb_src = transcript[-win:]
+        lines.append("Recent context (oldest to newest):")
+        for e in tb_src:
+            actor = e.get("actor", "")
+            text = e.get("text", "")
+            lines.append(f"- {actor}: {text}")
+
+    # Append latest round bullets
+    lines.append("Latest round:")
+    for e in round_entries:
+        actor = e.get("actor", "")
+        text = e.get("text", "")
+        lines.append(f"- {actor}: {text}")
+
+    return "\n".join(lines)
+
+
 def run_discord_agent(
     *,
     discord_cfg: Dict[str, Any],
@@ -63,22 +95,39 @@ def run_discord_agent(
     generate_text_fn,
     model_info: Dict[str, Dict[str, Any]],
     media_url: Optional[str] = None,
+    override_channel: Optional[str] = None,
+    override_server: Optional[str] = None,
+    bot_history: Optional[List[str]] = None,
 ) -> Optional[Dict[str, Any]]:
     """Post a per-round summary to Discord via MCP 'discord' server.
 
     generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str
     """
-    # 1) Build summary text via LLM (optional; can be disabled)
-    use_llm = bool(discord_cfg.get("use_llm", True))
-    api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
-    if use_llm:
+    # 1) Build summary text via LLM (optional; can be disabled via config)
+    disable_summary = bool(discord_cfg.get("disable_summary", False))
+    summary = ""
+    if not disable_summary:
+        api_model = _resolve_model_api(discord_cfg.get("model", "same-as-lm1"), selected_models, model_info)
         system_prompt = discord_cfg.get(
             "system_prompt",
             "You produce concise narrative summaries suitable for Discord updates.",
         )
-        # Build user prompt from template if provided
+        # Build user prompt, preferring template if provided, otherwise include transcript context
         template = discord_cfg.get("user_template")
+        # Prepare optional bot self-history bullets for template use only
+        try:
+            hist_window = int(discord_cfg.get("bot_history_window", 5))
+        except Exception:
+            hist_window = 5
+        bot_hist_list = list(bot_history or [])
+        # Slice to last N in chronological order (oldest -> newest)
+        if bot_hist_list and hist_window > 0:
+            bot_hist_src = bot_hist_list[-hist_window:]
+        else:
+            bot_hist_src = []
+        bot_hist_bullets = "\n".join(f"- {t}" for t in bot_hist_src)
         if isinstance(template, str) and template.strip():
+            # Build transcript-style lists
             round_bullets = "\n".join(
                 f"- {e.get('actor','')}: {e.get('text','')}" for e in round_entries
             )
@@ -90,45 +139,201 @@ def run_discord_agent(
             transcript_bullets = "\n".join(
                 f"- {e.get('actor','')}: {e.get('text','')}" for e in tb_src
             )
-            user_prompt = template.format(
-                round_bullets=round_bullets,
-                last_actor=last_actor,
-                last_text=last_text,
-                transcript_bullets=transcript_bullets,
-            )
-        else:
-            user_prompt = _build_round_summary_prompt(round_entries)
-        summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
-    else:
-        # Simple non-LLM summary (first 300 chars of last message)
-        last = round_entries[-1]["text"] if round_entries else ""
-        summary = (last[:297] + "...") if len(last) > 300 else last
 
-    # 2) Build tool args from config
+            # Template variables (legacy placeholders removed)
+            fmt_vars = {
+                # New names (clearer)
+                "latest_round_transcript": round_bullets,
+                "transcript": transcript_bullets,
+                "bot_history": bot_hist_bullets,
+                # Backward-compat (deprecated)
+                "latest_round_bullets": round_bullets,
+                "context_bullets": transcript_bullets,
+                # Convenience
+                "last_actor": last_actor,
+                "last_text": last_text,
+            }
+            user_prompt = template.format(**fmt_vars)
+        else:
+            # No template: include transcript and latest round only (no hidden history injection)
+            user_prompt = _build_default_user_prompt(
+                round_entries=round_entries,
+                transcript=transcript,
+                window=int(discord_cfg.get("transcript_window", 10)),
+            )
+            # Note: bot history is available only via {bot_history} in templates.
+        summary = generate_text_fn(system_prompt, api_model, user_prompt).strip()
+
+    # Helper: chunk long Discord messages to <=2000 chars (use 1900 margin)
+    def _chunk_text(txt: str, limit: int = 1900) -> List[str]:
+        if not isinstance(txt, str):
+            txt = str(txt)
+        if len(txt) <= limit:
+            return [txt]
+        chunks: List[str] = []
+        start = 0
+        n = len(txt)
+        while start < n:
+            end = min(start + limit, n)
+            # Prefer to break at a newline boundary if possible
+            if end < n:
+                nl = txt.rfind("\n", start, end)
+                if nl != -1 and nl > start:
+                    end = nl + 1
+            chunks.append(txt[start:end])
+            start = end
+        return chunks
+
+    # Determine chunk limit (bots are limited to ~2000 chars)
+    try:
+        chunk_limit = int(discord_cfg.get("max_message_length", 1900))
+    except Exception:
+        chunk_limit = 1900
+    # Bots are limited to 2000 chars; keep a safety margin
+    if chunk_limit > 1900:
+        chunk_limit = 1900
+
+    # 2) Build tool args from config (summary post)
     tool = discord_cfg.get("tool", {"server": "discord", "name": "send-message"})
     server_name = tool.get("server", "discord")
     tool_name = tool.get("name", "send-message")
     defaults = tool.get("defaults", {})
     # Expected by discord MCP: { server (optional), channel, message }
     args: Dict[str, Any] = {
-        "channel": defaults.get("channel", "general"),
+        "channel": override_channel or defaults.get("channel", "general"),
         "message": summary,
     }
-    if "server" in defaults:
-        args["server"] = defaults["server"]
+    if override_server is not None and str(override_server).strip():
+        args["server"] = override_server
+    else:
+        sv = defaults.get("server")
+        if isinstance(sv, str) and sv.strip():
+            args["server"] = sv.strip()
     if media_url:
         args["mediaUrl"] = media_url
 
     # 3) Load MCP server config and call tool (no FastMCP wrapping)
-    mcp_config_path = os.getenv("MCP_CONFIG", "mcp.config.json")
+    mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+    if not os.path.exists(mcp_config_path):
+        alt = "mcp_servers.json"
+        if os.path.exists(alt):
+            mcp_config_path = alt
     server_cfg: MCPServerConfig = load_server_config(mcp_config_path, server_name)
-    result = call_tool(server_cfg, tool_name, args)
-    return {
-        "posted": {
-            "server": args.get("server"),
-            "channel": args.get("channel"),
-            "message": summary,
-            "mediaUrl": media_url,
-        },
-        "result": result,
+    # Optionally post a pre-message separator before any content (e.g., between dreams)
+    # This uses the same tool/channel/server defaults.
+    posted_premessage: List[Dict[str, Any]] = []
+    pre_message = discord_cfg.get("pre_message")
+    if isinstance(pre_message, str) and pre_message.strip():
+        pre_parts = _chunk_text(pre_message.strip(), chunk_limit)
+        for part in pre_parts:
+            p_args = {
+                k: v
+                for k, v in {
+                    "channel": args.get("channel"),
+                    "server": args.get("server"),
+                    "message": part,
+                }.items()
+                if v is not None
+            }
+            try:
+                _ = call_tool(server_cfg, tool_name, p_args)
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": part,
+                })
+            except Exception:
+                posted_premessage.append({
+                    "server": p_args.get("server"),
+                    "channel": p_args.get("channel"),
+                    "message": "<failed to post pre_message>",
+                })
+    # Post summary (chunked if needed) unless disabled
+    posted_summary: List[Dict[str, Any]] = []
+    if not disable_summary:
+        summary_parts = _chunk_text(summary, chunk_limit)
+        for idx, part in enumerate(summary_parts, start=1):
+            s_args = dict(args)
+            s_args["message"] = part
+            # Attach media only to the first chunk if provided
+            if media_url and idx > 1 and "mediaUrl" in s_args:
+                s_args.pop("mediaUrl", None)
+            try:
+                _ = call_tool(server_cfg, tool_name, s_args)
+                posted_summary.append({
+                    "server": s_args.get("server"),
+                    "channel": s_args.get("channel"),
+                    "message": part,
+                })
+            except Exception:
+                posted_summary.append({
+                    "server": s_args.get("server"),
+                    "channel": s_args.get("channel"),
+                    "message": "<failed to post summary chunk>",
+                })
+
+    out: Dict[str, Any] = {
+        "posted": posted_summary,
+        "result": {"chunks": len(posted_summary)},
+        "composed_summary": summary,
     }
+
+    # 3) Optionally post verbatim transcript of the round to a different channel
+    if bool(discord_cfg.get("post_transcript", False)):
+        # Allow full separate tool configuration for transcript posts
+        ttool = discord_cfg.get("transcript_tool") or tool
+        t_server_name = ttool.get("server", "discord")
+        t_tool_name = ttool.get("name", "send-message")
+        t_defaults = ttool.get("defaults", {})
+        # Channel precedence: transcript_channel (top-level) > transcript_tool.defaults.channel > tool.defaults.channel
+        transcript_channel = (
+            discord_cfg.get("transcript_channel")
+            or t_defaults.get("channel")
+            or defaults.get("channel", "transcripts")
+        )
+        # Post each round entry as its own message to ensure readability and avoid chunking
+        posted_transcript: List[Dict[str, Any]] = []
+        t_args_base: Dict[str, Any] = {"channel": transcript_channel}
+        sv2 = t_defaults.get("server")
+        if isinstance(sv2, str) and sv2.strip():
+            t_args_base["server"] = sv2.strip()
+        # Reuse same MCP server config if server name matches; else reload
+        if t_server_name == server_name:
+            t_server_cfg = server_cfg
+        else:
+            mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+            if not os.path.exists(mcp_config_path):
+                alt = "mcp_servers.json"
+                if os.path.exists(alt):
+                    mcp_config_path = alt
+            t_server_cfg = load_server_config(mcp_config_path, t_server_name)
+
+        for e in round_entries:
+            actor = e.get("actor", "")
+            text = e.get("text", "")
+            # Prefix actor for each chunk to keep context clear
+            base = f"{actor}:\n{text}" if actor else str(text)
+            parts = _chunk_text(base, chunk_limit)
+            for idx, part in enumerate(parts, start=1):
+                t_args = dict(t_args_base)
+                t_args["message"] = part
+                try:
+                    _ = call_tool(t_server_cfg, t_tool_name, t_args)
+                    posted_transcript.append({
+                        "server": t_args.get("server"),
+                        "channel": t_args.get("channel"),
+                        "message": part,
+                    })
+                except Exception as _err:
+                    # Record failure but continue with remaining chunks/entries
+                    posted_transcript.append({
+                        "server": t_args.get("server"),
+                        "channel": t_args.get("channel"),
+                        "message": f"<failed to post chunk {idx}/{len(parts)}>",
+                    })
+        out["posted_transcript"] = posted_transcript
+
+    # 4) Intentionally do NOT post raw round entries to the main channel.
+    #    Keep channels clean; only the LLM-composed summary is posted.
+
+    return out

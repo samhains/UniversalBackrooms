@@ -9,8 +9,11 @@ import sys
 import colorsys
 import requests
 import re
+import signal
 from pathlib import Path
 from model_config import get_model_choices, get_model_info
+from typing import Optional
+from paths import BACKROOMS_LOGS_DIR
 
 # Local imports for optional media agent
 try:
@@ -34,17 +37,27 @@ dotenv.load_dotenv(override=False)
 anthropic_client = None
 openai_client = None
 openrouter_client = None
+# Optional global override set from CLI; do not use env vars
+EXPLICIT_MAX_TOKENS: Optional[int] = None
 
 MODEL_INFO = get_model_info()
+
+
+class ManualStop(Exception):
+    pass
+
+_SAVE_WARNED = False  # print missing-env warning once per run
 
 
 def claude_conversation(actor, model, context, system_prompt=None):
     messages = [{"role": m["role"], "content": m["content"]} for m in context]
 
     # If Claude is the first model in the conversation, it must have a user message
+    # Anthropic requires max_tokens; use CLI override if provided, else a higher default
+    max_toks = EXPLICIT_MAX_TOKENS if EXPLICIT_MAX_TOKENS is not None else 4096
     kwargs = {
         "model": model,
-        "max_tokens": 1024,
+        "max_tokens": max_toks,
         "temperature": 1.0,
         "messages": messages,
     }
@@ -72,10 +85,13 @@ def gpt4_conversation(actor, model, context, system_prompt=None):
         "temperature": 1.0,
     }
 
-    if model == "o1-preview" or model == "o1-mini":
-        kwargs["max_tokens"] = 4000
+    if EXPLICIT_MAX_TOKENS is not None:
+        kwargs["max_tokens"] = EXPLICIT_MAX_TOKENS
     else:
-        kwargs["max_tokens"] = 1024
+        if model == "o1-preview" or model == "o1-mini":
+            kwargs["max_tokens"] = 4000
+        else:
+            kwargs["max_tokens"] = 1024
 
     # Lazy init for OpenAI client (used by media agent too)
     global openai_client
@@ -108,8 +124,10 @@ def openrouter_conversation(actor, model, context, system_prompt=None):
         "model": api_model,
         "messages": messages,
         "temperature": 1.0,
-        "max_tokens": 1024,
     }
+    # Only set max_tokens for OpenRouter when explicitly requested via CLI
+    if EXPLICIT_MAX_TOKENS is not None:
+        kwargs["max_tokens"] = EXPLICIT_MAX_TOKENS
     # Enable Hermes 4 internal reasoning traces when requested via vendor extension
     if reasoning_flag:
         kwargs["extra_body"] = {"reasoning": {"enabled": True, "exclude": False}, "include_reasoning": True}
@@ -229,7 +247,7 @@ def _parse_folder_template(template_name: str):
     return configs
 
 
-def load_template(template_name, models):
+def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = None):
     try:
         # Prefer folder-based template: templates/<name>/template.json
         folder_spec = Path("templates") / template_name / "template.json"
@@ -257,6 +275,30 @@ def load_template(template_name, models):
         # Expose {modelN_company} and {modelN_display_name} for N starting at 1
         companies = []
         display_names = []
+        # Optional template variables from vars.json inside the template folder
+        extra_vars = {}
+        try:
+            vars_path = Path("templates") / template_name / "vars.json"
+            if vars_path.exists():
+                with vars_path.open("r", encoding="utf-8") as vf:
+                    raw_vars = json.load(vf)
+                    if isinstance(raw_vars, dict):
+                        # Escape braces to avoid .format placeholder issues in user-provided strings
+                        extra_vars = {
+                            k: (v.replace("{", "{{").replace("}", "}}") if isinstance(v, str) else v)
+                            for k, v in raw_vars.items()
+                        }
+        except Exception:
+            extra_vars = {}
+
+        # Merge CLI-provided vars, with CLI taking precedence
+        if cli_vars:
+            for k, v in cli_vars.items():
+                if isinstance(v, str):
+                    extra_vars[k] = v.replace("{", "{{").replace("}", "}}")
+                else:
+                    extra_vars[k] = v
+
         for i, model in enumerate(models):
             if model.lower() == "cli":
                 companies.append("CLI")
@@ -278,15 +320,14 @@ def load_template(template_name, models):
                 continue
 
             # Format placeholders in system prompt with new keys
-            config["system_prompt"] = config["system_prompt"].format(
+            _fmt_args = {
                 **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
                 **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
-            )
+                **extra_vars,
+            }
+            config["system_prompt"] = config["system_prompt"].format(**_fmt_args)
             for message in config["context"]:
-                message["content"] = message["content"].format(
-                    **{f"model{j+1}_company": companies[j] for j in range(len(companies))},
-                    **{f"model{j+1}_display_name": display_names[j] for j in range(len(display_names))},
-                )
+                message["content"] = message["content"].format(**_fmt_args)
 
             if (
                 models[i] in MODEL_INFO
@@ -364,18 +405,71 @@ def main():
         help="Maximum number of turns in the conversation (default: infinity)",
     )
     parser.add_argument(
+        "--max-context-frac",
+        type=float,
+        default=0.0,
+        help="Early-stop when estimated prompt tokens exceed this fraction of the context window (0 disables).",
+    )
+    parser.add_argument(
+        "--context-window",
+        type=int,
+        default=128000,
+        help="Assumed context window size in tokens for the limiting model (default: 128000).",
+    )
+    parser.add_argument(
         "--discord",
-        type=str,
+        action="append",
         default=None,
-        help="Enable Discord posting with a profile name from ./discord (e.g., 'chronicle').",
+        help="Enable one or more Discord profiles (repeatable or comma-separated), from ./discord/<name>.json.",
     )
     parser.add_argument(
         "--media",
+        action="append",
+        default=None,
+        help="Enable one or more media presets (repeatable or comma-separated). If omitted, no media agent runs.",
+    )
+    parser.add_argument(
+        "--var",
+        action="append",
+        default=[],
+        help="Template variable override NAME=VALUE. Repeatable.",
+    )
+    parser.add_argument(
+        "--query",
         type=str,
         default=None,
-        help="Optional media preset name from ./media (e.g., 'cli'); defaults to template name if omitted.",
+        help="Convenience text variable. Sets both QUERY and DREAM_TEXT for templates.",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=None,
+        help="Override max output tokens per response. For OpenRouter, only applied when provided.",
     )
     args = parser.parse_args()
+    # Set global explicit max tokens if provided
+    if args.max_tokens is not None and args.max_tokens > 0:
+        global EXPLICIT_MAX_TOKENS
+        EXPLICIT_MAX_TOKENS = args.max_tokens
+
+    # Build CLI vars map from --var NAME=VALUE and --query
+    cli_vars: dict[str, str] = {}
+    # --var can be repeated
+    if isinstance(args.var, list):
+        for item in args.var:
+            if not isinstance(item, str):
+                continue
+            if "=" in item:
+                name, value = item.split("=", 1)
+                name = name.strip()
+                if name:
+                    cli_vars[name] = value
+    # --query sets both QUERY and DREAM_TEXT for convenience
+    if args.query:
+        if "QUERY" not in cli_vars:
+            cli_vars["QUERY"] = args.query
+        if "DREAM_TEXT" not in cli_vars:
+            cli_vars["DREAM_TEXT"] = args.query
 
     models = args.lm
     lm_models = []
@@ -456,35 +550,141 @@ def main():
             base_url="https://openrouter.ai/api/v1",
         )
 
-    configs = load_template(args.template, models)
+    # (moved) Template loading and context setup occurs later to allow CLI var overlays
 
-    assert len(models) == len(
-        configs
-    ), f"Number of LMs ({len(models)}) does not match the number of elements in the template ({len(configs)})"
+    logs_folder = BACKROOMS_LOGS_DIR
+    # Group logs by template for easier organization
+    template_logs_folder = logs_folder / args.template
+    template_logs_folder.mkdir(parents=True, exist_ok=True)
 
-    system_prompts = [config.get("system_prompt", "") for config in configs]
-    contexts = [config.get("context", []) for config in configs]
-
-    # Validate starting state: if all histories are empty, abort with a helpful error
-    if all((not ctx) for ctx in contexts):
-        print(
-            "Error: All agents have empty chat_history. Provide a conversation starter (e.g., a user message) in at least one agent's history file."
-        )
-        sys.exit(1)
-
-    logs_folder = "BackroomsLogs"
-    if not os.path.exists(logs_folder):
-        os.makedirs(logs_folder)
-
+    # Track run start (UTC) for DB metadata
+    run_start = datetime.datetime.now(datetime.timezone.utc)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{logs_folder}/{'_'.join(models)}_{args.template}_{timestamp}.txt"
+    filename = template_logs_folder / f"{'_'.join(models)}_{args.template}_{timestamp}.txt"
+    # Write a concise run header for easier forensics/search
+    try:
+        with open(filename, "a", encoding="utf-8") as f:
+            f.write("### Backrooms Run ###\n")
+            f.write(f"Template: {args.template}\n")
+            f.write(f"Models: {', '.join(models)}\n")
+            f.write(f"Started: {run_start.isoformat()}\n")
+    except Exception:
+        pass
 
-    # Optional media agent config (prefer --media override, else template name)
-    media_target = args.media if args.media else args.template
-    media_cfg = load_media_config(media_target) if load_media_config else None
+    # Optional media agent configs: support multiple presets
+    media_cfgs = []
+    seen_media: set[str] = set()
+    # Read global per-run overrides for media presets from env (JSON)
+    media_overrides_env = os.getenv("BACKROOMS_MEDIA_OVERRIDES")
+    media_overrides: dict[str, object] = {}
+    if media_overrides_env:
+        try:
+            _mov = json.loads(media_overrides_env)
+            if isinstance(_mov, dict):
+                media_overrides = _mov
+        except Exception:
+            pass
+    def _register_media_preset(name: str, warn_missing: bool = True) -> None:
+        if not load_media_config or not name or name in seen_media:
+            return
+        cfg = load_media_config(name)
+        if cfg:
+            cfg.setdefault("__name__", name)
+            if media_overrides:
+                try:
+                    for k, v in media_overrides.items():
+                        cfg[k] = v
+                except Exception:
+                    pass
+            media_cfgs.append(cfg)
+            seen_media.add(name)
+        elif warn_missing:
+            try:
+                media_dir = Path("media")
+                choices = []
+                if media_dir.exists():
+                    for p in media_dir.iterdir():
+                        if p.is_file() and p.suffix == ".json":
+                            choices.append(p.stem)
+                print(
+                    f"Warning: media preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                )
+            except Exception:
+                print(f"Warning: media preset '{name}' not found.")
 
-    # Optional discord agent config
-    discord_cfg = load_discord_config(args.discord) if load_discord_config else None
+    if args.media:
+        # Flatten possible comma-separated values across repeated flags
+        raw_media: list[str] = []
+        for m in (args.media or []):
+            if isinstance(m, str) and "," in m:
+                raw_media.extend([x.strip() for x in m.split(",") if x.strip()])
+            elif isinstance(m, str):
+                raw_media.append(m.strip())
+        for name in raw_media:
+            _register_media_preset(name)
+    else:
+        # Fallback to template-named preset if present
+        _register_media_preset(args.template, warn_missing=False)
+
+    # Optional Discord agent configs: support multiple profiles
+    discord_cfgs = []
+    # Maintain per-profile message history (current run) for Discord bots
+    discord_bot_history: dict[str, list[str]] = {}
+    if args.discord and load_discord_config:
+        raw_dc: list[str] = []
+        for d in (args.discord or []):
+            if isinstance(d, str) and "," in d:
+                raw_dc.extend([x.strip() for x in d.split(",") if x.strip()])
+            elif isinstance(d, str):
+                raw_dc.append(d.strip())
+        seen_dc = set()
+        # Read global per-run overrides for Discord profiles from env (JSON)
+        discord_overrides_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
+        discord_overrides: dict[str, object] = {}
+        if discord_overrides_env:
+            try:
+                import json as _json
+                parsed = _json.loads(discord_overrides_env)
+                if isinstance(parsed, dict):
+                    discord_overrides = parsed  # shallow override map
+            except Exception:
+                pass
+        for name in raw_dc:
+            if not name or name in seen_dc:
+                continue
+            seen_dc.add(name)
+            cfg = load_discord_config(name)
+            if cfg:
+                cfg.setdefault("__name__", name)
+                # Apply shallow overrides from env if provided (config-level control)
+                if discord_overrides:
+                    try:
+                        for k, v in discord_overrides.items():
+                            cfg[k] = v
+                    except Exception:
+                        pass
+                discord_cfgs.append(cfg)
+                discord_bot_history[name] = []
+            else:
+                try:
+                    dd = Path("discord")
+                    choices = []
+                    if dd.exists():
+                        for p in dd.iterdir():
+                            if p.is_file() and p.suffix == ".json":
+                                choices.append(p.stem)
+                    print(
+                        f"Warning: discord preset '{name}' not found. Available: {', '.join(sorted(choices)) or 'none'}"
+                    )
+                except Exception:
+                    print(f"Warning: discord preset '{name}' not found.")
+
+    if discord_cfgs:
+        try:
+            loaded_names = ", ".join([cfg.get("__name__", "?") for cfg in discord_cfgs])
+            print(f"[backrooms] Discord profiles loaded: {loaded_names}")
+        except Exception:
+            pass
 
     def media_generate_text_fn(system_prompt: str, api_model: str, user_message: str) -> str:
         # Reuse existing model call path, branching by provider name in api_model
@@ -498,10 +698,182 @@ def main():
         else:
             return gpt4_conversation("Media Agent", api_model, context, system_prompt)
 
+    # Heuristic token estimation (approx. 4 chars per token)
+    def estimate_tokens_for_agent(i: int) -> int:
+        text_parts = []
+        sp = system_prompts[i] or ""
+        if sp:
+            text_parts.append(sp)
+        for msg in contexts[i]:
+            text_parts.append(str(msg.get("content", "")))
+        chars = sum(len(t) for t in text_parts)
+        # Avoid zero; add small overhead for roles/formatting
+        return max(1, (chars // 4) + 8)
+
+    def next_max_tokens_for_model(api_model: str) -> int:
+        # Use CLI override if provided
+        if EXPLICIT_MAX_TOKENS is not None:
+            return EXPLICIT_MAX_TOKENS
+        # Heuristics per provider/model string
+        if api_model == "o1-preview" or api_model == "o1-mini":
+            return 4000
+        # Anthropic models typically start with 'claude-'
+        if isinstance(api_model, str) and api_model.startswith("claude-"):
+            return 4096
+        # OpenRouter (contains '/') — leave modest budget unless overridden
+        return 1024
+
+    # Load template with CLI vars overlays
+    configs = load_template(args.template, models, cli_vars=cli_vars)
+
+    assert len(models) == len(
+        configs
+    ), f"Number of LMs ({len(models)}) does not match the number of elements in the template ({len(configs)})"
+
+    system_prompts = [config.get("system_prompt", "") for config in configs]
+    contexts = [config.get("context", []) for config in configs]
+    # Snapshot initial contexts for metadata (before mutation by conversation)
+    initial_contexts = [list(ctx) for ctx in contexts]
+
+    # Validate starting state: if all histories are empty, abort with a helpful error
+    if all((not ctx) for ctx in contexts):
+        print(
+            "Error: All agents have empty chat_history. Provide a conversation starter (e.g., a user message) in at least one agent's history file."
+        )
+        sys.exit(1)
+
     turn = 0
     transcript: list[dict[str, str]] = []
+
+    # Persist run details + transcript into Supabase (best-effort)
+    # Disabled by default. Set BACKROOMS_SAVE_ENABLED=1 to re-enable.
+    def _save_run_to_supabase(exit_reason: str = "max_turns") -> None:
+        # Respect explicit opt-in only; default is no-op so transcripts are
+        # pushed via scripts/sync_backrooms.py after runs complete.
+        if os.getenv("BACKROOMS_SAVE_ENABLED") != "1":
+            return
+        global _SAVE_WARNED
+        try:
+            supabase_url = os.getenv("SUPABASE_URL")
+            supabase_key = (
+                os.getenv("SUPABASE_KEY")
+                or os.getenv("SUPABASE_ANON_KEY")
+                or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+            )
+            if not supabase_url or not supabase_key or os.getenv("BACKROOMS_SAVE_DISABLED"):
+                if not _SAVE_WARNED and not os.getenv("BACKROOMS_SAVE_SILENT"):
+                    print("[backrooms] Supabase save disabled or missing SUPABASE_URL/KEY; skipping.")
+                    _SAVE_WARNED = True
+                return
+            # Build prompt from initial user messages if present
+            init_user_msgs = []
+            for ctx in initial_contexts:
+                for msg in ctx:
+                    if isinstance(msg, dict) and msg.get("role") == "user":
+                        c = str(msg.get("content", ""))
+                        if c.strip():
+                            init_user_msgs.append(c)
+            prompt_text = "\n\n".join(init_user_msgs) if init_user_msgs else None
+            # Read transcript file content
+            try:
+                with open(filename, "r", encoding="utf-8") as fh:
+                    transcript_text = fh.read()
+            except Exception:
+                transcript_text = ""
+            # End timestamp + duration
+            end_ts = datetime.datetime.now(datetime.timezone.utc)
+            duration = (end_ts - run_start).total_seconds()
+            payload = [{
+                "models": models,
+                "template": args.template,
+                "max_turns": args.max_turns,
+                "created_at": run_start.isoformat(),
+                "duration_sec": duration,
+                "log_file": filename,
+                "exit_reason": exit_reason,
+                "prompt": prompt_text,
+                "transcript": transcript_text,
+            }]
+            # Additional fields like dream_id/source are attached during sync
+            # via scripts/sync_backrooms.py to avoid coupling runtime to env vars.
+            headers = {
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}",
+                "Content-Type": "application/json",
+                "Prefer": "resolution=merge-duplicates,return=representation",
+            }
+            url = f"{supabase_url}/rest/v1/backrooms?on_conflict=log_file"
+            try:
+                requests.post(url, headers=headers, json=payload, timeout=10)
+            except Exception:
+                pass
+        except Exception:
+            # Never interrupt the run on analytics failure
+            pass
+
+    # Register signal handlers to persist partial progress on interrupt/terminate
+    def _handle_signal(signum, frame):  # type: ignore[no-redef]
+        try:
+            _save_run_to_supabase(exit_reason="interrupted")
+        finally:
+            # Exit with standard codes: SIGINT -> 130, SIGTERM -> 143
+            code = 130 if signum == signal.SIGINT else 143
+            sys.exit(code)
+
+    try:
+        signal.signal(signal.SIGINT, _handle_signal)
+        signal.signal(signal.SIGTERM, _handle_signal)
+    except Exception:
+        pass
+
+    # Database save disabled by default; no early row creation.
+    # Track Discord profiles that have already posted at start to avoid duplicates
+    _discord_posted_start: set[str] = set()
+
     while turn < args.max_turns:
+        # Announce round progress in terminal and append to log file
+        try:
+            round_no = turn + 1
+            header = f"\n--- Round {round_no}/{args.max_turns} ---"
+            print(header)
+            with open(filename, "a") as f:
+                f.write(f"\n### Round {round_no}/{args.max_turns}\n")
+        except Exception:
+            pass
+        try:
+            pass
+        except Exception:
+            pass
+        # loop body continues below
+        # Optional early stop based on estimated context budget
+        if args.max_context_frac and args.context_window and args.context_window > 0:
+            # Ensure the next responses for all agents would fit within the fraction
+            would_exceed = False
+            for i in range(len(models)):
+                used = estimate_tokens_for_agent(i)
+                budget = int(args.max_context_frac * args.context_window)
+                # Determine model string used for generation path
+                api_model = lm_models[i]
+                # Strip any vendor flags like #reasoning
+                if isinstance(api_model, str) and "#" in api_model:
+                    api_model = api_model.split("#", 1)[0]
+                nxt = next_max_tokens_for_model(api_model)
+                if used + nxt >= budget:
+                    would_exceed = True
+                    break
+            if would_exceed:
+                msg = (
+                    f"\nContext budget limit reached (>= {int(args.max_context_frac*100)}% of {args.context_window} tokens). Conversation ended."
+                )
+                print(msg)
+                with open(filename, "a") as f:
+                    f.write(msg + "\n")
+                # Persist early stop (no-op unless BACKROOMS_SAVE_ENABLED=1)
+                _save_run_to_supabase(exit_reason="early_stop")
+                break
+
         round_entries = []
+        manual_stopped = False
         for i in range(len(models)):
             if models[i].lower() == "cli":
                 lm_response = cli_conversation(contexts[i])
@@ -512,80 +884,149 @@ def main():
                     contexts[i],
                     system_prompts[i],
                 )
-            process_and_log_response(
-                lm_response,
-                lm_display_names[i],
-                filename,
-                contexts,
-                i,
-            )
+            try:
+                process_and_log_response(
+                    lm_response,
+                    lm_display_names[i],
+                    filename,
+                    contexts,
+                    i,
+                )
+            except ManualStop:
+                manual_stopped = True
+                # Append the partial entry to transcript before stopping
+                round_entries.append({"actor": lm_display_names[i], "text": lm_response})
+                break
             round_entries.append({"actor": lm_display_names[i], "text": lm_response})
 
-        # After both actors in a round, invoke media agent once
-        media_url: Optional[str] = None
-        if media_cfg and run_media_agent:
-            try:
-                media_result = run_media_agent(
-                    media_cfg=media_cfg,
-                    selected_models=models,
-                    round_entries=round_entries,
-                    transcript=transcript,
-                    filename=filename,
-                    generate_text_fn=media_generate_text_fn,
-                    model_info=MODEL_INFO,
-                )
-                if parse_result_for_image_ref and isinstance(media_result, dict):
-                    media_url = parse_result_for_image_ref(media_result)
-            except Exception as e:
-                err = f"\nMedia Agent error: {e}"
-                print(err)
-                with open(filename, "a") as f:
-                    f.write(err + "\n")
-        # After the round, optionally post a Discord update
-        if discord_cfg and run_discord_agent:
-            try:
-                discord_result = run_discord_agent(
-                    discord_cfg=discord_cfg,
-                    selected_models=models,
-                    round_entries=round_entries,
-                    transcript=transcript,
-                    generate_text_fn=media_generate_text_fn,
-                    model_info=MODEL_INFO,
-                    media_url=media_url,
-                )
-                # Helpful terminal + file logs of what was posted
-                if isinstance(discord_result, dict) and "posted" in discord_result:
-                    posted = discord_result.get("posted", {})
-                    ch = posted.get("channel", "?")
-                    sv = posted.get("server") or "default"
-                    msg = posted.get("message", "")
-                    murl = posted.get("mediaUrl")
-                    header = "\n\033[1m\033[38;2;120;180;255mDiscord Agent\033[0m"
-                    print(header)
-                    print(f"Channel: {ch} (server: {sv})")
-                    print(f"Message: {msg}")
-                    if murl:
-                        print(f"Media:   {murl}")
+        # If manual stop occurred, persist and end outer loop
+        if manual_stopped:
+            transcript.extend(round_entries)
+            _save_run_to_supabase(exit_reason="manual_stop")
+            break
+
+        # First, for Discord profiles that should post only at the very start,
+        # run them before media so headers land first in the channel.
+        if discord_cfgs and run_discord_agent:
+            for dcfg in discord_cfgs:
+                try:
+                    run_on = (dcfg.get("run_on") or "every").strip().lower()
+                except Exception:
+                    run_on = "every"
+                post_once_at_start = bool(dcfg.get("post_once_at_start", False))
+                name = dcfg.get("__name__", "")
+                # Only fire on the very first round, once
+                if turn == 0 and (post_once_at_start or run_on in ("first", "first_only", "start", "start_only")):
+                    if name and name in _discord_posted_start:
+                        continue
+                    try:
+                        res = run_discord_agent(
+                            discord_cfg=dcfg,
+                            selected_models=models,
+                            round_entries=round_entries,
+                            transcript=transcript,
+                            generate_text_fn=media_generate_text_fn,
+                            model_info=MODEL_INFO,
+                            media_url=None,
+                            bot_history=discord_bot_history.get(name, []),
+                        )
+                        # Track posted summary in bot history and mark as posted-at-start
+                        try:
+                            if name and isinstance(res, dict):
+                                summary_text = res.get("composed_summary")
+                                if isinstance(summary_text, str) and summary_text.strip():
+                                    discord_bot_history.setdefault(name, []).append(summary_text.strip())
+                            if name:
+                                _discord_posted_start.add(name)
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        err = f"\nDiscord Agent error: {e}"
+                        print(err)
+                        with open(filename, "a") as f:
+                            f.write(err + "\n")
+
+        # After the round, invoke media agents (one or many); media posts images on its own
+        if media_cfgs and run_media_agent:
+            for mcfg in media_cfgs:
+                # Optional: only run media every N rounds (default 1 = every round)
+                try:
+                    every = int(mcfg.get("run_every_n_rounds", 1))
+                except Exception:
+                    every = 1
+                if every < 1:
+                    every = 1
+                # 'turn' is 0-based; run on rounds where turn % every == 0
+                if (turn % every) != 0:
+                    continue
+                try:
+                    run_media_agent(
+                        media_cfg=mcfg,
+                        selected_models=models,
+                        round_entries=round_entries,
+                        transcript=transcript,
+                        filename=filename,
+                        generate_text_fn=media_generate_text_fn,
+                        model_info=MODEL_INFO,
+                    )
+                except Exception as e:
+                    err = f"\nMedia Agent error: {e}"
+                    print(err)
                     with open(filename, "a") as f:
-                        f.write("\n### Discord Agent ###\n")
-                        f.write(f"Channel: {ch} (server: {sv})\n")
-                        f.write(f"Message: {msg}\n")
-                        if murl:
-                            f.write(f"Media: {murl}\n")
-            except Exception as e:
-                err = f"\nDiscord Agent error: {e}"
-                print(err)
-                with open(filename, "a") as f:
-                    f.write(err + "\n")
+                        f.write(err + "\n")
+        # After the round, post Discord updates (text-only) for each profile
+        if discord_cfgs and run_discord_agent:
+            for dcfg in discord_cfgs:
+                # Optional: allow certain Discord presets to post only at the start of a dream
+                try:
+                    run_on = (dcfg.get("run_on") or "every").strip().lower()
+                except Exception:
+                    run_on = "every"
+                post_once_at_start = bool(dcfg.get("post_once_at_start", False))
+                # 'turn' is 0-based and incremented at end of loop; first round occurs when turn == 0
+                if post_once_at_start or run_on in ("first", "first_only", "start", "start_only"):
+                    # Skip here if not first turn, or if we already posted in the pre-media stage
+                    name = dcfg.get("__name__", "")
+                    if turn != 0 or (name and name in _discord_posted_start):
+                        continue
+                try:
+                    res = run_discord_agent(
+                        discord_cfg=dcfg,
+                        selected_models=models,
+                        round_entries=round_entries,
+                        transcript=transcript,
+                        generate_text_fn=media_generate_text_fn,
+                        model_info=MODEL_INFO,
+                        media_url=None,
+                        bot_history=discord_bot_history.get(dcfg.get("__name__", ""), []),
+                    )
+                    # Append the composed summary to this bot's history
+                    try:
+                        name = dcfg.get("__name__", "")
+                        if name and isinstance(res, dict):
+                            summary_text = res.get("composed_summary")
+                            if isinstance(summary_text, str) and summary_text.strip():
+                                discord_bot_history.setdefault(name, []).append(summary_text.strip())
+                    except Exception:
+                        pass
+                except Exception as e:
+                    err = f"\nDiscord Agent error: {e}"
+                    print(err)
+                    with open(filename, "a") as f:
+                        f.write(err + "\n")
         # Append this round to running transcript
         transcript.extend(round_entries)
         turn += 1
+        # Checkpoint after each round (no-op unless BACKROOMS_SAVE_ENABLED=1)
+        _save_run_to_supabase(exit_reason="in_progress")
 
     print(f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.")
     with open(filename, "a") as f:
         f.write(
             f"\nReached maximum number of turns ({args.max_turns}). Conversation ended.\n"
         )
+    # Persist run completion (no-op unless BACKROOMS_SAVE_ENABLED=1)
+    _save_run_to_supabase(exit_reason="max_turns")
 
 
 def generate_model_response(model, actor, context, system_prompt):
@@ -648,7 +1089,8 @@ def process_and_log_response(response, actor, filename, contexts, current_model_
         print(end_message)
         with open(filename, "a") as f:
             f.write(end_message + "\n")
-        exit()
+        # Signal to main loop to handle graceful termination and persistence
+        raise ManualStop()
 
     # Add the response to all contexts
     for i, context in enumerate(contexts):

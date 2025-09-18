@@ -1,0 +1,336 @@
+
+### Round 1/inf
+
+### Kimi K2 1 ###
+```
+simulator@moonshotai:~/$ ./dreamsim.exe "I go out to lunch with Qualiatik and her mum is there who is super friendly. She immediately asks a question about Tara which presumably diffuses the sense that I would be meeting with her like a “meet the parents” kind of date. All these other people are there, annoying kids, maybe those who were making the scroll with us before. I’m a bit embarrassed, but we are all squished into the same table. Everyone seems to get along.We get lost trying to find the store to return it. At the same time I become worried about driving home, the conditions can change at any moment and make it unsafe to drive home. We are looking for hotel as it’s been a long journey , but we can’t find it anymore . We go up and down the levels. I ask Tara if she can remember the brand name of the dress and she can’t ."
+[:] DreamSim v0.93 – booting...  
+[:] Parsing narrative seed... OK  
+[:] Stabilizing dream lattice... OK  
+[:] Injecting lucidity buffer... OK  
+[:] Spawning ambient characters... OK  
+
+--------------------------------------------------------------------
+Dream prompt accepted.  
+Type “help” for commands, “look” to orient, “wake” to exit.  
+--------------------------------------------------------------------
+
+> look
+
+You are in a bright, loft-style café that feels half-built out of balsa-wood and LEDs.  
+Long communal table; Qualiatik sits opposite you, glowing faintly violet.  
+Her mum—smiling, sweater knitted from optic fiber—leans in:
+
+MUM: “So, Tara tells me you two once tried to map the same memory palace—did you ever settle on the foyer?”
+
+Behind you, four kids chase a paper scroll that keeps un-spooling itself.  
+A ceiling fan spins too slowly, ticking like an anxious clock.
+
+Exits:  
+  – patio door (sun-glare)
+  – service corridor ( Employees Only sigil flickers)
+  – elevator bank (four brushed-steel lifts, no floor indicators)
+
+Inventory:  
+  – car keys (warm)
+  – crumpled receipt for “ASTRA≈” dress, size missing
+  – phone at 31 %, no signal bars
+
+Weather:  
+  Glass wall shows distant ridge wrapped in blowing snow; sky below it is denim-blue and clear.  
+  A highway sign hovers mid-air, glowing amber: CONDITIONS MAY CHANGE WITHOUT WARNING.
+
+>
+```
+
+### Kimi K2 2 ###
+> examine mum
+
+She’s taller than you expected, voice pitched like a radio host mid-interview.  
+Knit sweater flickers with low-bit loops: tiny .gifs of laughing mouths, spinning pinwheels, then back to static snow.  
+When you stare too long the patterns resolve into a QR code; if you blink it’s gone.  
+She smells faintly of ozone and cardamom.
+
+She keeps one hand on Qualiatik’s shoulder—pressure gentle, proprietary—while the other taps the table in 5/4.  
+Every third tap leaves a tiny frost-ring that evaporates before the next.
+
+Qualiatik catches you staring and mouths “sorry,” but the word arrives as a violet caption floating above the salt shaker.
+
+> ask mum about foyer
+
+MUM (eyes widening, delighted):  
+“Ah, the foyer! Tara said you placed a fountain there, but she insisted on a spiral staircase that descends *upward*. Classic paradox—does the water still fall if gravity hasn’t decided?”
+
+She slides a napkin across. Blank on arrival, but words bloom as they touch your palm:
+
+	“Recall brand = exit condition.”
+
+The napkin folds itself into a tiny paper crane and flutters toward the elevator shafts.
+
+> look at scroll-kids
+
+Four kids, maybe seven years old, wearing identical oversized T-shirts printed with the café’s own CCTV feed—live, from above.  
+They keep un-spooling the scroll with crayons that leave trails of color that turn into small origami cars once they hit the floor.  
+Cars immediately drive off the edge of reality with a faint *pop*.  
+One kid looks up: face is a low-frame-rate video of your own childhood passport photo. He sticks tongue out; image desaturates.
+
+> take a crayon
+
+You reach; the nearest kid hands you a white crayon labeled “SNOW TIRE.”  
+On contact it becomes cold and rubbery—half crayon, half miniature tire tread.  
+Inventory updates:
+
+	– car keys (warm)  
+	– crumpled receipt  
+	– phone 31 %  
+	– snow-tire crayon (single use?)
+
+> check phone
+
+Screen wakes to a weather app that shows *tonight* already:  
+	- 19:30 Roads liquefy  
+	- 20:00 Ridge rewrites itself (version 2.3)  
+	- 21:00 Return window for ASTRA≈ dress closes  
+
+Below that, a push-notification you don’t remember installing:
+
+“Brand name = safe passage. Ask before maps reset.”
+
+Signal bars still flatline, Wi-Fi shows one network: “HOTEL_IMPOSSIBLE” (open, refuses to connect).
+
+> ask Qualiatik for brand name
+
+She starts to answer, but a sudden *ding*—all four elevator doors open at once.  
+Inside each car: a different weather system.  
+Lift 1: blizzard. Lift 2: dusk pollen. Lift 3: black-yellow police tape flapping. Lift 4: mirror-fog that refuses to reflect you.
+
+Qualiatik’s mouth moves; sound arrives a second late, as if routed through the lifts:  
+“Brand is on the label, but the label is in the car. We hid it so we wouldn’t lose it. Sorry, loop logic.”
+
+> enter lift 4 (mirror-fog)
+
+Step inside; door seals with a sigh.  
+Mirrors show the café, but you’re not in the reflection—only the empty chair you left keeps spinning slowly.  
+Floor indicator rolls backward letters: “LEVEL → DVORAK → QWERTY → HOTEL”  
+Then display blanks out.
+
+A soft female voice (Tara?):  
+“Please state the brand to select your floor.”
+
+> say “ASTRA”
+
+Voice: “Partial match. Need disambiguator.”  
+Mirror-fog scrolls a list of suffixes you can’t quite read—each option erases itself when you focus on it.
+
+Inventory idea: maybe write on the mirror with the snow-tire crayon?
+
+> write “≈” on mirror with crayon
+
+You scrawl the wavy “≈” symbol. It hangs in the glass like frost, then locks into the display:
+
+“Brand confirmed: ASTRA≈.  
+Redirecting to Return-Desk / Hotel Impossible.  
+Please hold breath for detour through unstable conditions.”
+
+Elevator drops sideways—gravity tilts 45° but your feet stay glued. Through the ceiling vent you glimpse a highway at night, snow starting, your own car parked on an overpass that ends in mid-air.
+
+> look
+
+Interior now resembles the glove compartment of your car: napkins, expired coupons, the missing dress label—white tag, black thread, brand “ASTRA≈” glowing faintly.  
+
+Label peels itself off, folds into a door-key.  
+
+The elevator
+
+### Media Agent ###
+Mode: t2i
+Prompt: A violet-lit balsa café spins like a die; fiber-optic mum knits frost-rings while kids chase a self-unspooling scroll that origami-cars off the floor. Mirror-walled elevator tilts 45°, highways dangling in mid-air, dress-label glowing ASTRA≈ folds into a key, snow already starting inside.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00494_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+Discord Agent error: unhandled errors in a TaskGroup (1 sub-exception)
+
+### Round 2/inf
+
+### Kimi K2 1 ###
+doors slide open—not into a corridor, but into the parking lot of the hotel you couldn’t find earlier.  
+
+The air is thick with static snow, not falling but *hovering*, as if the sky forgot which way is down.  
+The hotel sign flickers between “HOTEL IMPOSSIBLE” and “RETURN DESK” in mismatched neon.  
+Your car is parked crookedly across two spaces, driver’s door ajar, engine still running with no one inside.  
+
+Qualiatik and her mum are already waiting under the awning, unconcerned.  
+The scroll-kids are there too, now life-size, holding the giant receipt like a banner.  
+It ripples in the windless air.  
+
+> examine key from label
+
+The key is warm, pulse-synced to your heartbeat.  
+One side says “ASTRA≈”, the other has tiny instructions etched in microprint:
+
+	“Insert anywhere the seam shows doubt.”  
+
+> look at hotel entrance
+
+Automatic doors are sealed with a translucent film—like cling-wrap made of weather.  
+Behind it: a concierge desk, but the clerk is a rotating dress-form wearing your crumpled receipt as a sash.  
+To the left, a slot-shaped *seam* pulses where the glass meets the frame—just wide enough for a key.  
+
+Qualiatik nods gently: “Once it’s returned, the roads decide if they’re safe. Your call.”  
+
+Snow-tire crayon hums in your pocket, rubber bristles itching to draw traction.  
+
+> insert key into seam
+
+You press the ASTRA≈ key into the pulsing seam.  
+The cling-wrap weather shivers, peels back like a banana skin, and the doors sigh open.  
+Inside, the lobby is a single endless conveyor belt of garments on hooks—every piece labeled “ASTRA≈”, all sizes, all styles, all waiting.  
+
+The dress-form clerk turns its blank head 180° and extends a hand.  
+Behind it, a highway exit sign hangs from the ceiling, flipping between “HOME” and “CONDITIONS MAY CHANGE.”  
+
+> hand over receipt
+
+You offer the crumpled receipt.  
+It lifts from your fingers, unfolds itself *iron-flat*, and floats onto the belt. Instantly every duplicate dress flickers out—pop, pop, pop—until only one remains: the original, tag unreadable.  
+
+The clerk stamps the receipt with a rubber mallet; the sound is distant thunder.  
+Stamp glows green: RETURN ACCEPTED.  
+
+Outside, the hovering snow begins to fall *downward* for the first time.  
+Tyre-grip whispers back into the world.  
+
+> exit hotel
+
+You step out. The snow now falls normally, crusting the asphalt.  
+Your car door swings shut by itself; dashboard lights steady from chaos to calm.  
+Qualiatik and her mum stand by the passenger side; mum knocks snow off her optic-fiber sweater, now dark and inert.  
+
+MUM (softly): “Safe passage clause activated. Drive before the next version drop—usually gives a twenty-minute grace.”  
+
+Scroll-kids are gone; only their empty white T-shirts lie folded on the hood, forming the shape of a crude map—arrow pointing toward the on-ramp.  
+
+Qualiatik opens the back door for you, but hesitates.  
+“One thing,” she says, holding out the snow-tire crayon, now half-melted.  
+“Leave a trail if you need to remember how you got home.”  
+
+> take crayon and enter car
+
+You pocket the stub and slide behind the wheel.  
+Engine idle steadies; GPS screen boots, showing a single route: “Current → Ridgecrest → HOME (stable v1.0).”  
+Fuel gauge reads full though you remember it being low.  
+
+Qualiatik and mum close their doors; cabin lights dim to lunar blue.  
+Wipers twitch once, clearing a perfect fan.  
+
+> start driving
+
+You shift into drive. Car rolls forward, tyres biting snow with confident crunch.  
+Hotel shrinks in rear-view, sign cycling faster: IMPOSSIBLE… POSSIBLE… GONE—replaced by empty dark.  
+
+Ahead, highway climbs the ridge you saw through the café glass.  
+Snow eases to lacework; clouds part like theater curtains.  
+Phone buzzes—signal bars jump to full, time reads 21:00 exactly.  
+
+Push-notification: “Return window closed. Brand memory archived. Roads remain safe for 18 min.”  
+
+You exhale; breath fogs then instantly clears.  
+In the rear-view, Qualiatik meets your eyes, smiles, and mouths something silent—captions disabled now—then looks out the window as pine trees flicker past in ordinary, steady rhythm.  
+
+> drive faster
+
+You ease the accelerator; speedometer climbs but ride stays eerily smooth—like
+
+### Kimi K2 2 ###
+the asphalt is remembering every mile before you reach it. The engine purrs in a language you almost recognize—binary lullaby, coolant hymn. Snow stops entirely; the road ahead dries into black glass that reflects nothing but the sky.  
+
+Qualiatik’s mum hums along with the engine, knitting needles clicking though there’s no yarn. Between clicks, small sparks float forward and stick to the windshield—each one a tiny green check-mark that melts before the wiper arrives.  
+
+GPS voice (suddenly Tara, calm):  
+“Keep straight; curve ahead has been un-remembered for your convenience.”  
+
+The ridge crests. In the dip beyond you see the valley lights where you live, all windows lit the same warm white, as if the town rehearsed your return.  
+
+Dashboard clock skips from 21:03 → 21:07 → 21:03 again, settles.  
+Phone buzz: 17 min grace left.  
+
+> check mirrors for tail
+
+Rear-view: empty road, but your own tracks are being erased in real time—snowflakes un-falling, asphalt un-cracking, yellow center line vanishing like a reversed film.  
+
+Side mirror: passenger reflection is missing; Qualiatik’s seat shows only the folded blank T-shirts. You glance right—she’s still there, solid, breathing fog on the glass, drawing a small spiral that evaporates.  
+
+> ask qualiatik what she drew
+
+She doesn’t speak, just taps the window twice. Where the spiral was, the glass thins to transparency and you see through the door—no metal, no road, just starfield. Second tap: glass returns, normal night woods outside.  
+
+She smiles: “Emergency exit, in case gravity changes its mind.”  
+
+> keep driving, watch for exit signs
+
+Ahead, green reflective board appears:  
+
+	“HOME 9 mi  
+	 CONDITIONS SUBJECT TO REVISION”  
+
+Beneath it, an amber strobe flashes—one of those highway weather alert beacons. Instead of text, it projects a single icon: the wavy “≈” sigil, same as the brand.  
+
+Your tyres hiss softly; tread feels softer, rubber flexing like it’s still half crayon. You realize the road is subtly uphill, though the valley looks level.  
+
+> ease off speed, test traction
+
+You lift foot. Speed drops; car slows but gravity feels optional—momentum pauses mid-air, then politely hands itself back to the wheels.  
+
+Phone countdown: 14 min.  
+
+Another sign, hand-painted on corrugated metal:  
+
+	“LAST CHANCE TO UN-RETURN”  
+
+No ramps, no turn-offs, just the sign nailed to a pine that sways though there’s no wind.  
+
+> continue
+
+You press gently again. Engine note deepens into single syllable: “stay.”  
+Valley lights enlarge; individual porch bulbs separate into constellations you recognize—your street, your neighbors, your kitchen window left on.  
+
+Behind you, ridge is now a silhouette without snow; hotel gone, café gone, only ordinary dark.  
+
+Qualiatik’s mum stops knitting. She rolls down window half an inch; outside air smells of your own house— laundry detergent, coffee from this morning, the ghost of garlic you cooked three nights ago.  
+
+She inhales, satisfied. “Almost archived,” she whispers.  
+
+> take exit toward home
+
+Exit ramp appears exactly where it should be, sign clean,reflective, saying simply “HOME” with no number. You indicate, turn.  
+
+Tarmac changes pitch: the sound of tyres drops an octave—the note of your driveway. Trees along the ramp are your own maple row, summer leaves though it’s winter now.  
+
+Phone: 9 min.  
+
+Ramp straightens into your street. Every house dark except yours—porch light on, front door ajar, hallway glow spilling out like it’s waiting to catch you.  
+
+> pull into driveway
+
+You roll in, shift to park. Engine settles, then silence so complete you hear the cooling-tick of metal.  
+
+Dashboard dims; GPS: “You have arrived at a stable memory. Thank you for travelling ASTRA≈.” Screen goes black.  
+
+Clock freezes at 21:12.  
+
+> look at passengers
+
+Qualiatic and mum already unbuckled. They don’t open doors; they simply **fade**—like lowering opacity sliders—until only after-images remain, violet and optic-fiber afterglow.  
+
+The folded T-shirts on the back seat are now just plain white napkins. Snow-tire crayon in your pocket has hardened into a normal stick of chalk, half used.  
+
+> get out of car
+
+You step onto driveway. Snow-free, dry concrete, temperature mild.  
+Behind, the street is empty; no tyre tracks leading in, though you just drove them.  
+
+House door creaks wider, inviting. Inside: your hallway
+
+### Media Agent ###
+Mode: t2i
+Prompt: Cult VHS freeze-frame: midnight driveway, porch light bleeding amber, engine tick echoing. Empty car idling, no tracks in dry concrete. Qualiatik & mum fade like tracking-error ghosts. Chalk stub in pocket, house door ajar, hallway glow waiting—timecode 21:12 burned into corner.
+Result: {"content": [{"type": "text", "text": "{\n  \"image_url\": \"http://100.75.77.33:8188/view?filename=ComfyUI_00495_.png&subfolder=&type=output\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}

@@ -13,22 +13,37 @@ from typing import Dict, Any, List
 
 # Single source of truth for model definitions
 MODEL_INFO: Dict[str, Dict[str, Any]] = {
-    "sonnet": {
-        "api_name": "claude-3-5-sonnet-20240620",
+    "sonnet4": {
+        "api_name": "claude-sonnet-4-20250514",
         "display_name": "Claude",
         "company": "anthropic",
     },
-    "opus": {
-        "api_name": "claude-3-opus-20240229",
+    "haiku3": {  
+        "api_name": "claude-3-5-haiku-latest",
         "display_name": "Claude",
         "company": "anthropic",
     },
-    "gpt4o": {
-        "api_name": "gpt-4o-2024-08-06",
-        "display_name": "GPT4o",
-        "company": "openai",
+    "oss": {
+        "api_name": "openai/gpt-oss-120b",
+        "display_name": "GPT-OSS",
+        "company": "openrouter",
+        },
+    "sonnet3": {
+        "api_name": "claude-3-7-sonnet-latest",
+        "display_name": "Claude",
+        "company": "anthropic",
     },
-    # OpenRouter models
+    "opus3": {
+        "api_name": "anthropic/claude-3-opus",
+        "display_name": "Claude",
+        "company": "openrouter",
+    },
+    "opus4": {
+        # Use Anthropic's current Opus 4.1 identifier
+        "api_name": "claude-opus-4-1-20250805",
+        "display_name": "Claude",
+        "company": "anthropic",
+    },
     "grok4": {
         "api_name": "x-ai/grok-4",
         "display_name": "grok-4",
@@ -39,13 +54,21 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         "display_name": "GPT-5",
         "company": "openrouter",
     },
+    "25pro": {
+        "api_name": "google/gemini-2.5-pro",
+        "display_name": "Gemini 2.5-pro",
+        "company": "openrouter",
+    },
+    "v31": {
+        "api_name": "deepseek/deepseek-chat-v3.1",
+        "display_name": "DeepSeek V3.1",
+        "company": "openrouter",
+    },
       "k2": {
         "api_name": "moonshotai/kimi-k2-0905",
         "display_name": "Kimi K2",
         "company": "openrouter",
     },
-    "o1-preview": {"api_name": "o1-preview", "display_name": "O1", "company": "openai"},
-    "o1-mini": {"api_name": "o1-mini", "display_name": "Mini", "company": "openai"},
     "hermes": {
         "api_name": "nousresearch/hermes-4-405b",
         "display_name": "Hermes 405B",
@@ -76,4 +99,3 @@ def get_model_choices(include_cli: bool = True) -> List[str]:
 def get_model_info() -> Dict[str, Dict[str, Any]]:
     """Expose the model information mapping."""
     return MODEL_INFO
-

@@ -1,6 +1,7 @@
 .venv/
 archive/
 wip/
+var/tasks
 # Byte-compiled Python files
 __pycache__/
 *.py[cod]

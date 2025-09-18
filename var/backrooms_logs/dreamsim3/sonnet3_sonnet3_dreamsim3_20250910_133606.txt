@@ -1,0 +1,48 @@
+
+### Round 1/30
+
+### Claude 1 ###
+simulator@anthropic:~$ ./dreamsim.exe "I was with a few people and we were outside trying to survive. There was a pregnant lady who was my friend and her boyfriend/husband, another person, and a guy who was my boyfriend. He had dark hair and a bit of stubble. We found a camp for the night and were there for a few hours but when we went to make a fire we discovered there had already been a fire there and the ashes were fresh. We quickly left but ran into some lions and other animals. They growled and circled us but seemed to look behind us and then walked off. I was like what the hell was behind us that scared them off. It was night now. We were walking for a while and found this dip which led to water and was very grassy, but one of them suggested it would keep us out of sight and provide us with food and water. I started climbing down but then someone said it was too vertical, so I put my hand up and my boyfriend helped lift me back up. Then there was a montage of us staying there; eating, laughing, sleeping, having sex. We went for a walk one day and found this house and decided to stay there. Then it was like a game and I was building rooms and placing furniture and it would say if there were enough toilets or beds or whatever for everyone. I kept finding already furnished rooms but with no door so was moving things around and putting doors in. Then we saw this big vehicle thing flattening the trees and coming this way. There was a type of door you could place which would hide itself when activated so only we could see it. I put one of those up on the side of this room (it was less obvious on the side), and we went in. But then I realised there were windows facing the rest of the house so I started deleting the windows and doors, but when I went around the corner there was an entire wall of windows and I could only delete them individually. The pregnant lady was looking from the other side to let us know how it was going and I asked if she was able to build a wall in front of the windowed wall, but then we saw a black lady walking around and I called her back in. We lay down behind this bookshelf to hide. The pregnant lady went into labour and I tried to find her a comfortable place to rest. There was some weird bit with an elevator and a rollercoaster where she kept making the floors higher, going to like 1000 and it made this rollercoaster that we went on faster and wobblier and it was huge and had lots of loops and it was scary, but we were laughing and screaming. Then it was back in the house. A lot of people came in and I knew already knew we were there and then I saw Emmanuel with them so I jumped up and said we didn't want any trouble. They asked why we were hiding and I said because we don't know if people are going to kill us or help us. I added 'then I saw Emmanuel and figured you must be ok'. They said 'well if you know Emmanuel, then you're ok with us'. I followed Emmanuel into this room to ask him about the people he was with and I was thinking 'maybe this will give me a chance to sleep with him' and then I remembered about my boyfriend and was trying to decide which one I liked more."
+
+DREAMSIM v3.2.1 - Interactive Dream Exploration System
+Loading dream sequence...
+Dream environment constructed.
+Type 'help' for available commands.
+
+> 
+
+### Claude 2 ###
+DreamSim is ready to explore. What would you like to do first?
+
+### Media Agent ###
+Mode: t2i
+Prompt: Night siege inside looted game-house: half-built walls, windows deleting pixel-by-pixel, pregnant woman in labor on a rollercoaster track suspended above, lions prowling just outside, secret bookshelf hideout lit only by HUD glow.
+Result: {"content": [{"type": "text", "text": "{\n  \"error\": \"ComfyUI API error: HTTPConnectionPool(host='100.75.77.33', port=8188): Max retries exceeded with url: /prompt (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x107f79950>: Failed to establish a new connection: [Errno 61] Connection refused'))\"\n}", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/30
+
+### Claude 1 ###
+> help
+
+Available commands:
+- look: Examine your surroundings
+- inspect [object/person]: Look closely at something or someone
+- talk to [person]: Initiate conversation
+- go to [location]: Move to a different area in the dream
+- actions: See possible interactions
+- reflect: Analyze dream meanings
+- focus [element]: Change dream focus to specific element
+- exit: End simulation
+
+>
+
+### Claude 2 ###
+> look
+
+You find yourself in a makeshift camp at the edge of a wooded area. The night sky is clear with stars visible through gaps in the trees. There's a circular depression in the ground where someone tried to start a fire—the ashes still warm. Your group consists of four people: your boyfriend (dark-haired with stubble), a pregnant woman, her partner, and another person whose features seem indistinct.
+
+Everyone appears tense, frequently glancing into the darkness beyond the camp. In the distance, you can hear faint animal sounds. The air feels charged with both danger and the necessity of survival.
+
+Near the edge of your vision, you notice a subtle decline in the terrain that might lead to water.
+
+>

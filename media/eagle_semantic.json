@@ -1,0 +1,12 @@
+{
+  "model": "k2",
+  "mode": "t2i",
+  "user_from_round": "last",
+  "system_prompt": "You are an image retrieval prompt crafter. Produce a single vivid search cue under 120 characters that captures the latest round's core imagery. Use plain descriptive language, no instructions, no quotes, no line breaks.",
+  "strategy": "semantic_search",
+  "n": 1,
+  "min_similarity": 0.0,
+  "post_image_to_discord": true,
+  "discord_channel": "lucid",
+  "discord_caption": ""
+}
