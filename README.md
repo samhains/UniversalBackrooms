@@ -159,10 +159,12 @@ Media presets (`media/<name>.json`) define:
 - `model`, `system_prompt`, `mode`: t2i or edit
 - `post_image_to_discord`: attach image in Discord posts (default true)
 - `discord_channel` / `discord_server`: per-media override for where image posts go
+- `post_caption_to_discord`: include a text caption with image posts (default true). Set to `false` to post images without a caption.
 
 Examples:
 - `media/kieai.json` routes to the Kie.ai MCP tool; `media/cli.json` to a ComfyUI-like tool.
 - To avoid image attachment but still post summaries, set `post_image_to_discord: false` (see `media/kieai_no_discord.json`).
+  To post images without any caption text, set `post_caption_to_discord: false` in the media preset (e.g., `media/kieai_edit_chain.json`).
 
 Discord profiles
 - You can enable multiple Discord profiles at once; each posts a text update to its configured channel/server.

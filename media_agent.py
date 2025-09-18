@@ -1034,38 +1034,112 @@ def run_media_agent(
             dtool_name = dtool.get("name", "send-message")
             ddefaults = dtool.get("defaults", {})
             channel = media_cfg.get("discord_channel") or ddefaults.get("channel", "media")
-            # Optional caption
+            # Optional caption controls
+            # - If post_caption_to_discord is false, omit caption entirely
+            # - Else, use explicit discord_caption when provided; otherwise fall back to the generated prompt text
+            post_caption = bool(media_cfg.get("post_caption_to_discord", True))
             caption = media_cfg.get("discord_caption", "")
-            caption_to_use = caption if isinstance(caption, str) else ""
+            if not post_caption:
+                caption_to_use = ""
+            else:
+                if isinstance(caption, str) and caption.strip():
+                    caption_to_use = caption.strip()
+                else:
+                    # Use the crafted prompt/search cue as the caption when available
+                    caption_to_use = prompt_text if isinstance(prompt_text, str) else ""
             last_posted_ref_local = None
-            for u in urls_to_post:
-                dargs = {"channel": channel, "message": caption_to_use, "mediaUrl": u}
-                # Maximize compatibility with different Discord MCP servers
-                # by also providing common alternative keys.
+            # Prepare base args and overrides once
+            base_args: Dict[str, Any] = {"channel": channel, "message": caption_to_use}
+            if "server" in ddefaults:
+                base_args["server"] = ddefaults["server"]
+            # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
+            try:
+                _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
+                if _ov_env:
+                    _ov = json.loads(_ov_env)
+                    if isinstance(_ov, dict):
+                        if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
+                            base_args["server"] = _ov.get("server").strip()
+                        if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
+                            base_args["channel"] = _ov.get("channel").strip()
+            except Exception:
+                pass
+
+            # Load discord MCP server config
+            mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
+            if not os.path.exists(mcp_config_path):
+                alt = "mcp_servers.json"
+                if os.path.exists(alt):
+                    mcp_config_path = alt
+            d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
+
+            # If multiple URLs, post in a single batched message using array payloads
+            if len(urls_to_post) > 1:
+                batched_args = dict(base_args)
+                batched_args["mediaUrl"] = list(urls_to_post)
+                # Maximize compatibility: also supply attachments array; omit imageUrl to avoid confusion
+                batched_args["attachments"] = list(urls_to_post)
+                try:
+                    d_res = call_tool(d_server_cfg, dtool_name, batched_args)
+                    with open(filename, "a") as f:
+                        f.write("\n### Media Agent (Discord Post) ###\n")
+                        f.write(f"Channel: {batched_args.get('channel')}\n")
+                        f.write(f"Media (batched {len(urls_to_post)}): {', '.join(urls_to_post)}\n")
+                        f.write(f"Args: {json.dumps({k:v for k,v in batched_args.items() if k in ['server','channel','message','mediaUrl']}, ensure_ascii=False)}\n")
+                        f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+                    # Record last as the last in the batch
+                    last_posted_ref_local = urls_to_post[-1]
+                except Exception as _post_batch_err:
+                    # Fallback to per-image posting on failure
+                    with open(filename, "a") as f:
+                        f.write("\n### Media Agent (Discord Post) ###\n")
+                        f.write(f"Channel: {base_args.get('channel')}\n")
+                        f.write("Batch post failed; falling back to individual posts.\n")
+                        f.write(f"Error: {repr(_post_batch_err)}\n")
+                    for u in urls_to_post:
+                        dargs = dict(base_args)
+                        dargs["mediaUrl"] = u
+                        # Also provide common alternative keys for compatibility
+                        dargs.setdefault("imageUrl", u)
+                        dargs.setdefault("attachments", [u])
+                        try:
+                            d_res = call_tool(d_server_cfg, dtool_name, dargs)
+                            with open(filename, "a") as f:
+                                f.write("\n### Media Agent (Discord Post) ###\n")
+                                f.write(f"Channel: {dargs.get('channel')}\n")
+                                f.write(f"Media: {u}\n")
+                                f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                                f.write(f"Result: {json.dumps(d_res, ensure_ascii=False)}\n")
+                            last_posted_ref_local = u
+                        except Exception as _post_err:
+                            # Fallback: append URL to the message and try a plain text post
+                            try:
+                                alt_args = dict(base_args)
+                                url_text = f"\n{u}" if caption_to_use else u
+                                alt_args["message"] = (caption_to_use + url_text) if caption_to_use else url_text
+                                d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
+                                with open(filename, "a") as f:
+                                    f.write("\n### Media Agent (Discord Post) ###\n")
+                                    f.write(f"Channel: {alt_args.get('channel')}\n")
+                                    f.write(f"Media: {u}\n")
+                                    f.write(f"Args: {json.dumps({k:v for k,v in alt_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
+                                    f.write(f"Result (fallback): {json.dumps(d_res2, ensure_ascii=False)}\n")
+                                last_posted_ref_local = u
+                            except Exception as _post_err2:
+                                with open(filename, "a") as f:
+                                    f.write("\n### Media Agent (Discord Post) ###\n")
+                                    f.write(f"Channel: {base_args.get('channel')}\n")
+                                    f.write(f"Media: {u}\n")
+                                    f.write(f"Args: {json.dumps({k:v for k,v in base_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
+                                    f.write(f"Error: {repr(_post_err)}\n")
+                                    f.write(f"Error (fallback): {repr(_post_err2)}\n")
+            else:
+                # Single URL: preserve legacy behavior with both mediaUrl and imageUrl
+                u = urls_to_post[0]
+                dargs = dict(base_args)
+                dargs["mediaUrl"] = u
                 dargs.setdefault("imageUrl", u)
                 dargs.setdefault("attachments", [u])
-                if "server" in ddefaults:
-                    dargs["server"] = ddefaults["server"]
-                # Allow per-run overrides via BACKROOMS_DISCORD_OVERRIDES (JSON)
-                try:
-                    _ov_env = os.getenv("BACKROOMS_DISCORD_OVERRIDES")
-                    if _ov_env:
-                        _ov = json.loads(_ov_env)
-                        if isinstance(_ov, dict):
-                            if isinstance(_ov.get("server"), str) and _ov.get("server").strip():
-                                dargs["server"] = _ov.get("server").strip()
-                            if isinstance(_ov.get("channel"), str) and _ov.get("channel").strip():
-                                dargs["channel"] = _ov.get("channel").strip()
-                except Exception:
-                    pass
-                # Load discord MCP server config
-                mcp_config_path = os.getenv("MCP_CONFIG") or os.getenv("MCP_SERVERS_CONFIG") or "mcp.config.json"
-                if not os.path.exists(mcp_config_path):
-                    alt = "mcp_servers.json"
-                    if os.path.exists(alt):
-                        mcp_config_path = alt
-                d_server_cfg: MCPServerConfig = load_server_config(mcp_config_path, dserver)
-                # Fire and log minimal outcome with fallback strategy
                 try:
                     d_res = call_tool(d_server_cfg, dtool_name, dargs)
                     with open(filename, "a") as f:
@@ -1078,11 +1152,8 @@ def run_media_agent(
                 except Exception as _post_err:
                     # Fallback: append URL to the message and try a plain text post
                     try:
-                        alt_args = dict(dargs)
+                        alt_args = dict(base_args)
                         url_text = f"\n{u}" if caption_to_use else u
-                        alt_args.pop("mediaUrl", None)
-                        alt_args.pop("imageUrl", None)
-                        alt_args.pop("attachments", None)
                         alt_args["message"] = (caption_to_use + url_text) if caption_to_use else url_text
                         d_res2 = call_tool(d_server_cfg, dtool_name, alt_args)
                         with open(filename, "a") as f:
@@ -1095,11 +1166,12 @@ def run_media_agent(
                     except Exception as _post_err2:
                         with open(filename, "a") as f:
                             f.write("\n### Media Agent (Discord Post) ###\n")
-                            f.write(f"Channel: {dargs.get('channel')}\n")
+                            f.write(f"Channel: {base_args.get('channel')}\n")
                             f.write(f"Media: {u}\n")
-                            f.write(f"Args: {json.dumps({k:v for k,v in dargs.items() if k in ['server','channel','message','mediaUrl','imageUrl']}, ensure_ascii=False)}\n")
+                            f.write(f"Args: {json.dumps({k:v for k,v in base_args.items() if k in ['server','channel','message']}, ensure_ascii=False)}\n")
                             f.write(f"Error: {repr(_post_err)}\n")
                             f.write(f"Error (fallback): {repr(_post_err2)}\n")
+
             # Remember last posted ref after a successful call
             if last_posted_ref_local:
                 state.last_posted_ref = last_posted_ref_local

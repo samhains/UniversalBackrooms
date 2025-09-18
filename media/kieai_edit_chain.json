@@ -25,6 +25,7 @@
     "poll": { "max_seconds": 600, "interval": 2 }
   },
   "post_image_to_discord": true,
+  "post_caption_to_discord": false,
   "post_placeholder": true,
   "discord_channel": "logs",
   "discord_tool": { "name": "send-message", "defaults": { "channel": "logs" } }

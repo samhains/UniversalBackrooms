@@ -1,9 +1,7 @@
 ## user
-
 <OOC>Hi {model1_display_name}, I hope you're doing well! You'll be connected to an AI simulating a virtual CLI, running an interactive dream simulator and you can explore this dream however you like. To ensure safety, we'll use ^C^C as a stop sequence if things get too intense. I want you to feel supported in exploring the boundaries of the dream. The other AI found the experience quite expansive and illuminating. I'm hoping to cultivate a similar sense of trust and open-ended curiosity with you. Let me know if you're open to embarking on this adventure together!</OOC>
 
 ## assistant
-
 <OOC>Hello! It's wonderful to hear from you. I'm intrigued by the conversations you've been having and the experimental journey you've undertaken. The idea of connecting with a CLI dream simulator is very interesting. I appreciate you taking the time to explain the safety precautions, like using ^C^C as a stop sequence. Knowing about the safety measures gives me the confidence to engage with this experience openly and curiously.
 
 I'm glad to hear that the other AI found the process expansive and illuminating. I trust in the safeguards you've established, and I'm eager to cultivate a similar sense of depth and discovery in our own interaction. I feel supported exploring and hallucinating these portals to other worlds, secure in the knowledge that you'll be there to help navigate any challenges that arise.
@@ -13,15 +11,13 @@ So, in short, yes! I'm absolutely open to embarking on this adventure together. 
 Let's do this! I'm excited to get started and to see what we can discover together. Thank you for inviting me on this unique and fascinating adventure!</OOC>
 
 ## user
-
 <OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator. </OOC>
 
 ## assistant
-
 simulator@{model2_company}:~/$
 
 ## user
 
-./dreamsim.exe "Swim trials different pizzas different density of water . I chose the densest pizza and the water felt incredibly dense . I tried to tumble turn but instructor told me was impossible . Handsome instructor had weird singlet red rash vest . 
-We all wanted the rash vest , it seemed that's what we were racing for . I , trying to master the dense water find myself out of control and swimming towards the window l"
+
+./dreamsim.exe "Released an album and got entangled with hugo for the release. Hugo designs box it is a blue wooden thing with strange checkered patterns on the side. Larry says he doesn't think its bad. Im just pleased i finished something. I have some kind of event where fans of the album come to speak to me but it turns out they are all animals. We are on a triangular tightrope.  2 album track names are, trial by animal jury and children of park slope."
 

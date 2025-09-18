@@ -116,6 +116,7 @@ Provide a preset under `media/` via `integrations.media`. Each preset defines:
 - Discord posting:
   - `post_image_to_discord`: boolean
   - `discord_channel`: channel name
+  - `post_caption_to_discord`: boolean (default true). When false, posts images without a text caption.
 
 ## Environment
 

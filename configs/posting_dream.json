@@ -1,14 +1,14 @@
 {
-  "type": "batch",
-  "template": "dreamsim3",
-  "max_turns": 30,
-  "models": ["opus4"],
+  "type": "single",
+  "template": "dreamsim2",
+  "max_turns": 1000,
+  "models": ["k2", "k2"],
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,
   "context_window": 128000,
   "integrations": {
-    "discord": ["dream_header", "simple_director", "transcripts"],
+    "discord": [],
     "media": "kieai_edit_chain",
     "media_overrides": { "discord_channel": "lucid" }
   },

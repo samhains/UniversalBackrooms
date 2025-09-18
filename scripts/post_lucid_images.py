@@ -98,7 +98,7 @@ def _post_media_to_discord(
     return call_tool(server_cfg, "send-message", args)
 
 
-def run(query: str, n: int, min_similarity: float, channel: str, folders: Optional[List[str]], dry_run: bool) -> int:
+def run(query: str, n: int, min_similarity: float, channel: str, folders: Optional[List[str]], caption: str, dry_run: bool) -> int:
     # Fetch images via semantic search
     images = search_images_semantic(
         query=query,
@@ -175,6 +175,8 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
         print(f"Warning: only resolved {len(items)}/{n} URLs.")
 
     print(f"Posting {len(items)} image(s) to #{channel}...")
+    if caption:
+        print(f"Caption: {caption}")
     for i, it in enumerate(items, start=1):
         u = it["url"]
         sim = it.get("similarity")
@@ -190,7 +192,7 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
         return 0
 
     try:
-        _ = _post_media_to_discord(media_urls=urls_to_post, channel=channel, message="")
+        _ = _post_media_to_discord(media_urls=urls_to_post, channel=channel, message=caption or "")
     except Exception as e:
         print(f"Failed to post to Discord: {e}")
         return 1
@@ -206,6 +208,7 @@ def main() -> int:
     ap.add_argument("--min-similarity", type=float, default=0.0, help="Minimum similarity 0.0–1.0 (default: 0.0)")
     ap.add_argument("--channel", default="lucid", help="Discord channel name (default: lucid)")
     ap.add_argument("--folders", nargs="+", help="Optional Eagle folder filters")
+    ap.add_argument("--caption", default="", help="Optional caption/message to include with the Discord post")
     ap.add_argument("--dry-run", action="store_true", help="List URLs but do not post to Discord")
 
     args = ap.parse_args()
@@ -216,6 +219,7 @@ def main() -> int:
             min_similarity=float(args.min_similarity),
             channel=str(args.channel or "lucid"),
             folders=args.folders,
+            caption=str(args.caption or ""),
             dry_run=bool(args.dry_run),
         )
     except Exception as e:
