@@ -26,7 +26,12 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Reuse the semantic search implemented in search_eagle_images.py
-from search_eagle_images import search_images_semantic, get_supabase_client
+from search_eagle_images import (
+    search_images_semantic,
+    get_supabase_client,
+    search_images_by_image_url,
+)
+from scripts.eagle.utils import row_to_image_url
 
 # Minimal MCP client to call the Discord tool directly
 from mcp_cli import load_server_config
@@ -34,29 +39,6 @@ from mcp_client import MCPServerConfig, call_tool
 
 
 load_dotenv()
-
-
-def _supabase_public_base() -> Optional[str]:
-    base = os.getenv("SUPABASE_URL", "").rstrip("/")
-    if not base:
-        return None
-    return f"{base}/storage/v1/object/public/eagle-images/"
-
-
-def _row_to_image_url(row: Dict[str, Any]) -> Optional[str]:
-    # Try common key variants
-    for k in ("image_url", "imageUrl", "imageurl"):
-        val = row.get(k)
-        if isinstance(val, str) and val.strip():
-            return val.strip()
-    # Derive from storage path if present
-    storage_path = row.get("storage_path") or row.get("path")
-    if isinstance(storage_path, str) and storage_path.strip():
-        base = _supabase_public_base()
-        if base:
-            return base + storage_path.strip().lstrip("/")
-        # If base cannot be determined, skip building a URL from storage path
-    return None
 
 
 def _post_media_to_discord(
@@ -98,14 +80,46 @@ def _post_media_to_discord(
     return call_tool(server_cfg, "send-message", args)
 
 
-def run(query: str, n: int, min_similarity: float, channel: str, folders: Optional[List[str]], caption: str, dry_run: bool) -> int:
-    # Fetch images via semantic search
-    images = search_images_semantic(
-        query=query,
-        limit=n,
-        min_similarity=min_similarity,
-        folders=folders,
-    )
+def run(
+    *,
+    query: Optional[str],
+    image_url: Optional[str],
+    n: int,
+    min_similarity: float,
+    channel: str,
+    folders: Optional[List[str]],
+    caption: str,
+    dry_run: bool,
+) -> int:
+    if bool(query) == bool(image_url):
+        raise ValueError("Provide either a semantic query or an --image-url (but not both)")
+
+    search_meta: Dict[str, Any] = {}
+
+    if image_url:
+        print(f"Searching for images similar to: {image_url}")
+        search_limit = max(n * 3, n)
+        images, meta = search_images_by_image_url(
+            image_url,
+            limit=search_limit,
+            min_similarity=min_similarity,
+            folders=folders,
+        )
+        search_meta = meta or {}
+        source = search_meta.get("embedding_source")
+        if source == "cache":
+            print("Reused cached image embedding from Supabase.")
+        elif source == "vertex":
+            print("Generated fresh Vertex AI image embedding.")
+    else:
+        # Fetch images via semantic text search
+        images = search_images_semantic(
+            query=query or "",
+            limit=max(n * 3, n),
+            min_similarity=min_similarity,
+            folders=folders,
+        )
+
     if not images:
         print("No images found.")
         return 1
@@ -119,7 +133,7 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
         rid = str(row.get("id") or row.get("eagle_id") or "").strip()
         if rid:
             seen_ids.add(rid)
-        url = _row_to_image_url(row)
+        url = row_to_image_url(row)
         if url and url not in seen_urls:
             seen_urls.add(url)
             items.append({
@@ -153,7 +167,7 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
                 rid = str(r.get("id") or r.get("eagle_id") or "").strip()
                 if rid and rid in seen_ids:
                     continue
-                u = _row_to_image_url(r)
+                u = row_to_image_url(r)
                 if not u:
                     continue
                 if u in seen_urls:
@@ -202,8 +216,12 @@ def run(query: str, n: int, min_similarity: float, channel: str, folders: Option
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Post N Eagle images to Discord using semantic search")
-    ap.add_argument("query", help="Short prompt to search for (semantic)")
+    ap = argparse.ArgumentParser(description="Post N Eagle images to Discord using semantic or image-based search")
+    ap.add_argument("query", nargs="?", help="Short prompt to search for (semantic)")
+    ap.add_argument(
+        "--image-url",
+        help="Use an existing image URL instead of a text prompt (reverse image search)",
+    )
     ap.add_argument("--n", type=int, default=3, help="Number of images to post (default: 3)")
     ap.add_argument("--min-similarity", type=float, default=0.0, help="Minimum similarity 0.0–1.0 (default: 0.0)")
     ap.add_argument("--channel", default="lucid", help="Discord channel name (default: lucid)")
@@ -213,8 +231,12 @@ def main() -> int:
 
     args = ap.parse_args()
     try:
+        if bool(args.query) == bool(args.image_url):
+            raise ValueError("Provide either a semantic query or --image-url (but not both)")
+
         return run(
             query=args.query,
+            image_url=args.image_url,
             n=max(1, int(args.n)),
             min_similarity=float(args.min_similarity),
             channel=str(args.channel or "lucid"),
