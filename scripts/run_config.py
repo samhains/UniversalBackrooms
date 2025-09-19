@@ -25,7 +25,7 @@ import sys
 import time
 import datetime as dt
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 import getpass
 
 # Ensure repository root is importable when running as a script from scripts/
@@ -56,7 +56,12 @@ try:
     )
 except Exception:
     # Fallback stubs for type hints; batch mode will fail if actually used without these
-    def read_dreams_from_supabase(query: Optional[str], limit: int, source: str = "mine") -> List[dict]:
+    def read_dreams_from_supabase(
+        query: Optional[str],
+        limit: int,
+        source: str = "mine",
+        ids: Optional[Iterable[object]] = None,
+    ) -> List[dict]:
         raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
 
     def parse_pairs(pairs_str: str):
@@ -357,7 +362,20 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         query = ds.get("query") or ""
         limit = int(ds.get("limit", 200))
         source = ds.get("source", "mine")
-        rows = read_dreams_from_supabase(query=query or None, limit=limit, source=source)
+        ids = ds.get("ids")
+        if ids is None:
+            curated_cfg = cfg.get("curated_lists") or {}
+            active_list = curated_cfg.get("active")
+            if active_list:
+                ids = (curated_cfg.get("lists") or {}).get(active_list)
+        if ids is None:
+            ids = []
+        rows = read_dreams_from_supabase(
+            query=query or None,
+            limit=limit,
+            source=source,
+            ids=ids,
+        )
 
         # Shuffle/limit — default to shuffle when using a search query
         shuffle_flag = cfg.get("shuffle")

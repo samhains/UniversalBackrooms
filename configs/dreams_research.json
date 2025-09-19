@@ -1,0 +1,33 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 1000,
+  "models": ["opus3", "opus3"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": {
+    "discord": [
+      "dream_header",
+      "simple_director",
+      "ascii_director_wild",
+      "transcripts"
+    ],
+    "media": "eagle_semantic",
+    "media_overrides": { "discord_channel": "logs" }
+  },
+  "curated_lists": {
+    "active": "harry_brother",
+    "lists": {
+      "harry_brother": [32, 52, 57, 65, 70, 71, 79, 81, 109]
+    },
+    "_note": "Add more named lists under 'lists'. Set 'active' to decide which IDs feed data_source when no explicit ids are provided."
+  },
+  "data_source": {
+    "kind": "supabase",
+    "limit": 200,
+    "source": "mine"
+  },
+  "shuffle": true
+}

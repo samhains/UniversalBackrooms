@@ -19,7 +19,7 @@ import argparse
 import json
 import os
 import sys
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import requests
 
@@ -53,7 +53,14 @@ def search_rpc(url: str, key: str, q: str, limit: int, offset: int):
     return r.json()
 
 
-def search_ilike(url: str, key: str, q: str, limit: int, offset: int):
+def search_ilike(
+    url: str,
+    key: str,
+    q: str,
+    limit: int,
+    offset: int,
+    source: Optional[str],
+):
     endpoint = f"{url}/rest/v1/dreams"
     terms = [t for t in (q or "").split() if t]
     if not terms:
@@ -66,6 +73,8 @@ def search_ilike(url: str, key: str, q: str, limit: int, offset: int):
         "limit": str(limit),
         "offset": str(offset),
     }
+    if source and source != "all":
+        params["source"] = f"eq.{source}"
     r = requests.get(endpoint, headers=_headers(key), params=params, timeout=20)
     r.raise_for_status()
     return r.json()
@@ -86,19 +95,27 @@ def main():
     ap.add_argument("--offset", type=int, default=0, help="Fetch offset (default: 0)")
     ap.add_argument("--source", choices=["mine", "rsos", "all"], default="mine", help="Source filter (default: mine)")
     ap.add_argument("--jsonl", action="store_true", help="Output JSONL rows (id,date,content)")
+    ap.add_argument(
+        "--ids-only",
+        action="store_true",
+        help="Only print matching dream IDs (one per line)",
+    )
     args = ap.parse_args()
+
+    if args.ids_only and args.jsonl:
+        ap.error("--ids-only cannot be combined with --jsonl")
 
     url, key = _env_keys()
 
     try:
         # If a specific source is requested, prefer ilike with a server-side source filter
         if args.source and args.source != "all":
-            rows = search_ilike(url, key, args.query, args.limit, args.offset)
+            rows = search_ilike(url, key, args.query, args.limit, args.offset, args.source)
         else:
             try:
                 rows = search_rpc(url, key, args.query, args.limit, args.offset)
             except Exception:
-                rows = search_ilike(url, key, args.query, args.limit, args.offset)
+                rows = search_ilike(url, key, args.query, args.limit, args.offset, None)
     except requests.HTTPError as e:
         try:
             detail = e.response.json()
@@ -111,6 +128,11 @@ def main():
     if args.jsonl:
         for r in out:
             print(json.dumps(r, ensure_ascii=False))
+        return
+
+    if args.ids_only:
+        for r in out:
+            print(r["id"])
         return
 
     print(f"Found {len(out)} rows for query: '{args.query}' (source={args.source})\n")
