@@ -138,15 +138,65 @@ def fetch_backrooms(
     return rows
 
 
+def fetch_dreams(
+    url: str,
+    key: str,
+    *,
+    source: Optional[str] = None,
+    contains: Optional[str] = None,
+    limit: int = 200,
+) -> List[Dict[str, Any]]:
+    endpoint = f"{url}/rest/v1/dreams"
+    params: Dict[str, str] = {
+        "select": "id,content,date,source,source_ref",
+        "order": "date.desc.nullslast,id.desc",
+        "limit": str(limit),
+    }
+    if source and source != "all":
+        params["source"] = f"eq.{source}"
+    if contains:
+        params["content"] = f"ilike.*{contains}*"
+
+    r = requests.get(endpoint, headers=_headers(key), params=params, timeout=60)
+    r.raise_for_status()
+    rows = r.json()
+    if not isinstance(rows, list):
+        return []
+
+    cleaned: List[Dict[str, Any]] = []
+    for row in rows:
+        content = (row.get("content") or "").strip()
+        if not content:
+            continue
+        cleaned.append(
+            {
+                "id": row.get("id"),
+                "content": content,
+                "date": row.get("date"),
+                "source": row.get("source"),
+                "source_ref": row.get("source_ref"),
+            }
+        )
+    return cleaned
+
+
 def ensure_dirs(base: Path) -> dict[str, Path]:
     transcripts_dir = base / "Transcripts"
     prompts_dir = base / "Prompts"
     models_dir = base / "Models"
+    dreams_dir = base / "Dreams"
     base.mkdir(parents=True, exist_ok=True)
     transcripts_dir.mkdir(parents=True, exist_ok=True)
     prompts_dir.mkdir(parents=True, exist_ok=True)
     models_dir.mkdir(parents=True, exist_ok=True)
-    return {"base": base, "transcripts": transcripts_dir, "prompts": prompts_dir, "models": models_dir}
+    dreams_dir.mkdir(parents=True, exist_ok=True)
+    return {
+        "base": base,
+        "transcripts": transcripts_dir,
+        "prompts": prompts_dir,
+        "models": models_dir,
+        "dreams": dreams_dir,
+    }
 
 
 def to_frontmatter(row: Dict[str, Any]) -> Dict[str, Any]:
@@ -220,6 +270,67 @@ def write_markdown(transcripts_dir: Path, row: Dict[str, Any], overwrite: bool =
         chunks.append(transcript if transcript.endswith("\n") else transcript + "\n")
 
     body = "\n".join(chunks)
+    path.write_text("\n".join(yaml_lines) + body, encoding="utf-8")
+    return path
+
+
+def write_dream_markdown(
+    dreams_dir: Path,
+    row: Dict[str, Any],
+    *,
+    groups: Optional[Iterable[str]] = None,
+    search_contains: Optional[str] = None,
+    overwrite: bool = False,
+) -> Path:
+    content = (row.get("content") or "").strip()
+    dream_id = row.get("id")
+    id_part = str(dream_id) if dream_id is not None else _short_hash(content or "")
+    preview = content.splitlines()[0][:60] if content else ""
+    slug = _slugify(preview, maxlen=60)
+    fname = f"{id_part}--{slug}.md" if slug else f"{id_part}.md"
+    path = dreams_dir / fname
+
+    if path.exists() and not overwrite:
+        return path
+
+    group_list = [g for g in (groups or []) if g]
+    # Deduplicate while preserving order
+    seen: dict[str, None] = {}
+    for g in group_list:
+        if g not in seen:
+            seen[g] = None
+    yaml_lines = ["---"]
+    fm: Dict[str, Any] = {
+        "type": "dream",
+        "dream_id": dream_id,
+        "date": row.get("date"),
+        "source": row.get("source"),
+    }
+    if row.get("source_ref"):
+        fm["source_ref"] = row.get("source_ref")
+    if search_contains:
+        fm["search_contains"] = search_contains
+    if seen:
+        fm["groups"] = list(seen.keys())
+
+    for k, v in fm.items():
+        if v in (None, "", []):
+            continue
+        if isinstance(v, list):
+            yaml_lines.append(f"{k}:")
+            for item in v:
+                yaml_lines.append(f"  - {item}")
+        else:
+            yaml_lines.append(f"{k}: {v}")
+    yaml_lines.append("---\n")
+
+    body_lines: List[str] = ["## Dream"]
+    if content:
+        body_lines.append("")
+        body_lines.append(content if content.endswith("\n") else content + "\n")
+    body = "\n".join(body_lines)
+    if not body.endswith("\n"):
+        body += "\n"
     path.write_text("\n".join(yaml_lines) + body, encoding="utf-8")
     return path
 
@@ -303,6 +414,52 @@ for (const g of groups) {
 }
 ```"""
     body = f"# Model {model}\n\n" + dvjs
+    path.write_text("\n".join(yaml) + body, encoding="utf-8")
+    return path
+
+
+def write_dream_group_page(
+    dreams_dir: Path,
+    group_label: str,
+    *,
+    contains: Optional[str] = None,
+    source: Optional[str] = None,
+    overwrite: bool = True,
+) -> Path:
+    slug = _slugify(group_label) or "group"
+    path = dreams_dir / f"group-{slug}.md"
+    if path.exists() and not overwrite:
+        return path
+
+    fm: Dict[str, Any] = {"type": "dream_group", "group": group_label}
+    if contains:
+        fm["contains"] = contains
+    if source and source != "all":
+        fm["source"] = source
+    yaml = ["---"] + [f"{k}: {v}" for k, v in fm.items() if v not in (None, "", [])] + ["---\n"]
+
+    group_js = group_label.replace("\\", "\\\\").replace("'", "\\'")
+    dvjs = (
+        "```dataviewjs\n"
+        "const group = '" + group_js + "';\n"
+        "const pages = dv.pages('\\\"Dreams\\\"')\n"
+        "  .where(p => p.type === 'dream' && Array.isArray(p.groups) && p.groups.includes(group))\n"
+        "  .sort(p => p.date ?? '', 'desc');\n"
+        "dv.table(['Dream','Date','Source'], pages.map(p => [p.file.link, p.date ?? '', p.source ?? '']));\n"
+        "```"
+    )
+
+    lines: List[str] = [f"# Dream Group: {group_label}"]
+    meta_lines: List[str] = []
+    if contains:
+        meta_lines.append(f"- contains: `{contains}`")
+    if source and source != "all":
+        meta_lines.append(f"- source: `{source}`")
+    if meta_lines:
+        lines.append("\n".join(meta_lines))
+    lines.append("")
+    lines.append(dvjs)
+    body = "\n\n".join(lines) + "\n"
     path.write_text("\n".join(yaml) + body, encoding="utf-8")
     return path
 
@@ -407,22 +564,30 @@ def main():
     ap.add_argument("--limit", type=int, default=1000, help="Fetch limit (default: 1000)")
     ap.add_argument("--overwrite", action="store_true", help="Overwrite existing transcript files")
     ap.add_argument("--write-index", action="store_true", help="Write Index.md and per-prompt pages")
+    ap.add_argument("--export-dreams", action="store_true", help="Export matching dreams into Dreams/")
+    ap.add_argument("--dream-source", default="mine", help="Dream source filter (default: mine; use 'all' to disable)")
+    ap.add_argument("--dream-contains", default="", help="Filter dreams whose content ilike *substring*")
+    ap.add_argument("--dream-limit", type=int, default=200, help="Dream fetch limit when exporting (default: 200)")
+    ap.add_argument("--dream-group", default="", help="Assign a group label to fetched dreams and write a helper page")
     args = ap.parse_args()
 
     url, key = _env_keys()
 
+    rows: List[Dict[str, Any]] = []
     since_val = iso_date(args.since) if args.since else None
-    rows = fetch_backrooms(
-        url,
-        key,
-        since=since_val,
-        dream_id=args.dream_id or None,
-        prompt_contains=args.prompt_contains or None,
-        limit=args.limit,
-    )
-    if not rows:
-        print("No rows fetched.")
-        return
+    if args.limit != 0:
+        rows = fetch_backrooms(
+            url,
+            key,
+            since=since_val,
+            dream_id=args.dream_id or None,
+            prompt_contains=args.prompt_contains or None,
+            limit=args.limit,
+        )
+        if not rows:
+            print("No transcripts fetched for the given parameters.")
+    else:
+        print("Skipping transcript export (--limit 0).")
 
     paths = ensure_dirs(Path(args.vault))
     tx_dir = paths["transcripts"]
@@ -436,7 +601,7 @@ def main():
         written.append(p)
 
     # Optional index and per-prompt pages
-    if args.write_index:
+    if args.write_index and rows:
         write_index(paths["base"]) 
         # Use the first prompt text we see for each dream_id
         seen: dict[str, str] = {}
@@ -462,7 +627,43 @@ def main():
         if model_names:
             write_models_index(models_dir, model_names)
 
-    print(f"Exported {len(written)} transcripts to {tx_dir}")
+    if written:
+        print(f"Exported {len(written)} transcripts to {tx_dir}")
+
+    export_dreams = args.export_dreams or bool(args.dream_contains or args.dream_group)
+    dream_written: List[Path] = []
+    if export_dreams:
+        dream_rows = fetch_dreams(
+            url,
+            key,
+            source=args.dream_source or None,
+            contains=args.dream_contains or None,
+            limit=args.dream_limit,
+        )
+        if not dream_rows:
+            print("No dreams fetched for the given dream filters.")
+        else:
+            groups = [args.dream_group] if args.dream_group else []
+            for row in dream_rows:
+                dp = write_dream_markdown(
+                    paths["dreams"],
+                    row,
+                    groups=groups,
+                    search_contains=args.dream_contains or None,
+                    overwrite=args.overwrite,
+                )
+                dream_written.append(dp)
+            if args.dream_group:
+                write_dream_group_page(
+                    paths["dreams"],
+                    args.dream_group,
+                    contains=args.dream_contains or None,
+                    source=args.dream_source or None,
+                    overwrite=True,
+                )
+
+    if dream_written:
+        print(f"Exported {len(dream_written)} dreams to {paths['dreams']}")
 
 
 if __name__ == "__main__":

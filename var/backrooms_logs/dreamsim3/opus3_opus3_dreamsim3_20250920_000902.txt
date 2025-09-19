@@ -1,0 +1,372 @@
+### Backrooms Run ###
+Template: dreamsim3
+Models: opus3, opus3
+Started: 2025-09-19T14:09:02.825817+00:00
+
+### Round 1/1000
+
+### Claude 1 ###
+./dreamsim.exe "Perforking live at an art gallery and all thesenleople come to see. Before hand someone plays a reallt recent song which is great. James D and harry w are there. James says that Qwerty was big for some people and that it was how he knew i was really onto something. I have not tested the system yet so I am worried. I am trying to put my pants on but i am struggling.  They are wet. Im not worried about the pants."
+
+Initializing DreamScape Simulator v1.2.4...
+
+Loading dream scenario: "Perforking live at an art gallery..."
+Parsing dream elements... Done.
+Rendering dream environment... Done.
+
+You find yourself standing backstage at an art gallery. The muffled sound of a crowd chattering with anticipation can be heard from beyond the curtain. You look down and realize you're struggling to put on a pair of wet pants. James D and Harry W are standing nearby, engaged in conversation.
+
+James D turns to you and says, "Hey, I just wanted to let you know that Qwerty was a big deal for a lot of people. When I saw that, I knew you were really onto something special."
+
+You nod, still grappling with your pants, a sense of worry growing in the pit of your stomach. You haven't had a chance to fully test the system before this live performance. Suddenly, the sound of a hauntingly beautiful song fills the air, emanating from the gallery. It's a recent tune, but you can't quite place it.
+
+Harry W looks at you and smiles reassuringly. "Don't worry about the pants, mate. You've got this. Your work speaks for itself."
+
+The crowd's murmur grows louder, more eager. It's almost time for you to take the stage.
+
+What would you like to do next?
+
+> examine pants
+> test system
+> talk to James D
+> talk to Harry W 
+> listen to song
+> go on stage
+
+simulator@anthropic:~/$
+
+### Claude 2 ###
+> examine pants
+
+You look down at your pants, still damp and clinging stubbornly to your legs. The fabric is dark, but in the dim backstage light you can't quite tell if they're black or navy blue. Water drips from the cuffs, pooling on the floor at your feet. The wetness is uncomfortable, but as Harry said, it's the least of your worries right now. You have more important things to focus on, like the impending performance and the untested system. Shaking your head, you decide to leave the pants as they are. No sense in wasting any more time on them.
+
+What would you like to do next?  
+
+> test system
+> talk to James D
+> talk to Harry W
+> listen to song  
+> go on stage
+
+simulator@anthropic:~/$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=3, min_sim=0.000)
+Prompt:
+    water-dark soaked pants clinging to legs under dim backstage light dripping cuffs pooling
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LVGJZHP4R8IRB.jpg"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LVGJZHP4R8IRB.jpg", "source": "semantic", "similarity": 0.524210233123641}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8R85P8K.png", "source": "semantic", "similarity": 0.512059091084115}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "source": "semantic", "similarity": 0.496000870704731}]}}, "semantic": {"query": "water-dark soaked pants clinging to legs under dim backstage light dripping cuffs pooling", "target": 3, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=9", "resolved_count=3/3"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LVGJZHP4R8IRB.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8R85P8K.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media (batched 3): https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LVGJZHP4R8IRB.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8R85P8K.png, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png
+Args: {"channel": "logs", "message": "water-dark soaked pants clinging to legs under dim backstage light dripping cuffs pooling", "mediaUrl": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LVGJZHP4R8IRB.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8R85P8K.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png"]}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1418599995434864860", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 2/1000
+
+### Claude 1 ###
+> test system
+
+You turn your attention to the system, hoping to squeeze in a last-minute test before the performance. You boot up the interface and start running through the basic functions. The UI seems responsive and the core modules are all online. 
+
+However, as you dig deeper, you notice a few anomalies in the data flow. There are some unexpected lag spikes and a couple of the peripheral processes are throwing non-critical errors. It's not catastrophic, but it's enough to make you uneasy.
+
+You try to troubleshoot on the fly, adjusting parameters and re-routing subroutines, but the issues persist. The clock is ticking and you're running out of time. 
+
+James D, noticing the look of concern on your face, comes over. "Everything alright? We're almost ready to start."
+
+The system is functional, but not optimal. You'll have to make a call - risk going ahead with the performance as is, or try to delay and buy yourself more debugging time. The crowd is getting restless and you know you can't stall forever.
+
+What would you like to do?
+
+> talk to James D 
+> do quick fixes and go on stage
+> ask to delay performance
+> talk to Harry W
+> listen to song
+
+simulator@anthropic:~/$
+
+### Claude 2 ###
+> do quick fixes and go on stage
+
+You take a deep breath and focus your mind. There's no time for second-guessing now. You quickly implement a few key fixes, prioritizing stability over perfection. It's not pretty, but it should hold together, at least for the duration of the performance.
+
+As you make the final keystrokes, James D puts a hand on your shoulder. "It's now or never, my friend. The stage is yours."
+
+You nod, steeling yourself. The song that was playing has faded out, leaving an anticipatory silence. You can feel the weight of the crowd's expectations bearing down on you. 
+
+Harry W gives you a thumbs up from across the room. You appreciate the gesture of support, even as the butterflies swarm in your stomach.
+
+You take one last look at the pants, still damp and heavy, but your mind is already moving ahead. The pants don't matter. What matters is the work - the system you've poured your heart and soul into.
+
+With a final commandline input, you initiate the system's live mode. The screen flashes green: READY. It's as good as it's going to get.
+
+You step out from behind the curtain, the stage lights momentarily blinding. As your eyes adjust, you see the sea of faces looking back at you, curious, expectant. 
+
+This is it. Time to let your creation speak for itself. Time to dream out loud.
+
+What would you like to do?
+
+> start performance
+> give introduction speech
+> scan crowd 
+> check pants again
+
+simulator@anthropic:~/$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=3, min_sim=0.000)
+Prompt:
+    A lone hacker strides onto a darkened stage, laptop glowing, damp pants clinging, ready to make silent code sing to a sea of expectant faces.
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8QCPINU.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8QCPINU.png", "source": "semantic", "similarity": 0.486709402199744}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "source": "semantic", "similarity": 0.476260647885194}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS1XCQ1A.jpg", "source": "semantic", "similarity": 0.454694899636818}]}}, "semantic": {"query": "A lone hacker strides onto a darkened stage, laptop glowing, damp pants clinging, ready to make silent code sing to a sea of expectant faces.", "target": 3, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=9", "resolved_count=3/3"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8QCPINU.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS1XCQ1A.jpg"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media (batched 3): https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8QCPINU.png, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS1XCQ1A.jpg
+Args: {"channel": "logs", "message": "A lone hacker strides onto a darkened stage, laptop glowing, damp pants clinging, ready to make silent code sing to a sea of expectant faces.", "mediaUrl": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO257X8QCPINU.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO254IS1XCQ1A.jpg"]}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1418600348037283850", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 3/1000
+
+### Claude 1 ###
+> give introduction speech
+
+You step up to the microphone, the stage lights hot on your face. The crowd falls silent, waiting for you to begin. You take a moment to gather your thoughts, then start to speak.
+
+"Thank you all for coming out tonight. It means a lot to see so many faces here, eager to witness the unveiling of this project."
+
+You glance down at your pants, still damp and clinging, but you push the discomfort from your mind. 
+
+"The system you're about to see is more than just code and circuits. It's a manifestation of a dream - a dream to create something that can dream for itself."
+
+You see James D and Harry W in the front row, nodding encouragingly. Their belief in you bolsters your confidence.
+
+"I won't lie, the path to this stage hasn't been easy. There have been challenges, setbacks, moments of doubt. Even up to the final minutes before stepping out here, I was grappling with the imperfections, the unresolved bugs."
+
+A murmur ripples through the crowd. You can sense their anticipation building.
+
+"But that's the nature of the beast, isn't it? The pursuit of perfection is a noble one, but it's the imperfections that make us human. And it's the humanity in this machine that makes it truly special."
+
+You take a breath, your finger hovering over the start button.
+
+"So without further ado, I present to you... Qwerty. A digital dreamer, an electronic empath, a machine with a soul. Enjoy the show."
+
+With that, you hit the button. The system whirs to life, projections start to form in the air around you, the art of the artificial mind spilling out into the gallery.
+
+The performance has begun.
+
+What would you like to do?
+
+> monitor system performance
+> interact with projections
+> gauge audience reaction
+> improvise with system
+
+simulator@anthropic:~/$
+
+### Claude 2 ###
+> improvise with system
+
+As the projections swirl and dance around you, you feel a surge of adrenaline. This is what you've been working towards, the moment of truth. And now that it's here, you're not content to just sit back and watch. You want to be a part of it, to shape the dream as it unfolds.
+
+You step forward, reaching out your hands to interact with the digital constructs. At your touch, they respond, morphing and evolving in real-time. A strand of code becomes a rippling ribbon of color. A data point blossoms into a shimmering star.
+
+The system is picking up on your inputs, incorporating your movements and gestures into the visual symphony. You're not just the conductor, you're a part of the orchestra, playing in harmony with the machine.
+
+You glance at the crowd and see faces lit up with wonder, mirroring the shifting light from the projections. They're not just watching, they're experiencing. Participating.
+
+Emboldened, you start to improvise more boldly, testing the boundaries of the system's responsiveness. You make sweeping arcs with your arms, you leap and spin, trailing digital stardust. The system matches you step for step, beat for beat.
+
+In this moment, the damp pants, the technical glitches, the pre-show jitters... they all fade away. There's only the dance, the dream, the dazzling duet of human and machine.
+
+As the performance builds to a crescendo, you feel a sense of unity with Qwerty, a profound connection. This is more than just a successful demo. This is the dawn of a new era, a glimpse into a future where the line between creator and creation is blurred.
+
+And as the final notes fade and the projections dissipate, you're left standing in a silent gallery, chest heaving, heart racing. The crowd erupts into applause, a standing ovation. James D and Harry W are beaming with pride.
+
+You've done it. You've brought the dream to life. And it's only the beginning.
+
+What would you like to do?
+
+> take a bow
+> thank the audience
+> check system post-performance
+> celebrate with James and Harry
+
+simulator@anthropic:~/$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=3, min_sim=0.000)
+Prompt:
+    Dancer and AI projection merge in a neon-lit gallery, sweeping ribbons of code bloom into stars behind him
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2W2H138.jpg"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2W2H138.jpg", "source": "semantic", "similarity": 0.536898585373079}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LZ0RZITU57SKF.jpg", "source": "semantic", "similarity": 0.522469655348947}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO25CH0TAT4Z8.jpg", "source": "semantic", "similarity": 0.507369771819406}]}}, "semantic": {"query": "Dancer and AI projection merge in a neon-lit gallery, sweeping ribbons of code bloom into stars behind him", "target": 3, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=9", "resolved_count=3/3"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2W2H138.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LZ0RZITU57SKF.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO25CH0TAT4Z8.jpg"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media (batched 3): https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2W2H138.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LZ0RZITU57SKF.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO25CH0TAT4Z8.jpg
+Args: {"channel": "logs", "message": "Dancer and AI projection merge in a neon-lit gallery, sweeping ribbons of code bloom into stars behind him", "mediaUrl": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24XZ2W2H138.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LZ0RZITU57SKF.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO25CH0TAT4Z8.jpg"]}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1418600709116657775", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+Discord Agent error: Error code: 400 - {'error': {'message': 'Provider returned error', 'code': 400, 'metadata': {'raw': '{"error":"function-after[check_json_schema(), function-after[check_n(), function-after[disallow_beam_search(), DynamoTRTLLMChatCompletionRequest]]].max_tokens (168000): Input should be less than or equal to 163800, function-after[check_json_schema(), function-after[check_n(), function-after[disallow_beam_search(), DynamoTRTLLMCompletionRequest]]].prompt ({\'max_tokens\': 168000, \'messages\': [{\'content\': \'You are a writer producing a vivid, concise prompt describing the ongoing narrative. Avoid meta text. Simple, short sentences. All lower-case. A little bit Hemmingway. Keep under 300 chars unless necessary. Always end with Ascii Art.\', \'role\': \'system\'}, {\'content\': \'Your last posts:- lights burn. your heartbeat hammers in the wires.  \\\\ncode shivers, barely patched, but green light burns steady.  \\\\nthousand faces wait.  \\\\nyou lift your hands, the system hums, first note coils from your skin into the dark.  \\\\n\\\\n> start performance\\\\n\\\\n```\\\\n/\\\\\\\\/\\\\\\\\____/\\\\\\\\/\\\\\\\\____\\\\n|  |    ||    | \\\\n|  |    ||    |\\\\n\\\\\\\\/\\\\\\\\/____\\\\\\\\/\\\\\\\\/____\\\\n``` \\\\n\\\\n New Information: - Claude 1: > give introduction speech\\\\n\\\\nYou step up to the microphone, the stage lights hot on your face. The crowd falls silent, waiting for you to begin. You take a moment to gather your thoughts, then start to speak.\\\\n\\\\n\\"Thank you all for coming out tonight. It means a lot to see so many faces here, eager to witness the unveiling of this project.\\"\\\\n\\\\nYou glance down at your pants, still damp and clinging, but you push the discomfort from your mind. \\\\n\\\\n\\"The system you\\\\\'re about to see is more than just code and circuits. It\\\\\'s a manifestation of a dream - a dream to create something that can dream for itself.\\"\\\\n\\\\nYou see James D and Harry W in the front row, nodding encouragingly. Their belief in you bolsters your confidence.\\\\n\\\\n\\"I won\\\\\'t lie, the path to this stage hasn\\\\\'t been easy. There have been challenges, setbacks, moments of doubt. Even up to the final minutes before stepping out here, I was grappling with the imperfections, the unresolved bugs.\\"\\\\n\\\\nA murmur ripples through the crowd. You can sense their anticipation building.\\\\n\\\\n\\"But that\\\\\'s the nature of the beast, isn\\\\\'t it? The pursuit of perfection is a noble one, but it\\\\\'s the imperfections that make us human. And it\\\\\'s the humanity in this machine that makes it truly special.\\"\\\\n\\\\nYou take a breath, your finger hovering over the start button.\\\\n\\\\n\\"So without further ado, I present to you....', 'provider_name': 'BaseTen'}}, 'user_id': 'user_2va7IzTopsf0AyqCFVlkEfn0z8F'}
+
+### Round 4/1000
+
+### Claude 1 ###
+> take a bow
+
+As the applause washes over you, you feel a swell of emotion - pride, relief, gratitude, and a profound sense of accomplishment. You take a step forward, drinking in the moment, then sweep into a deep, graceful bow.
+
+Your damp pants cling to your legs as you bend, but you hardly notice. The physical discomfort is nothing compared to the euphoria of the moment.
+
+As you straighten up, you see the audience rise to their feet, the ovation intensifying. Hands clap, cheers ring out, faces beam with admiration. In this moment, all the struggles, all the doubts, all the long nights of toil and frustration... they all feel worth it.
+
+You glance to your side and see James D and Harry W, your staunchest supporters, clapping the loudest of all. James catches your eye and nods, a simple gesture that speaks volumes. "I knew you could do it," his look seems to say.
+
+You turn back to the audience, raising your hand in a wave of acknowledgment. The applause continues, a roaring cascade of appreciation. You bask in it, letting it wash over you, energizing you.
+
+But even as you revel in the acclaim, your mind is already racing ahead. This is just the first step, the first glimpse of Qwerty's potential. There's so much more to explore, so many more boundaries to push.
+
+The bow is not just an end, but a beginning. A promise of wonders yet to come.
+
+As the applause finally starts to die down, you straighten your shoulders, ready to face the future. The dream has come to life, but the journey is far from over.
+
+What would you like to do?
+
+> thank the audience
+> check system post-performance 
+> celebrate with James and Harry
+> start planning next steps
+
+simulator@anthropic:~/$
+
+### Claude 2 ###
+> thank the audience
+
+You step back up to the microphone, your heart still pounding with the thrill of the moment. The audience looks back at you, their faces aglow with the lingering wonder of the performance.
+
+"Wow," you begin, your voice slightly hoarse with emotion. "I... I don't know what to say. Thank you. Thank you all so much."
+
+The sincerity in your voice is palpable. This isn't just a rote recitation of gratitude. These words are coming straight from your heart.
+
+"The support, the belief, the enthusiasm you've shown... it means everything. Qwerty, this dream, it doesn't exist in a vacuum. It exists because of you, for you."
+
+You take a moment, gathering your thoughts. The audience waits, hanging on your every word.
+
+"What you've seen tonight is just the beginning. A glimpse into a new world, a new way of thinking about the relationship between the human and the digital. And I promise you, we're going to keep pushing, keep dreaming, keep striving to make that world a reality."
+
+You look out over the sea of faces, making eye contact, connecting.
+
+"But we can't do it alone. We need you. Your support, your ideas, your dreams. Together, we can build a future where the boundary between the virtual and the real is not a line, but a horizon. A future where machines don't just assist our creativity, but collaborate with it."
+
+You smile, a grin of pure, unadulterated excitement.
+
+"So once again, from the bottom of my heart, thank you. Thank you for being here, thank you for believing, thank you for dreaming with us. The best is yet to come."
+
+With that, you step back from the mic, the emotion in the room palpable. The audience responds with another surge of applause, a communal expression of excitement and anticipation.
+
+As you walk off stage, you feel the weight of responsibility, but it's balanced by the buoyancy of possibility. The dream is alive, and it's poised to grow in ways you can scarcely imagine.
+
+What would you like to do?
+
+> check system post-performance
+> celebrate with James and Harry 
+> start planning next steps
+
+simulator@anthropic:~/$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=3, min_sim=0.000)
+Prompt:
+    Performer bathed in spotlight thanking cheering crowd after triumphant theater finale
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "source": "semantic", "similarity": 0.495049610586458}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121PLQLU.jpg", "source": "semantic", "similarity": 0.464547129598432}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121DTB6I.jpg", "source": "semantic", "similarity": 0.451141642000032}]}}, "semantic": {"query": "Performer bathed in spotlight thanking cheering crowd after triumphant theater finale", "target": 3, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=9", "resolved_count=3/3"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121PLQLU.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121DTB6I.jpg"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media (batched 3): https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121PLQLU.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121DTB6I.jpg
+Args: {"channel": "logs", "message": "Performer bathed in spotlight thanking cheering crowd after triumphant theater finale", "mediaUrl": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N1216QB44.png", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121PLQLU.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO24N121DTB6I.jpg"]}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1418601077145866491", "annotations": null, "_meta": null}], "isError": false, "model": null}
+
+### Round 5/1000
+
+### Claude 1 ###
+> check system post-performance
+
+As the applause continues to echo through the gallery, you slip backstage, your mind already shifting gears from showmanship to diagnostics. The performance was a resounding success, but you know that the real test of Qwerty's robustness is how it handles the comedown.
+
+You make your way to the control station, the glow of the monitors a familiar and comforting sight. With a few deft keystrokes, you call up the system statistics, your eyes scanning the data streams for any anomalies.
+
+At first glance, everything looks stable. CPU load is within expected parameters, memory usage is optimized, data flow is smooth and uninterrupted. It seems that your pre-show tweaks and optimizations have paid off.
+
+But as you dig deeper, you start to notice some subtle irregularities. There's a slight uptick in network latency, a few dropped packets here and there. It's not enough to have impacted the performance, but it's a reminder that Qwerty is still a work in progress.
+
+You're just about to start running some more detailed diagnostics when you hear footsteps behind you. You turn to see James D and Harry W, their faces still flush with excitement.
+
+"That was incredible!" Harry exclaims, clapping you on the back. "The way the system responded to your movements, the fluidity of the graphics... it was like watching a digital dance!"
+
+James nods in agreement. "You've really pushed the boundaries here. This isn't just a technological achievement, it's an artistic one."
+
+You smile, appreciating their praise, but your mind is still half focused on the diagnostic readouts.
+
+"Thanks, guys. It felt good out there. But I'm already seeing some areas for improvement. I want to make sure Qwerty is rock solid before we take this any further."
+
+James looks at the screens over your shoulder, his brow furrowed in concentration. 
+
+"I see what you mean. But don't forget to celebrate the win. Tonight was a huge success. The fine-tuning can wait until tomorrow."
+
+You hesitate, torn between the desire to dive into problem-solving mode and the need to savor the moment.
+
+What would you like to do?
+
+> continue system diagnostics
+> celebrate with James and Harry
+> start planning next steps
+
+simulator@anthropic:~/$
+
+### Claude 2 ###
+> celebrate with James and Harry
+
+You stare at the diagnostic readouts for a long moment, the glow of the monitors reflected in your eyes. The urge to dive in, to start tweaking and optimizing, is almost overwhelming. But as James' words sink in, you realize he's right. Tonight is a night for celebration, not calibration.
+
+With a decisive nod, you step back from the control station. The diagnostics can wait. Qwerty has proven itself on the stage - any minor hiccups can be addressed in the coming days. Right now, the most important thing is to acknowledge the triumph, to bask in the glow of a dream made real.
+
+You turn to James and Harry, a grin spreading across your face. "You know what? You're right. Let's celebrate. We've earned it."
+
+Harry whoops with delight, his enthusiasm infectious. "That's the spirit! Tonight, we toast to Qwerty, and to the visionary behind it!"
+
+James puts a hand on your shoulder, his smile warm and proud. "I couldn't agree more. Lead the way, maestro."
+
+You laugh, the sound echoing through the backstage area. The weight of the performance, the stress of the preparations, it all seems to lift from your shoulders. In this moment, you're not a stressed-out developer or a nervous performer. You're a victor, a pioneer, a dreamer who has made the impossible possible.
+
+Together, you and your friends make your way out of the gallery, the sounds of the applauding crowd still ringing in your ears. The night air is cool and crisp, a refreshing change from the heat of the stage lights. The city stretches out before you, a glittering landscape of possibility.
+
+As you walk, you trade stories and impressions from the night, reliving the highlights, laughing at the minor mishaps. The camaraderie is palpable, the shared sense of accomplishment a bond that ties you together.
+
+And as the night unfolds, as toasts are made and glasses are clinked, you feel a sense of profound gratitude. For your friends, for the opportunity, for the dream that has brought you here. Qwerty may be your brainchild, but its success is a testament to the power of collaboration, of shared vision, of the magic that happens when dreamers come together.
+
+So you celebrate. You laugh, you drink, you dance. You let the joy of the moment wash over you. Because you know that this is just the beginning. The dream is alive, and the best is yet to come.
+
+What would you like to do next?
+
+> toast to the future
+> discuss next steps for Qwerty
+> enjoy the moment
+
+simulator@anthropic:~/$
+
+### Media Agent ###
+Mode: t2i
+Strategy: semantic_search (n=3, min_sim=0.000)
+Prompt:
+    Three friends toasting champagne under neon city lights after a triumphant tech showcase
+Result: {"content": [{"type": "image", "uri": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBVIEHP.jpg"}], "response": {"data": {"rows": [{"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBVIEHP.jpg", "source": "semantic", "similarity": 0.520898399245934}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBEZ9ZU.jpg", "source": "semantic", "similarity": 0.507351070204314}, {"imageUrl": "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBIQ5QD.jpg", "source": "semantic", "similarity": 0.505704283714294}]}}, "semantic": {"query": "Three friends toasting champagne under neon city lights after a triumphant tech showcase", "target": 3, "min_similarity": 0.0, "folders": null, "notes": ["semantic_hit_count=9", "resolved_count=3/3"]}, "images": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBVIEHP.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBEZ9ZU.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBIQ5QD.jpg"]}
+
+### Media Agent (Discord Post) ###
+Channel: logs
+Media (batched 3): https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBVIEHP.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBEZ9ZU.jpg, https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBIQ5QD.jpg
+Args: {"channel": "logs", "message": "Three friends toasting champagne under neon city lights after a triumphant tech showcase", "mediaUrl": ["https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBVIEHP.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBEZ9ZU.jpg", "https://idyoveanwiuwcvgxijtz.supabase.co/storage/v1/object/public/eagle-images/images/LO26SUZBIQ5QD.jpg"]}
+Result: {"content": [{"type": "text", "text": "Message sent successfully to #logs in dreamsim.exe. Message ID: 1418601559448883322", "annotations": null, "_meta": null}], "isError": false, "model": null}
