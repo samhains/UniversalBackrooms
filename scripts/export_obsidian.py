@@ -328,6 +328,18 @@ def write_dream_markdown(
     if content:
         body_lines.append("")
         body_lines.append(content if content.endswith("\n") else content + "\n")
+    # List transcripts for this dream, newest first
+    body_lines.append("## Transcripts\n")
+    body_lines.append(
+        """
+```dataview
+table file.link as Transcript, model_pair, created_at, duration_sec, exit_reason
+from "Transcripts"
+where type = "transcript" and dream_id = this.dream_id
+sort created_at desc
+```
+""".lstrip()
+    )
     body = "\n".join(body_lines)
     if not body.endswith("\n"):
         body += "\n"

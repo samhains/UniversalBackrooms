@@ -121,7 +121,8 @@ def fetch_transcripts(
     params: dict[str, str] = {
         "select": "id,dream_id,created_at,models,exit_reason,transcript,prompt,template,log_file,duration_sec,max_turns",
         "dream_id": f"in.({id_list})",
-        "order": "created_at.asc",
+        # Fetch newest transcripts first so each dream's list is most-recent-first
+        "order": "created_at.desc",
         "limit": str(max(limit, len(dream_ids))),
     }
 
