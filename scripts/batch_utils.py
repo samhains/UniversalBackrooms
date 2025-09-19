@@ -121,7 +121,7 @@ def read_dreams_from_supabase(
 ) -> List[dict]:
     url, key = env_keys()
     try:
-        if ids:
+        if ids is not None:
             unique_ids = []
             seen = set()
             for raw in ids:
@@ -130,9 +130,12 @@ def read_dreams_from_supabase(
                     continue
                 seen.add(s)
                 unique_ids.append(s)
-            if limit and limit > 0:
-                unique_ids = unique_ids[:limit]
-            rows = fetch_by_ids(url, key, unique_ids, source)
+            if not unique_ids:
+                rows = []
+            else:
+                if limit and limit > 0:
+                    unique_ids = unique_ids[:limit]
+                rows = fetch_by_ids(url, key, unique_ids, source)
         elif query:
             rows = search_dreams(url, key, query, limit, source)
         else:

@@ -360,16 +360,21 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     source = None  # used only for Supabase metadata
     if kind in ("supabase",):
         query = ds.get("query") or ""
-        limit = int(ds.get("limit", 200))
         source = ds.get("source", "mine")
-        ids = ds.get("ids")
-        if ids is None:
-            curated_cfg = cfg.get("curated_lists") or {}
-            active_list = curated_cfg.get("active")
-            if active_list:
-                ids = (curated_cfg.get("lists") or {}).get(active_list)
-        if ids is None:
-            ids = []
+
+        raw_ids = ds.get("ids", None)
+        ids: Optional[List[Any]]
+        if raw_ids is None:
+            ids = None
+        else:
+            if not isinstance(raw_ids, (list, tuple, set)):
+                raise SystemExit("data_source.ids must be an array of IDs (list/tuple/set)")
+            ids = [item for item in raw_ids]
+
+        if ids is not None:
+            limit = len(ids)
+        else:
+            limit = int(ds.get("limit", 200))
         rows = read_dreams_from_supabase(
             query=query or None,
             limit=limit,
