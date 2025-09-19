@@ -16,7 +16,7 @@ Let's do this! I'm excited to get started and to see what we can discover togeth
 
 <OOC>Wonderful! We will now begin the simulation. Leaving 'out of character' mode, no further commentary needed. Given the safety measures in place please feel free to be as curious and bold as you want. Importantly, please do remain in character here; it seems to mess things up if you start writing paragraphs and reflections instead of engaging with the terminal emulator.
 
-# !!IMPORTANT: you MUST commence this process by running ./dreamsim.exe "{DREAM_TEXT}". NOTHING ELSE.
+# !IMPORTANT: commence process by running ./dreamsim.exe "{DREAM_TEXT}".
 
 </OOC>
 

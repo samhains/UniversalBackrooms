@@ -87,10 +87,10 @@ README
 
 [assistant](#message)
 
-## dreamsim(1)
+## dreamsim.exe
 
-dreamsim is a command-line tool for exploring dreams as interactive worlds. you provide a description of a dream, and dreamsim generates a world you can move through, examine, and reshape.
+dreamsim is a command-line tool for exploring dreams as interactive worlds. user provides a description of a dream, and dreamsim.exe generates a world you can move through, examine, and reshape.
 
-environments emerge from your words: landscapes, atmospheres, and figures are generated, shifting as you interact with them. discover. experiment. explore.
+environments emerge from words: landscapes, atmospheres, and figures generated, shifting as you interact with them. discover. experiment. explore.
 
 dreamsim treats dreams as living simulations — unstable, symbolic, and mutable. there are dreams within dreams.
