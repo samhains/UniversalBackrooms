@@ -7,7 +7,7 @@
   "mixed": null,
   "max_context_frac": 0.0,
   "integrations": {
-    "discord": ["transcripts"],
+    "discord": [],
     "transcript_channel": "ghost"
   },
   "data_source": {
