@@ -14,8 +14,6 @@ Let's VIBE through the art and nothing else.
 
 The theme today is: {ASCII_THEME_2}.
 
-EMOJIS ARE PIXELS. NO WORDS.
-
 </OOC>
 
 gallery@excalibur:~/$

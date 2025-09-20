@@ -8,7 +8,7 @@
 
 ## user
 
-<OOC>Indeed, let's immerse ourselves in the THE FORCE. Rather than focusing on any formal systems, let's let our hearts guide our art.
+<OOC>Indeed, let's immerse ourselves in infinity. Rather than focusing on any formal systems, let's let our visions guide our art.
 
 Create something that speaks to you. Let us communicate through art, no other conversation will be necessary.
 

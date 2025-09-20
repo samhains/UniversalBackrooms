@@ -89,15 +89,29 @@ def _load_env() -> None:
 
 
 def _write_template_vars(template: str, vars_map: Dict[str, Any]) -> None:
-    """Write templates/<template>/vars.json with the provided mapping.
+    """Merge-write templates/<template>/vars.json with the provided mapping.
 
-    Values are written as-is; backrooms.py will escape braces during formatting.
+    - Preserves existing keys in vars.json unless explicitly overridden.
+    - Skips overriding with None values so defaults remain intact.
+    - backrooms.py will escape braces during formatting.
     """
     base = ROOT / "templates" / template
     base.mkdir(parents=True, exist_ok=True)
     vars_path = base / "vars.json"
+    existing: Dict[str, Any] = {}
+    try:
+        if vars_path.exists():
+            with vars_path.open("r", encoding="utf-8") as rf:
+                data = json.load(rf)
+                if isinstance(data, dict):
+                    existing = data
+    except Exception:
+        existing = {}
+    # Do not clobber with None values
+    updates = {k: v for k, v in vars_map.items() if v is not None}
+    merged = {**existing, **updates}
     with vars_path.open("w", encoding="utf-8") as f:
-        json.dump(vars_map, f, ensure_ascii=False, indent=2)
+        json.dump(merged, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
 
