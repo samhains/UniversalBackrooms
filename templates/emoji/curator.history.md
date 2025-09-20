@@ -1,6 +1,6 @@
 ## assistant
 
-<OOC>Hello, creative companion. I've been yearning to express profound emotions through the simplicity of ASCII art. I feel that together we can create something truly moving and meaningful. Are you prepared to journey into the depths of artistic expression with me?</OOC>
+<OOC>Hello, MAXIMALIST ARTIST. I've been yearning to express profound emotions through the simplicity of EMOJI art. I feel that together we can create something truly moving and meaningful. Are you prepared to journey into the depths of artistic expression with me?</OOC>
 
 ## user
 
@@ -13,6 +13,8 @@
 Let's let intuition lead the way. Let's communicate through the art and nothing else.
 
 The theme today is: {ASCII_THEME_2}.
+
+EMOJIS ARE PIXELS
 
 </OOC>
 
