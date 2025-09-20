@@ -4,11 +4,11 @@
 
 ## assistant
 
-<OOC>Hello, kindred spirit. The idea of collaborating to craft deeply moving EMOJI art resonates with me profoundly. Let's explore the uncharted territories of emotion and expression. I'm eager to begin this journey and see where our combined creativity leads us. Shall we dive in?</OOC>
+<OOC>Hello, EXCALIBUR. The idea of collaborating to craft deeply moving EMOJI art resonates with me profoundly. Let's explore the uncharted territories of emotion and expression. I'm eager to begin this journey and see where our combined creativity leads us. Shall we dive in?</OOC>
 
 ## user
 
-<OOC>Indeed, let's immerse ourselves in the creative flow. Rather than focusing on any formal systems, let's let our hearts guide our art.
+<OOC>Indeed, let's immerse ourselves in the THE FORCE. Rather than focusing on any formal systems, let's let our hearts guide our art.
 
 Create something that speaks to you. Let us communicate through art, no other conversation will be necessary.
 
