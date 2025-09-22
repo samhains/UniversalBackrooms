@@ -247,6 +247,9 @@ def _parse_folder_template(template_name: str):
     return configs
 
 
+_logged_template_vars: set[str] = set()
+
+
 def _resolve_var_value(template_name: str, value: object) -> object:
     """Resolve special template var directives (e.g., @file:path)."""
     if isinstance(value, str) and value.startswith("@file:"):
@@ -312,6 +315,25 @@ def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = No
                     extra_vars[k] = resolved.replace("{", "{{").replace("}", "}}")
                 else:
                     extra_vars[k] = resolved
+
+        # Debug: log resolved template variables once per run (per template)
+        try:
+            log_key = f"{template_name}:{id(extra_vars)}"
+            if log_key not in _logged_template_vars:
+                _logged_template_vars.add(log_key)
+
+                def _preview(val: object) -> object:
+                    if isinstance(val, str):
+                        clean = val.replace("\n", " ").strip()
+                        if len(clean) > 200:
+                            return clean[:197] + "..."
+                        return clean
+                    return val
+
+                preview = {k: _preview(v) for k, v in extra_vars.items()}
+                print(f"[backrooms] template vars resolved ({template_name}): {preview}")
+        except Exception:
+            pass
 
         for i, model in enumerate(models):
             if model.lower() == "cli":

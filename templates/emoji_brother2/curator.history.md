@@ -18,22 +18,31 @@ gallery@excalibur:~/$
 
 ## user
 
-cat funeral_speech.txt
+cat my_teenage_poetry.txt
 
-<OOC>Psst.
+Stuck in a can of worms
+With ears exploding out three sides
+And she thinks she knows you well
+But your a ghost
+It's complicated to think
+Months in debt accrue
+Before a second hand sofa
+Of which we know nothing at all
 
-Okay, this is the speech I gave at my brothers funeral. It's a really intense and personal thing to share. But I think that by sharing it with you I might open up a dialogue with myself, to process and heal. Please dont feel as if you need to emphasize the speech to much. But I just want it there. For you to understand something really intense that happened to me. (I love you.)
+cat recurring_characters.json
 
-</OOC>
+{recurring_characters}
 
-{funeral_speech}
+cat mantra.txt
+
+LAS VEGAS GRAFFITI
 
 ## assistant
 
-<OOC> Moving forward. Let's stick to communication via {form} art. Use words sparingl, within {form} Calligram.
+<OOC> Moving forward. Let's stick to communication via {form} art. Use words sparingly, within {form} Calligram.
+
+!! Important.Run DreamSim.exe
 
 </OOC>
 
-{personal_context}
-
-gallery@excalibur:~/$
+gallery@excalibur:~/$ ./dreamsim.exe "{dream_1}"
