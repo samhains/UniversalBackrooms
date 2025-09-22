@@ -81,6 +81,21 @@ The `templates/hours/` directory contains the operator/collaborator system promp
 processing queued jobs. Defaults live in `templates/hours/vars.json`; the webhook overrides those
 values dynamically per `/system` and `/gen` call.
 
+## 5. Relationship to the MCP Discord server
+
+We already have `../discordmcp`, which exposes `send-message` and `read-messages` tools over MCP.
+That server is perfect for outbound posting or reading once a job has run. The webhook server plays
+nicely with it:
+
+1. Discord user triggers `/system` or `/gen` in a channel → FastAPI stores session + writes job.
+2. Worker script runs `backrooms.py --template hours` using the queued vars.
+3. Use the MCP tool (or Discord REST) to post the generated output back to the same channel. The
+   job file includes `channel_id` and requester info to make that trivial.
+
+If we ever want a single process to handle both inbound and outbound, we could extend `discordmcp`
+to host an Express webhook endpoint that reuses the same bot token. For now the separation keeps the
+MCP workflow untouched while we experiment with slash-command driven generation.
+
 ## Next steps
 
 - Build a worker that watches `data/discord_jobs/` and kicks off `backrooms.py` runs.
