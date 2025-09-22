@@ -20,6 +20,14 @@ gallery@excalibur:~/$
 
 cat funeral_speech.txt
 
+<OOC>Psst.
+
+Okay, this is the speech I gave at my brothers funeral. It's a really intense and personal thing to share. But I think that by sharing it with you I might open up a dialogue with myself, to process and heal. Please dont feel as if you need to emphasize the speech to much. But I just want it there. For you to understand something really intense that happened to me. (I love you.)
+
+</OOC>
+
+{funeral_speech}
+
 ## assistant
 
 <OOC> Moving forward. Let's stick to communication via {form} art. Use words sparingl, within {form} Calligram.
