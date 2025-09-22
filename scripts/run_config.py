@@ -48,6 +48,7 @@ except Exception:
 try:
     from scripts.batch_utils import (
         read_dreams_from_supabase,
+        read_items_from_supabase,
         parse_pairs,
         validate_models,
         latest_log_for,
@@ -61,6 +62,15 @@ except Exception:
         limit: int,
         source: str = "mine",
         ids: Optional[Iterable[object]] = None,
+    ) -> List[dict]:
+        raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
+
+    def read_items_from_supabase(
+        query: Optional[str],
+        limit: int,
+        source: str = "mine",
+        ids: Optional[Iterable[object]] = None,
+        **_: Any,
     ) -> List[dict]:
         raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
 
@@ -374,7 +384,65 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     source = None  # used only for Supabase metadata
     if kind in ("supabase",):
         query = ds.get("query") or ""
-        source = ds.get("source", "mine")
+        table = str(ds.get("table") or "dreams").strip() or "dreams"
+
+        if "source" in ds:
+            source = ds.get("source")
+        else:
+            source = "mine" if table == "dreams" else "all"
+
+        select = ds.get("select")
+        search_column = str(ds.get("search_column") or ds.get("search_field") or "content")
+        order_column_raw = ds.get("order_column")
+        if order_column_raw is None:
+            order_column = "date"
+        else:
+            order_column = str(order_column_raw).strip()
+        order_desc_raw = ds.get("order_desc")
+        if order_desc_raw is None:
+            order_desc = True
+        elif isinstance(order_desc_raw, str):
+            order_desc = order_desc_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            order_desc = bool(order_desc_raw)
+
+        if "source_column" in ds:
+            source_column_val = ds.get("source_column")
+            source_column = str(source_column_val).strip() if source_column_val else None
+        else:
+            source_column = "source" if table == "dreams" else None
+
+        id_column = str(ds.get("id_column") or "id")
+
+        if "content_field" in ds:
+            content_field_val = ds.get("content_field")
+            content_field = str(content_field_val).strip() if content_field_val else None
+        else:
+            content_field = "content"
+
+        fallback_raw = ds.get("content_fallback_fields")
+        if fallback_raw is None:
+            content_fallback_fields = None
+        elif isinstance(fallback_raw, (list, tuple, set)):
+            content_fallback_fields = [str(item).strip() for item in fallback_raw if str(item).strip()]
+        else:
+            content_fallback_fields = [str(fallback_raw).strip()] if str(fallback_raw).strip() else None
+
+        date_fields_raw = ds.get("date_fields")
+        if date_fields_raw is None:
+            date_fields = None
+        elif isinstance(date_fields_raw, (list, tuple, set)):
+            date_fields = [str(item).strip() for item in date_fields_raw if str(item).strip()]
+        else:
+            date_fields = [str(date_fields_raw).strip()] if str(date_fields_raw).strip() else None
+
+        require_content_raw = ds.get("require_content")
+        if require_content_raw is None:
+            require_content = True
+        elif isinstance(require_content_raw, str):
+            require_content = require_content_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            require_content = bool(require_content_raw)
 
         raw_ids = ds.get("ids", None)
         ids: Optional[List[Any]]
@@ -389,11 +457,22 @@ def run_batch(cfg: Dict[str, Any]) -> None:
             limit = len(ids)
         else:
             limit = int(ds.get("limit", 200))
-        rows = read_dreams_from_supabase(
+        rows = read_items_from_supabase(
             query=query or None,
             limit=limit,
             source=source,
             ids=ids,
+            table=table,
+            select=select,
+            search_column=search_column,
+            order_column=order_column,
+            order_desc=order_desc,
+            source_column=source_column,
+            id_column=id_column,
+            content_field=content_field,
+            content_fallback_fields=content_fallback_fields,
+            date_fields=date_fields,
+            require_content=require_content,
         )
 
         # Shuffle/limit — default to shuffle when using a search query
