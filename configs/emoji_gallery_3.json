@@ -1,0 +1,31 @@
+{
+  "type": "batch",
+  "template": "emoji_brother3",
+  "max_turns": 30,
+  "models": ["sonnet4", "sonnet4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "integrations": {
+    "discord": ["transcripts"],
+    "transcript_channel": "emoji"
+  },
+  "data_source": {
+    "kind": "supabase",
+    "table": "poetry",
+    "select": ["poem", "header"],
+    "limit": 50,
+    "order_column": "header",
+    "order_desc": false,
+    "content_field": "poem",
+    "require_content": true
+  },
+  "template_vars_from_item": {
+    "dream_1": "poem",
+    "teenage_poetry": "poem",
+    "poem_title": "header"
+  },
+  "max_items": 10,
+  "context_window": 128000,
+  "shuffle": true
+}
