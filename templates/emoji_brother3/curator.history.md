@@ -22,11 +22,7 @@ cat my_teenage_poetry.txt
 
 {teenage_poetry}
 
-cat recurring_characters.json
-
-{recurring_characters}
-
-cat random_phrase.txt
+cat mysterious_vision.txt
 
 LAS VEGAS GRAFFITI
 
