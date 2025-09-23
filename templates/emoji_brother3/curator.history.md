@@ -26,7 +26,7 @@ cat recurring_characters.json
 
 {recurring_characters}
 
-cat mantra.txt
+cat random_phrase.txt
 
 LAS VEGAS GRAFFITI
 
