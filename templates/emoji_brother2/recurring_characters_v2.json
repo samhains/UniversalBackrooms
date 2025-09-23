@@ -1,0 +1,85 @@
+{
+  "recurring_characters": [
+    {
+      "id": "speaker",
+      "name": "Speaker/Narrator",
+      "role": "Younger Brother",
+      "relationships": {
+        "harry": "younger brother",
+        "father": "son"
+      },
+      "background": "Former software engineer turned artist, attended Melbourne Grammar",
+      "personality": [
+        "Initially conformist and quiet",
+        "Self-identified as 'stable, sensible, ordinary'",
+        "Evolved to embrace creativity as adult",
+        "Reflective and emotionally expressive"
+      ],
+      "character_arc": {
+        "childhood": "Defined self in opposition to Harry, stayed quiet to avoid worry",
+        "adulthood": "Pursued arts, recognized shared traits with Harry",
+        "post_loss": "Full acceptance of Harry's influence and shared qualities"
+      },
+      "creative_interests": "Virtual worlds, avatars, simulations, science fiction",
+      "key_experiences": [
+        "Frustrated visitor to 'Harry Land'",
+        "Endured social embarrassment from Harry's behavior",
+        "Held off collaboration hoping for Harry's sobriety"
+      ],
+      "context": "Delivering Harry's eulogy"
+    },
+    {
+      "id": "harry",
+      "name": "Harry",
+      "role": "Older Brother",
+      "relationships": {
+        "speaker": "older brother",
+        "father": "son"
+      },
+      "background": "Artist, expelled from Melbourne Grammar after 3 years, died young",
+      "personality": [
+        "Brilliantly creative and imaginative",
+        "Boundary-pushing and volatile",
+        "Fearless and shameless",
+        "Challenging but inspiring"
+      ],
+      "notable_creation": {
+        "harry_land": "Magical realm accessed through wardrobe with own maps, language, customs, currency, merchant characters, and creature inhabitants"
+      },
+      "key_incidents": [
+        "Sent to principal for 'licking' notice board pole",
+        "Various behaviors that frightened parents",
+        "Struggled with sobriety"
+      ],
+      "artistic_focus": "Virtual worlds, avatars, simulations, science fiction",
+      "legacy": "Left profound impact through boldness, creativity, and artistic work"
+    },
+    {
+      "id": "father",
+      "name": "Father",
+      "role": "Parent",
+      "relationships": {
+        "harry": "father",
+        "speaker": "father"
+      },
+      "characteristics": [
+        "Worried and overwhelmed by Harry's behavior",
+        "Traditional values (chose conservative school)",
+        "Part of concerned parental unit"
+      ],
+      "context": "Background figure representing conventional expectations"
+    }
+  ],
+  "family_dynamics": {
+    "central_conflict": "Harry's unconventionality vs. family/social expectations",
+    "sibling_evolution": "Opposition in childhood → growing closeness as adults → full acceptance after loss",
+    "parental_response": "Attempted structure through conservative schooling"
+  },
+  "core_themes": [
+    "Creativity vs. conformity",
+    "Identity through opposition",
+    "Grief and acceptance",
+    "The price and value of nonconformity",
+    "Addiction's impact on relationships"
+  ]
+}
