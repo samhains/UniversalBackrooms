@@ -88,7 +88,7 @@ dreams-search query="" limit="200" json="false":
 
 # Backfill: upsert backrooms from JSONL + transcripts
 sync-backrooms:
-    # Scan all var/backrooms_logs/*/_meta.jsonl, skip runs with <3 replies (size filter off), then upsert to Supabase
+    # Scan all var/backrooms_logs/*/_meta.jsonl, skip runs with <1 reply (size filter off), then upsert to Supabase
     python scripts/sync_backrooms.py
 
 # Prune DB rows for template not present in cleaned metadata
