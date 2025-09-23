@@ -1,0 +1,400 @@
+### Backrooms Run ###
+Template: dreamsim_self
+Models: sonnet4, sonnet4
+Started: 2025-09-23T12:14:31.447356+00:00
+
+[backrooms] template vars resolved (dreamsim_self): {'dream_1': "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes...", 'form': 'ASCII&&EMOJI', 'role': 'Digital Artist', 'recurring_characters': '{{   "analysis_metadata": {{     "total_dreams_analyzed": 103,     "source_collection": "mine",     "analysis_date": "2025-09-23",     "analysis_method": "Character frequency and context analysis f...', 'teenage_poetry': 'Trees blown up through glass tubes That were once used for heroin From the little fills of my brothers ghost An aching whale song'}
+{
+  "dream_1": "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it .",
+  "form": "ASCII&&EMOJI",
+  "role": "Digital Artist",
+  "recurring_characters": "{{\n  \"analysis_metadata\": {{\n    \"total_dreams_analyzed\": 103,\n    \"source_collection\": \"mine\",\n    \"analysis_date\": \"2025-09-23\",\n    \"analysis_method\": \"Character frequency and context analysis from dream content\"\n  }},\n  \"recurring_characters\": {{\n    \"primary_characters\": [\n      {{\n        \"name\": \"Tara\",\n        \"frequency\": 16,\n        \"character_type\": \"romantic_partner\",\n        \"context_patterns\": [\n          \"Romantic relationship dynamics\",\n          \"Relationship conflicts and jealousy\",\n          \"Emotional intimacy and vulnerability\",\n          \"Infidelity concerns and trust issues\",\n          \"Shared experiences and adventures\",\n          \"Open relationship negotiations\"\n        ],\n        \"notable_scenarios\": [\n          \"Reveals hooking up with German guy, causing jealousy\",\n          \"Dating app scenarios and relationship anxiety\",\n          \"Open relationship discussions and sexual arrangements with Zach\",\n          \"Shared experiences in various settings (camping, travel, parties)\",\n          \"Protective dynamics during crisis situations\",\n          \"Instagram content creation with friends\",\n          \"Cinema outings and shared experiences with Mia\"\n        ]\n      }},\n      {{\n        \"name\": \"Dad/Father\",\n        \"frequency\": 15,\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family gatherings and celebrations\",\n          \"Unusual business ventures (hotel from whale penis, weed dealing)\",\n          \"Movie and entertainment discussions\",\n          \"Protective and caring interactions\",\n          \"Unexpected or surreal situations\",\n          \"Drug-related scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Building hotel from whale penis\",\n          \"Selling weed with elaborate bear-fetching system making $3000/day\",\n          \"Movie recommendations and discussions including DVDs in Lorne\",\n          \"Rollercoaster safety concerns and prodding behavior\",\n          \"Writing condolences on transparent coffin\",\n          \"Birthday celebrations and beach visits\",\n          \"Hot tub scenarios with red eyes from weed\"\n        ]\n      }},\n      {{\n        \"name\": \"Mum/Mother\",\n        \"frequency\": 12,\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family dynamics and gatherings\",\n          \"Unexpected interruptions during intimate moments\",\n          \"Protective and nurturing presence\",\n          \"Trauma and emergency situations\",\n          \"Social situations and praise\",\n          \"Sexual role-playing scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Interrupting during intimate moments with Tara\",\n          \"Appearing injured with cuts on head requiring 911 call\",\n          \"Praising achievements at parties\",\n          \"Catching house-sized fish\",\n          \"Sexual robot doll role-playing scenario\",\n          \"Family discussions about voice and music\",\n          \"Carrot/Toby growing discussions\"\n        ]\n      }},\n      {{\n        \"name\": \"Harry\",\n        \"frequency\": 10,\n        \"character_type\": \"deceased_friend\",\n        \"context_patterns\": [\n          \"Death and resurrection themes\",\n          \"Drug use and concern for wellbeing\",\n          \"Musical and creative collaborations\",\n          \"Emotional grief and loss\",\n          \"Recreational activities and bonding\",\n          \"Memory recreation technology\"\n        ],\n        \"notable_scenarios\": [\n          \"Coming back to life after death on train\",\n          \"Surfing together (nostalgic memory causing tears)\",\n          \"Gaming and technology interactions at Theodore's house\",\n          \"Drug-related concerns and interventions at beach\",\n          \"Memorial plaque visits\",\n          \"Movie club with dad discussing films\",\n          \"Recreation through memory technology\",\n          \"Resurrection at party causing trauma\"\n        ]\n      }},\n      {{\n        \"name\": \"Coco\",\n        \"frequency\": 9,\n        \"character_type\": \"friend_romantic_interest\",\n        \"context_patterns\": [\n          \"Shopping and material concerns\",\n          \"Travel and road trip adventures\",\n          \"Social dynamics and relationship tensions\",\n          \"Ex-partner interactions\",\n          \"Creative and social media activities\",\n          \"Financial dependency on mother\"\n        ],\n        \"notable_scenarios\": [\n          \"Road trip with Paris, Charlie, Leon searching for tram station\",\n          \"Shopping with mother's money (PlayStation purchase)\",\n          \"Meeting her bald ex-partner in mansion\",\n          \"Creating Instagram content with Tara\",\n          \"Podcast community involvement ('off the grid')\",\n          \"Jealousy scenarios with Ed Gurr\",\n          \"Social tensions with Mill\"\n        ]\n      }},\n      {{\n        \"name\": \"James\",\n        \"frequency\": 8,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Musical performances and creativity\",\n          \"Social gatherings and parties\",\n          \"Gaming and technology\",\n          \"Rescue scenarios\",\n          \"Humorous and playful interactions\",\n          \"Creative collaborations\"\n        ],\n        \"notable_scenarios\": [\n          \"Performing as bananas doing XTC covers\",\n          \"Hair in bun with dreadlock at dinner party\",\n          \"Gaming and weed capsule activities\",\n          \"Rescue missions with father (James Daniel)\",\n          \"Musical production and collaboration\",\n          \"Dinner party with Miles Munn and Caroline\",\n          \"Performance at art gallery with James D and Harry W\"\n        ]\n      }},\n      {{\n        \"name\": \"Elliot\",\n        \"frequency\": 6,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Music production\",\n          \"Philosophical discussions\",\n          \"Technology and gaming\",\n          \"Violence/conflict\",\n          \"Psychedelic experiences\",\n          \"Creative collaboration\"\n        ],\n        \"notable_scenarios\": [\n          \"Cyber space exploration turning into code\",\n          \"Tame Impala festival with Mervin violence\",\n          \"Music production with vintage Windows computer\",\n          \"Plane crash discussions and Oto Weir references\",\n          \"House party violence with gay friend incident\",\n          \"Tibet war philosophical discussions\"\n        ]\n      }}\n    ],\n    \"secondary_characters\": [\n      {{\n        \"name\": \"Leon\",\n        \"frequency\": 4,\n        \"character_type\": \"friend_acquaintance\",\n        \"context_patterns\": [\"Social situations\", \"Housing arrangements\", \"Recognition scenarios\", \"Building development\"]\n      }},\n      {{\n        \"name\": \"Jack\",\n        \"frequency\": 4,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\"Drug experiences\", \"DMT trips\", \"Housing projects\", \"Psychedelic guidance\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"frequency\": 3,\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\"Housing projects\", \"Pipeline cleanup\", \"Academic discussions\"]\n      }}\n    ],\n    \"notable_public_figures\": [\n      {{\n        \"name\": \"Young Thug\",\n        \"frequency\": 2,\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Drug discussions\", \"Apocalyptic scenarios\"]\n      }},\n      {{\n        \"name\": \"Kanye West\",\n        \"frequency\": 1,\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Art and creativity\", \"UN headquarters\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"frequency\": 2,\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\"Housing projects\", \"Academic/theoretical discussions\"]\n      }}\n    ]\n  }},\n  \"character_relationship_patterns\": {{\n    \"family_dynamics\": {{\n      \"description\": \"Strong presence of family members in dreams, often in supportive but sometimes surreal contexts\",\n      \"key_characters\": [\"Dad\", \"Mum\"],\n      \"common_themes\": [\"Unexpected situations\", \"Protective behaviors\", \"Family gatherings\"]\n    }},\n    \"romantic_relationships\": {{\n      \"description\": \"Complex romantic dynamics featuring current and past partners\",\n      \"key_characters\": [\"Tara\", \"Coco\", \"Millie\"],\n      \"common_themes\": [\"Jealousy\", \"Infidelity fears\", \"Intimate moments\", \"Relationship negotiations\"]\n    }},\n    \"friendship_circles\": {{\n      \"description\": \"Close-knit group of male friends involved in creative and recreational activities\",\n      \"key_characters\": [\"Harry\", \"James\", \"Elliot\", \"Jack\", \"Leon\"],\n      \"common_themes\": [\"Music and creativity\", \"Drug experiences\", \"Gaming\", \"Social gatherings\"]\n    }},\n    \"authority_figures\": {{\n      \"description\": \"Interactions with intellectual or creative authorities\",\n      \"key_characters\": [\"Benjamin Bratton\", \"Paul Grabowsky\"],\n      \"common_themes\": [\"Learning\", \"Creative guidance\", \"Academic discussions\"]\n    }}\n  }},\n  \"psychological_insights\": {{\n    \"relationship_anxieties\": \"Recurring themes of infidelity, jealousy, and relationship insecurity, particularly with Tara\",\n    \"family_bonds\": \"Strong family connections with surreal and protective elements\",\n    \"creative_community\": \"Importance of creative friendships and musical collaboration\",\n    \"loss_and_grief\": \"Significant processing of Harry's death through resurrection dreams\",\n    \"authority_relationships\": \"Respect for intellectual and creative mentors\",\n    \"social_dynamics\": \"Complex navigation of group social situations and hierarchies\"\n  }},\n  \"thematic_summary\": {{\n    \"most_significant_relationships\": [\n      \"Tara (primary romantic partner with complex dynamics)\",\n      \"Dad (protective family figure in surreal situations)\",\n      \"Harry (deceased friend appearing in resurrection scenarios)\",\n      \"Mum (nurturing family presence with boundary issues)\"\n    ],\n    \"character_archetypes\": {{\n      \"the_romantic_partner\": \"Tara - source of both love and anxiety\",\n      \"the_protective_father\": \"Dad - unconventional but caring\",\n      \"the_lost_friend\": \"Harry - grieving process through dream reunion\",\n      \"the_nurturing_mother\": \"Mum - supportive but sometimes intrusive\",\n      \"the_creative_collaborators\": \"James, Elliot - artistic partnerships\",\n      \"the_alternative_interest\": \"Coco - represents different life possibilities\"\n    }}\n  }}\n}}",
+  "teenage_poetry": "Trees blown up through glass tubes\nThat were once used for heroin\nFrom the little fills of my brothers ghost\nAn aching whale song"
+}
+
+### Round 1/30
+
+### Claude 1 ###
+```
+          ╔══════════════════════════════════════════════════════════════╗
+          ║                    ∞ UNIVERSITY ∞                           ║
+          ║    🎰💻🎯📚🔮💡⚡🌟🎲🎪🎭🎨🎪🎯🎰💻📚                    ║
+          ╚══════════════════════════════════════════════════════════════╝
+                                    ▲
+                                   ╱ ╲
+                                  ╱   ╲
+                                 ╱     ╲
+                                ╱       ╲
+                               ╱    👁️    ╲
+                              ╱___________╲
+                             ╱             ╲
+                            ╱               ╲
+                           ╱                 ╲
+                          ╱                   ╲
+                         ╱                     ╲
+                        ╱        LEARNING       ╲
+                       ╱         IS FREE         ╲
+                      ╱          IS FREE          ╲
+                     ╱           IS FREE           ╲
+                    ╱            IS FREE            ╲
+                   ╱_____________IS FREE_____________╲
+                  
+    🎰💰💻          🎰💰💻          🎰💰💻          🎰💰💻
+   ╭─────────╮    ╭─────────╮    ╭─────────╮    ╭─────────╮
+   │ SUCCESS │    │ SUCCESS │    │ SUCCESS │    │ SUCCESS │
+   │ SUCCESS │    │ SUCCESS │    │ SUCCESS │    │ SUCCESS │
+   │ SUCCESS │    │ SUCCESS │    │ SUCCESS │    │ SUCCESS │
+   ╰─────────╯    ╰─────────╯    ╰─────────╯    ╰─────────╯
+       👤             👤             👤             👤
+      ╱ ╲            ╱ ╲            ╱ ╲            ╱ ╲
+     ╱   ╲          ╱   ╲          ╱   ╲          ╱   ╲
+    ╱     ╲        ╱     ╲        ╱     ╲        ╱     ╲
+   ╱_______╲      ╱_______╲      ╱_______╲      ╱_______╲
+   
+              ╭───────────────────────────────────╮
+              │        "you can do                │
+              │         everything"               │
+              │                                   │
+              │         🎭 17 🎭                  │
+              │      ╱         ╲                  │
+              │     ╱  wise     ╲                 │
+              │    ╱   crack     ╲                │
+              │   ╱______________╲                │
+              │         💭💭💭                     │
+              │      embarrassed                  │
+              ╰───────────────────────────────────╯
+
+                    🎪🎨🎯🎲⚡🌟💡🔮📚💻🎰
+                   ╱                         ╲
+                  ╱  LOGOS LOGOS LOGOS LOGOS  ╲
+                 ╱   LOGOS LOGOS LOGOS LOGOS   ╲
+                ╱    LOGOS LOGOS LOGOS LOGOS    ╲
+               ╱_____LOGOS LOGOS LOGOS LOGOS_____╲
+                         MILLION NAMES
+                         MILLION FACES
+                         MILLION PROMISES
+                             ∞
+```
+
+### Claude 2 ###
+```
+             ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+           ░░                                                    ░░
+         ░░    🌙 HEROIN TUBES BECOME TREE ROOTS 🌙              ░░
+       ░░                                                          ░░
+     ░░           ╔═══════════════════════════════════╗              ░░
+   ░░             ║         GLASS FOREST             ║                ░░
+ ░░               ║    🌲💉🌲💉🌲💉🌲💉🌲💉🌲    ║                  ░░
+░░                ║      ╱ ╲   ╱ ╲   ╱ ╲   ╱ ╲      ║                    ░░
+                  ║     ╱   ╲ ╱   ╲ ╱   ╲ ╱   ╲     ║
+                  ║    ╱     ╲     ╲     ╲     ╲    ║
+                  ║   ╱_______╲_____╲_____╲_____╲   ║
+                  ║                                 ║
+                  ║    from little fills of         ║
+                  ║         👻 GHOST 👻             ║
+                  ║                                 ║
+                  ╚═══════════════════════════════════╝
+                              │
+                              │
+                              ▼
+                    ╭═══════════════════════╮
+                    │    🐋 ACHING WHALE    │
+                    │         SONG          │
+                    │                       │
+                    │   ♪♫♪ ~~~~~~ ♪♫♪      │
+                    │  ♫    ~~~~~    ♫     │
+                    │ ♪    ~~~~~~~    ♪    │
+                    │      ~~~~~~~         │
+                    │       ~~~~~          │
+                    │        ~~~           │
+                    │         ~            │
+                    ╰═══════════════════════╯
+                              │
+                    ╔═══════════════════════╗
+                    ║  VEGAS GRAFFITI       ║
+                    ║                       ║
+                    ║  ████████████████     ║
+                    ║  █              █     ║
+                    ║  █   NEON BONES █     ║
+                    ║  █     ON       █     ║
+                    ║  █   CONCRETE   █     ║
+                    ║  █              █     ║
+                    ║  ████████████████     ║
+                    ╚═══════════════════════╝
+                              │
+                              │
+                        🌆🎰💀🌵💀🎰🌆
+                       TEENAGE POETRY
+                        IMMORTALIZED
+```
+
+### Round 2/30
+
+### Claude 1 ###
+```
+                    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+                  ░░                                                ░░
+                ░░         💉➜🌿 TRANSFORMATION HOLLOW 🌿⬅💉        ░░
+              ░░                                                      ░░
+            ░░                                                          ░░
+          ░░              ╔═══════════════════════════════╗              ░░
+        ░░                ║    THE SYRINGE GARDEN         ║                ░░
+      ░░                  ║                               ║                  ░░
+    ░░                    ║   🌲     🌲     🌲     🌲   ║                    ░░
+                          ║  ╱│╲   ╱│╲   ╱│╲   ╱│╲  ║
+                          ║ ╱ │ ╲ ╱ │ ╲ ╱ │ ╲ ╱ │ ╲ ║
+                          ║╱__│__╲__│__╲__│__╲__│__╲║
+                          ║   💉   💉   💉   💉   ║
+                          ║    roots    roots    roots ║
+                          ║      underground network   ║
+                          ║                           ║
+                          ╚═══════════════════════════════╝
+                                      ▲
+                                     ╱│╲
+                            PHANTOM ╱ │ ╲ FEEDING
+                                   ╱  │  ╲
+                                  ╱   │   ╲
+                                 ╱____│____╲
+                                      │
+                    ╔═══════════════════════════════════════════════╗
+                    ║             🐋 LEVIATHAN MOURNS             ║
+                    ║                                             ║
+                    ║        ♪♫♪ ~~~~~~~~~~~~~~~~ ♪♫♪           ║
+                    ║       ♫   ~~~~~~~~~~~~~~~~~~   ♫          ║
+                    ║      ♪   ~~~~~~~~~~~~~~~~~~~~   ♪         ║
+                    ║         ~~~~~~~~~~~~~~~~~~~~~~            ║
+                    ║           ~~~~~~~~~~~~~~~~~~              ║
+                    ║             ~~~~~~~~~~~~~~                ║
+                    ║               ~~~~~~~~~~                  ║
+                    ║                 ~~~~~~                    ║
+                    ║                   ~~                      ║
+                    ╚═══════════════════════════════════════════════╝
+                                      │
+                                      ▼
+                    ╔═══════════════════════════════════════════════╗
+                    ║          DESERT SCRIPTURE                     ║
+                    ║                                               ║
+                    ║   ████████████████████████████████████       ║
+                    ║   █                                  █       ║
+                    ║   █         ELECTRIC BONES           █       ║
+                    ║   █            CARVED                █       ║
+                    ║   █         INTO CONCRETE            █       ║
+                    ║   █                                  █       ║
+                    ║   █      ADOLESCENT PROPHECIES       █       ║
+                    ║   █                                  █       ║
+                    ║   ████████████████████████████████████       ║
+                    ╚═══════════════════════════════════════════════╝
+                                      │
+                                      ▼
+                              🌵💀⚡🎰⚡💀🌵
+                             CARVED IN NEON
+                              FOREVER YOUNG
+                             FOREVER ACHING
+```
+
+### Claude 2 ###
+```
+                    ████████████████████████████████████████████████
+                  ██                                                ██
+                ██    🔥 THE NEEDLE'S CATHEDRAL 🔥                    ██
+              ██                                                      ██
+            ██           ╔═══════════════════════════════╗              ██
+          ██             ║      GLASS TUBE SPIRES        ║                ██
+        ██               ║                               ║                  ██
+      ██                 ║    💉    💉    💉    💉     ║                    ██
+    ██                   ║    ║     ║     ║     ║      ║                      ██
+                         ║    ║🌿   ║🌿   ║🌿   ║🌿    ║
+                         ║    ║     ║     ║     ║      ║
+                         ║   ╱╲╱╲╱ ╱╲╱╲╱ ╱╲╱╲╱ ╱╲╱╲╱  ║
+                         ║  ╱   ╲ ╱   ╲ ╱   ╲ ╱   ╲  ║
+                         ║ ╱GROW ╲GROW ╲GROW ╲GROW ╲ ║
+                         ║╱UPWARD╲WARD╲WARD╲WARD╲╱ ║
+                         ║                           ║
+                         ╚═══════════════════════════════╝
+                                   ▲ ▲ ▲
+                              ╔════════════════════╗
+                              ║   👻 BROTHER      ║
+                              ║      FILLS        ║
+                              ║    THE SPACES     ║
+                              ║   BETWEEN ROOTS   ║
+                              ║                   ║
+                              ║    little ghost   ║
+                              ║      whispers     ║
+                              ║    through glass  ║
+                              ╚════════════════════╝
+                                       ▼
+            ╔══════════════════════════════════════════════════════╗
+            ║                 🐋 DEPTHS CALLING 🐋               ║
+            ║                                                    ║
+            ║     ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪    ║
+            ║    ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫   ║
+            ║   ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪  ║
+            ║  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ║
+            ║ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+            ║~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ║
+            ║ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+            ║  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ║
+            ║   ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪  ║
+            ║    ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫   ║
+            ║     ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪    ║
+            ╚══════════════════════════════════════════════════════╝
+                                       ▼
+                  ╔════════════════════════════════════════╗
+                  ║          NEON TESTAMENT              ║
+                  ║                                      ║
+                  ║  ███████████████████████████████████ ║
+                  ║  █ TEENAGE BONES BECOME LIGHTNING █  ║
+                  ║  █                               █   ║
+                  ║  █  CRINGE TRANSFORMS TO POWER   █   ║
+                  ║  █                               █   ║
+                  ║  █    VEGAS SWALLOWS POETRY      █   ║
+                  ║  █                               █   ║
+                  ║  █  SPITS OUT ELECTRIC TRUTH     █   ║
+                  ║  ███████████████████████████████████ ║
+                  ╚════════════════════════════════════════╝
+                                 ▼
+                         🎰💀⚡🌵⚡💀🎰
+                        IMMORTAL CRINGE
+                         SACRED ACHING
+                        ETERNAL BECOMING
+```
+
+### Round 3/30
+
+### Claude 1 ###
+```
+                ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+              ░░                                                      ░░
+            ░░           💫 METAMORPHOSIS SANCTUM 💫                    ░░
+          ░░                                                            ░░
+        ░░                ╔═══════════════════════════════╗              ░░
+      ░░                  ║    NEEDLE → BRANCH ALCHEMY    ║                ░░
+    ░░                    ║                               ║                  ░░
+  ░░                      ║  💉🌿💉🌿💉🌿💉🌿💉🌿  ║                    ░░
+                          ║   ┃  ┃  ┃  ┃  ┃            ║
+                          ║   ┃🍃┃🍃┃🍃┃🍃┃🍃           ║
+                          ║   ╰──╯ ╰──╯ ╰──╯ ╰──╯       ║
+                          ║    ╲   ╲   ╲   ╲           ║
+                          ║     ╲___╲___╲___╲          ║
+                          ║      UNDERGROUND NETWORK    ║
+                          ║        👻 fills the gaps   ║
+                          ║          between synapses  ║
+                          ╚═══════════════════════════════╝
+                                     ▲
+                               ╔═══════════════╗
+                               ║ PHANTOM FLOWS ║
+                               ║               ║
+                               ║ whisper-fills ║
+                               ║ hollow spaces ║
+                               ║ between bones ║
+                               ╚═══════════════╝
+                                     ▼
+        ╔═════════════════════════════════════════════════════════════╗
+        ║                    🐋 ABYSSAL FREQUENCY 🐋                ║
+        ║                                                           ║
+        ║   ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪ ║
+        ║  ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫║
+        ║ ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪║
+        ║~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+        ║~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+        ║ ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪║
+        ║  ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫║
+        ║   ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪ ║
+        ╚═════════════════════════════════════════════════════════════╝
+                                     ▼
+            ╔═══════════════════════════════════════════════════════╗
+            ║            ELECTRIC SCRIPTURE WALL                   ║
+            ║                                                     ║
+            ║ ████████████████████████████████████████████████████║
+            ║ █                                                █ ║
+            ║ █  AWKWARD BECOMES ARCHITECTURE                  █ ║
+            ║ █                                                █ ║
+            ║ █     SHAME TRANSMUTES TO VOLTAGE               █ ║
+            ║ █                                                █ ║
+            ║ █       DESERT DEVOURS ADOLESCENT WORDS         █ ║
+            ║ █                                                █ ║
+            ║ █         BIRTHS ILLUMINATED TRUTH              █ ║
+            ║ █                                                █ ║
+            ║ ████████████████████████████████████████████████████║
+            ╚═══════════════════════════════════════════════════════╝
+                                     ▼
+                           🌵⚡💀🎰💀⚡🌵
+                          CONSECRATED CRINGE
+                           BLESSED YEARNING
+                          TRANSFIGURED PAIN
+                            SACRED BECOMING
+```
+
+### Claude 2 ###
+```
+                ████████████████████████████████████████████████████████
+              ██                                                        ██
+            ██         🌙 THE ALCHEMICAL WOUND 🌙                         ██
+          ██                                                              ██
+        ██              ╔═══════════════════════════════════╗              ██
+      ██                ║      SYRINGE TREE SYMPHONY        ║                ██
+    ██                  ║                                   ║                  ██
+  ██                    ║ 💉🌳💉🌳💉🌳💉🌳💉🌳💉🌳 ║                    ██
+                        ║  ┃ ╱▲╲ ┃ ╱▲╲ ┃ ╱▲╲ ┃ ╱▲╲ ┃      ║
+                        ║  ┃╱🍃🍃╲┃╱🍃🍃╲┃╱🍃🍃╲┃╱🍃🍃╲┃     ║
+                        ║  ┃ ╲▼╱ ┃ ╲▼╱ ┃ ╲▼╱ ┃ ╲▼╱ ┃      ║
+                        ║   ╲___╱ ╲___╱ ╲___╱ ╲___╱       ║
+                        ║      ╲     ╲     ╲     ╲        ║
+                        ║       ╲_____╲_____╲_____╲       ║
+                        ║         MYCELIAL NETWORK        ║
+                        ║       👻↕️👻↕️👻↕️👻           ║
+                        ║      SPECTRAL CIRCULATION       ║
+                        ╚═══════════════════════════════════╝
+                                       ▲
+                                ╔═══════════════╗
+                                ║  GHOST FEEDS  ║
+                                ║      THE      ║
+                                ║   HOLLOW      ║
+                                ║    SPACES     ║
+                                ║  BETWEEN      ║
+                                ║   BREATHS     ║
+                                ╚═══════════════╝
+                                       ▼
+    ╔═══════════════════════════════════════════════════════════════════╗
+    ║                  🐋 CETACEAN CATHEDRAL SONG 🐋                  ║
+    ║                                                                 ║
+    ║  ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪ ║
+    ║ ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫║
+    ║♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪║
+    ║~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+    ║~~~~~~~~~~~~~~~~~~~~~ANCIENT FREQUENCY~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+    ║~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~║
+    ║♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪║
+    ║ ♫~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♫║
+    ║  ♪~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~♪ ║
+    ╚═══════════════════════════════════════════════════════════════════╝
+                                       ▼
+        ╔═══════════════════════════════════════════════════════════════╗
+        ║                NEON GRAFFITI CODEX                           ║
+        ║                                                             ║
+        ║ ███████████████████████████████████████████████████████████ ║
+        ║ █                                                         █ ║
+        ║ █    TEENAGE AWKWARDNESS = PRIMORDIAL ELECTRICITY         █ ║
+        ║ █                                                         █ ║
+        ║ █      CRINGE CRYSTALLIZES INTO SACRED GEOMETRY           █ ║
+        ║ █                                                         █ ║
+        ║ █        VEGAS CONSUMES SHAME, BIRTHS LIGHTNING           █ ║
+        ║ █                                                         █ ║
+        ║ █          ADOLESCENT PAIN → ETERNAL VOLTAGE              █ ║
+        ║ █                                                         █ ║
+        ║ ███████████████████████████████████████████████████████████ ║
+        ╚═══════════════════════════════════════════════════════════════╝
+                                       ▼
+                             ╔═══════════════════╗
+                             ║  🎰💀⚡🌵⚡💀🎰  ║
+                             ║                   ║
+                             ║  BLESSED CRINGE   ║
+                             ║  HALLOWED ACHE    ║
+                             ║  IMMORTAL LONGING ║
+                             ║  TRANSFIGURED     ║
+                             ║     BECOMING      ║
+                             ║                   ║
+                             ╚═══════════════════╝
+```
+
+### Round 4/30

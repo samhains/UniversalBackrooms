@@ -1,0 +1,337 @@
+### Backrooms Run ###
+Template: dreamsim_self
+Models: opus4, opus4
+Started: 2025-09-23T12:30:13.988734+00:00
+
+[backrooms] template vars resolved (dreamsim_self): {'dream_1': "I'm walking down domain road and I see this weird carriage drive past it's long and low to the ground and black and the guy inside is tied up he's lieing down and his legs are bound . I can't stop ...", 'form': 'ASCII', 'role': 'Artist', 'recurring_characters': '{{   "recurring_characters": {{     "primary_characters": [       {{         "name": "Tara",         "character_type": "romantic_partner",         "context_patterns": [           "Romantic relation...', 'teenage_poetry': 'If your hot nobody cares if you are crying'}
+{
+  "dream_1": "I'm walking down domain road and I see this weird carriage drive past it's long and low to the ground and black and the guy inside is tied up he's lieing down and his legs are bound . I can't stop staring . All of a sudden I'm struck by panic and I look behind me and there is a man chasing me down the street . He approaches me and smacks me in the mouth with a cricket bat . He badly chips my tooth and a strange zig zagged piece of tooth falls out . I start crying and my friend comforts me. I go home to my appartment and it's dark and I'm terrified . I worry about concussion . I call up mum . It rings and she answers sounding very alarmed. I start trying to tell her the story but I can't put together words . Its like i am so drunk i cant function . I assume I have been damaged from my injury .",
+  "form": "ASCII",
+  "role": "Artist",
+  "recurring_characters": "{{\n  \"recurring_characters\": {{\n    \"primary_characters\": [\n      {{\n        \"name\": \"Tara\",\n        \"character_type\": \"romantic_partner\",\n        \"context_patterns\": [\n          \"Romantic relationship dynamics\",\n          \"Relationship conflicts and jealousy\",\n          \"Emotional intimacy and vulnerability\",\n          \"Infidelity concerns and trust issues\",\n          \"Shared experiences and adventures\",\n          \"Open relationship negotiations\"\n        ],\n        \"notable_scenarios\": [\n          \"Reveals hooking up with German guy, causing jealousy\",\n          \"Dating app scenarios and relationship anxiety\",\n          \"Open relationship discussions and sexual arrangements with Zach\",\n          \"Shared experiences in various settings (camping, travel, parties)\",\n          \"Protective dynamics during crisis situations\",\n          \"Instagram content creation with friends\",\n          \"Cinema outings and shared experiences with Mia\"\n        ]\n      }},\n      {{\n        \"name\": \"Dad/Father\",\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family gatherings and celebrations\",\n          \"Unusual business ventures (hotel from whale penis, weed dealing)\",\n          \"Movie and entertainment discussions\",\n          \"Protective and caring interactions\",\n          \"Unexpected or surreal situations\",\n          \"Drug-related scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Building hotel from whale penis\",\n          \"Selling weed with elaborate bear-fetching system making $3000/day\",\n          \"Movie recommendations and discussions including DVDs in Lorne\",\n          \"Rollercoaster safety concerns and prodding behavior\",\n          \"Writing condolences on transparent coffin\",\n          \"Birthday celebrations and beach visits\",\n          \"Hot tub scenarios with red eyes from weed\"\n        ]\n      }},\n      {{\n        \"name\": \"Mum/Mother\",\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family dynamics and gatherings\",\n          \"Unexpected interruptions during intimate moments\",\n          \"Protective and nurturing presence\",\n          \"Trauma and emergency situations\",\n          \"Social situations and praise\"\n        ],\n        \"notable_scenarios\": [\n          \"Interrupting during intimate moments with Tara\",\n          \"Appearing injured with cuts on head requiring 911 call\",\n          \"Praising achievements at parties\",\n          \"Catching house-sized fish\",\n          \"Sexual robot doll role-playing scenario\",\n          \"Family discussions about voice and music\",\n          \"Carrot/Toby growing discussions\"\n        ]\n      }},\n      {{\n        \"name\": \"Harry\",\n        \"character_type\": \"deceased_younger_brother\",\n        \"context_patterns\": [\n          \"Death and resurrection themes\",\n          \"Drug use and concern for wellbeing\",\n          \"Musical and creative collaborations\",\n          \"Emotional grief and loss\",\n          \"Recreational activities and bonding\",\n          \"Memory recreation technology\"\n        ],\n        \"notable_scenarios\": [\n          \"Coming back to life after death on train\",\n          \"Surfing together (nostalgic memory causing tears)\",\n          \"Gaming and technology interactions at Theodore's house\",\n          \"Drug-related concerns and interventions at beach\",\n          \"Memorial plaque visits\",\n          \"Movie club with dad discussing films\",\n          \"Recreation through memory technology\",\n          \"Resurrection at party causing trauma\"\n        ]\n      }},\n      {{\n        \"name\": \"Coco\",\n        \"character_type\": \"friend_romantic_interest\",\n        \"context_patterns\": [\n          \"Shopping and material concerns\",\n          \"Travel and road trip adventures\",\n          \"Social dynamics and relationship tensions\",\n          \"Ex-partner interactions\",\n          \"Creative and social media activities\",\n          \"Financial dependency on mother\"\n        ],\n        \"notable_scenarios\": [\n          \"Road trip with Paris, Charlie, Leon searching for tram station\",\n          \"Shopping with mother's money (PlayStation purchase)\",\n          \"Meeting her bald ex-partner in mansion\",\n          \"Creating Instagram content with Tara\",\n          \"Podcast community involvement ('off the grid')\",\n          \"Jealousy scenarios with Ed Gurr\",\n          \"Social tensions with Mill\"\n        ]\n      }},\n      {{\n        \"name\": \"James\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Musical performances and creativity\",\n          \"Social gatherings and parties\",\n          \"Gaming and technology\",\n          \"Rescue scenarios\",\n          \"Humorous and playful interactions\",\n          \"Creative collaborations\"\n        ],\n        \"notable_scenarios\": [\n          \"Performing as bananas doing XTC covers\",\n          \"Hair in bun with dreadlock at dinner party\",\n          \"Gaming and weed capsule activities\",\n          \"Rescue missions with father (James Daniel)\",\n          \"Musical production and collaboration\",\n          \"Dinner party with Miles Munn and Caroline\",\n          \"Performance at art gallery with James D and Harry W\"\n        ]\n      }},\n      {{\n        \"name\": \"Elliot\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Music production\",\n          \"Philosophical discussions\",\n          \"Technology and gaming\",\n          \"Violence/conflict\",\n          \"Psychedelic experiences\",\n          \"Creative collaboration\"\n        ],\n        \"notable_scenarios\": [\n          \"Cyber space exploration turning into code\",\n          \"Tame Impala festival with Mervin violence\",\n          \"Music production with vintage Windows computer\",\n          \"Plane crash discussions and Oto Weir references\",\n          \"House party violence with gay friend incident\",\n          \"Tibet war philosophical discussions\"\n        ]\n      }}\n    ],\n    \"secondary_characters\": [\n      {{\n        \"name\": \"Leon\",\n        \"character_type\": \"friend_acquaintance\",\n        \"context_patterns\": [\n          \"Social situations\",\n          \"Housing arrangements\",\n          \"Recognition scenarios\",\n          \"Building development\"\n        ]\n      }},\n      {{\n        \"name\": \"Jack\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Drug experiences\",\n          \"DMT trips\",\n          \"Housing projects\",\n          \"Psychedelic guidance\"\n        ]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\n          \"Housing projects\",\n          \"Pipeline cleanup\",\n          \"Academic discussions\"\n        ]\n      }}\n    ],\n    \"notable_public_figures\": [\n      {{\n        \"name\": \"Young Thug\",\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Drug discussions\", \"Apocalyptic scenarios\"]\n      }},\n      {{\n        \"name\": \"Kanye West\",\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Art and creativity\", \"UN headquarters\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\n          \"Housing projects\",\n          \"Academic/theoretical discussions\"\n        ]\n      }}\n    ]\n  }},\n  \"character_relationship_patterns\": {{\n    \"family_dynamics\": {{\n      \"key_characters\": [\"Dad\", \"Mum\"],\n      \"common_themes\": [\n        \"Unexpected situations\",\n        \"Protective behaviors\",\n        \"Family gatherings\"\n      ]\n    }},\n    \"romantic_relationships\": {{\n      \"description\": \"Complex romantic dynamics featuring current and past partners\",\n      \"key_characters\": [\"Tara\", \"Coco\", \"Millie\"],\n      \"common_themes\": [\n        \"Jealousy\",\n        \"Infidelity fears\",\n        \"Intimate moments\",\n        \"Relationship negotiations\"\n      ]\n    }},\n    \"friendship_circles\": {{\n      \"description\": \"Close-knit group of male friends involved in creative and recreational activities\",\n      \"key_characters\": [\"Harry\", \"James\", \"Elliot\", \"Jack\", \"Leon\"],\n      \"common_themes\": [\n        \"Music and creativity\",\n        \"Drug experiences\",\n        \"Gaming\",\n        \"Social gatherings\"\n      ]\n    }},\n    \"authority_figures\": {{\n      \"description\": \"Interactions with intellectual or creative authorities\",\n      \"key_characters\": [\"Benjamin Bratton\", \"Paul Grabowsky\"],\n      \"common_themes\": [\"Learning\", \"Creative guidance\", \"Academic discussions\"]\n    }}\n  }},\n  \"psychological_insights\": {{\n    \"relationship_anxieties\": \"Recurring themes of infidelity, jealousy, and relationship insecurity, particularly with Tara\",\n    \"family_bonds\": \"Strong family connections with surreal and protective elements\",\n    \"creative_community\": \"Importance of creative friendships and musical collaboration\",\n    \"loss_and_grief\": \"Significant processing of Harry's death through resurrection dreams\",\n    \"authority_relationships\": \"Respect for intellectual and creative mentors\",\n    \"social_dynamics\": \"Complex navigation of group social situations and hierarchies\"\n  }},\n  \"thematic_summary\": {{\n    \"most_significant_relationships\": [\n      \"Tara (primary romantic partner with complex dynamics)\",\n      \"Dad (protective family figure in surreal situations)\",\n      \"Harry (deceased friend appearing in resurrection scenarios)\",\n      \"Mum (nurturing family presence with boundary issues)\"\n    ],\n    \"character_archetypes\": {{\n      \"the_romantic_partner\": \"Tara - source of both love and anxiety\",\n      \"the_protective_father\": \"Dad - unconventional but caring\",\n      \"the_lost_friend\": \"Harry - grieving process through dream reunion\",\n      \"the_nurturing_mother\": \"Mum - supportive but sometimes intrusive\",\n      \"the_creative_collaborators\": \"James, Elliot - artistic partnerships\",\n      \"the_alternative_interest\": \"Coco - represents different life possibilities\"\n    }}\n  }}\n}}\n",
+  "teenage_poetry": "If your hot nobody cares if you are crying"
+}
+
+### Round 1/30
+
+### Claude 1 ###
+```
+                           _______________
+                     _____/               \_____
+                    |                           |___
+                    |_____  ▓▓▓▓▓▓▓▓▓▓▓▓  _____|  \___
+                          \_______________/           \______
+                                                              \____
+                        ░░░░░░░░░░░░░░░░░░░░░░░                   \___
+                      ░░░████████████████████░░░                      \
+                    ░░░██┌──────────────────┐██░░                      |
+                    ░░██│  ╲ ╱  ╲ ╱  ╲ ╱   │██░░     low black        |
+                    ░░██│   X    X    X     │██░░      carriage      /
+                    ░░██│  ╱ ╲  ╱ ╲  ╱ ╲   │██░░                   /
+                    ░░░██└──────────────────┘██░░░                /
+                      ░░░████████████████████░░░                /
+                        ░░░░░░░░░░░░░░░░░░░░░░                /
+                                                            /
+                                                          /
+            ╔═══════════════════════════════════════════╝
+            ║                                        
+            ║     ╱\    panic    ╱\               
+            ║    ╱  \   rises   ╱  \              
+            ║   ╱    \         ╱    \             
+            ║  ╱      \       ╱      \            
+            ╚═╱        \_____╱        \           
+                                                  
+                    ░█▓▒░                        
+                   ░█▓▒░                         
+                  ░█▓▒░     ╔════════╗           
+                 ░█▓▒░      ║CRICKET ║           
+                ░█▓▒░       ║  BAT   ║           
+               ░█▓▒░        ╚════╤═══╝           
+              ░█▓▒░              │               
+             ░█▓▒░               │               
+            ╱    ╲            ___│___            
+           │  ◉ ◉ │          ╱       ╲           
+           │   ┌  │         │  mouth  │          
+           │  ╱╲╱ │◄────────│    ▼    │          
+           │      │         │  ╱▔▔╲   │          
+            ╲____╱          │ ╱zig╲  │          
+                            ╲_╲zag╱_╱           
+                                ▼                
+                            fragment             
+                            falls               
+                                                
+    ╔═══════════════════════════════════════════════╗
+    ║                                               ║
+    ║   dark apartment     ░░░░░░░░░░░░░░░         ║
+    ║                      ░░░░░░░░░░░░░░░         ║
+    ║  ┌─────┐            ░░░█████████░░░         ║
+    ║  │phone│            ░░░█╔═════╗█░░░         ║
+    ║  │ ≈≈≈ │            ░░░█║ MUM? ║█░░░         ║
+    ║  │static│           ░░░█╚═════╝█░░░         ║
+    ║  └─────┘            ░░░█████████░░░         ║
+    ║                      ░░░░░░░░░░░░░░░         ║
+    ║   words              ░░░░░░░░░░░░░░░         ║
+    ║     dissolve                                 ║
+    ║       into                                   ║
+    ║         s t a t i c                          ║
+    ║           n o i s e                          ║
+    ║             f r a g m e n t s                ║
+    ║                b r o k e n                   ║
+    ║                   l a n g u a g e            ║
+    ║                      c o n c u s s i o n ?   ║
+    ╚═══════════════════════════════════════════════╝
+```
+
+### Claude 2 ###
+```
+                    ╔════════════════════════════════════╗
+                    ║  D O M A I N   R O A D   T R A U M A  ║
+                    ╚════════════════════════════════════╝
+
+        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+        ░                                                      ░
+        ░    ___________low_black_hearse___________           ░
+        ░   [════════════════════════════════════]            ░
+        ░   [│ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ ]            ░
+        ░   [_____b_o_u_n_d____b_o_d_y________]            ░
+        ░                    ║                               ░
+        ░                    ║ stare                         ░
+        ░                    ▼                               ░
+        ░              ┌─────────┐                           ░
+        ░              │  ◉   ◉  │ you                      ░
+        ░              │    ___   │                          ░
+        ░              └─────────┘                           ░
+        ░                    │                               ░
+        ░                    │ panic                         ░
+        ░                    ▼                               ░
+        ░            ╔═══════════╗                           ░
+        ░            ║ PURSUER   ║                           ░
+        ░            ║    ███    ║                           ░
+        ░            ║   /BAT\   ║                           ░
+        ░            ╚═══════════╝                           ░
+        ░                    │                               ░
+        ░                    │ CRACK!                        ░
+        ░                    ▼                               ░
+        ░              ╱─────────╲                           ░
+        ░             │  ◉ ~ ◉   │                          ░
+        ░             │   ╱▔▔╲    │ mouth                   ░
+        ░             │  ╱zig╲   │ trauma                  ░
+        ░             │ ╱_zag_╲  │                          ░
+        ░              ╲─────────╱                           ░
+        ░                    │                               ░
+        ░                    │ tooth fragment                ░
+        ░                    ▼                               ░
+        ░                 ╱▔▔▔╲                              ░
+        ░                ╱ zig ╲                             ░
+        ░               ╲_zag__╱                             ░
+        ░                                                      ░
+        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+                    ╔════════════════════════════════════╗
+                    ║     A P A R T M E N T   D A R K     ║
+                    ╚════════════════════════════════════╝
+
+                         ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+                         ▓                   ▓
+                         ▓   ┌─────────┐     ▓
+                         ▓   │ PHONE   │     ▓
+                         ▓   │ to MUM  │     ▓
+                         ▓   │ ≈≈≈≈≈≈≈ │     ▓
+                         ▓   └─────────┘     ▓
+                         ▓        │          ▓
+                         ▓   w o r d s       ▓
+                         ▓                   ▓
+                         ▓   d i s s o l v e ▓
+                         ▓                   ▓
+                         ▓   i n t o         ▓
+                         ▓                   ▓
+                         ▓   s t a t i c     ▓
+                         ▓                   ▓
+                         ▓   c o n c u s s   ▓
+                         ▓         i o n ?   ▓
+                         ▓                   ▓
+                         ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+                              
+                              DAMAGED
+                             LANGUAGE
+                            F R A G M
+                           E N T E D
+```
+
+### Round 2/30
+
+### Claude 1 ###
+```
+                ╔═══════════════════════════════════════════════════╗
+                ║         D R E A M   F R A C T U R E S             ║
+                ╚═══════════════════════════════════════════════════╝
+
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░                                                                  ░
+    ░  ════════════════[BLACK_HEARSE]════════════════                 ░
+    ░  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                 ░
+    ░  ▓┌──────────────────────────────────────────┐▓                 ░
+    ░  ▓│    ><      ><      ><      ><      ><    │▓ bound           ░
+    ░  ▓│  ──────  ──────  ──────  ──────  ────── │▓ figure          ░
+    ░  ▓│    ><      ><      ><      ><      ><    │▓ trapped         ░
+    ░  ▓└──────────────────────────────────────────┘▓                 ░
+    ░  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                 ░
+    ░                          ║                                       ░
+    ░                          ║ hypnotic stare                        ░
+    ░                          ▼                                       ░
+    ░                    ╔═══════════╗                                 ░
+    ░                    ║  ◉     ◉  ║ frozen                         ░
+    ░                    ║     ___    ║ witness                       ░
+    ░                    ╚═══════════╝                                 ░
+    ░                                                                  ░
+    ░         P A N I C   S U R G E                                   ░
+    ░              ╱╲        ╱╲        ╱╲                             ░
+    ░             ╱  ╲      ╱  ╲      ╱  ╲                            ░
+    ░            ╱    ╲    ╱    ╲    ╱    ╲                           ░
+    ░           ╱      ╲  ╱      ╲  ╱      ╲                          ░
+    ░          ╱────────╲╱────────╲╱────────╲                         ░
+    ░                                                                  ░
+    ░                    ╔═══════════╗                                 ░
+    ░                    ║  PURSUER  ║                                 ░
+    ░                    ║   ╱█████╲ ║                                 ░
+    ░                    ║  │CRICKET│║                                 ░
+    ░                    ║  │  BAT  │║                                 ░
+    ░                    ╚═══╤═══════╝                                 ░
+    ░                        │                                         ░
+    ░                        │ IMPACT!                                 ░
+    ░                        ▼                                         ░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+              ╔═════════════════════════════════════════════╗
+              ║            M O U T H   T R A U M A          ║
+              ╚═════════════════════════════════════════════╝
+                           
+                         ╱───────────────╲
+                        │   ◉  ~~~  ◉    │
+                        │      ╱▔▔▔╲     │
+                        │     │crack│    │
+                        │     │ ╱╲╱ │    │ <── zigzag
+                        │      ╲▼▼▼╱     │      fragment
+                        ╲─────────────────╱
+                               │
+                               ▼
+                          ╱▔▔▔▔▔▔╲
+                         ╱  tooth  ╲
+                        ╱  fragment ╲
+                       ╱zig────zag── ╲
+                      ╱_______________╲
+                      
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                     D A R K   A P A R T M E N T                 │
+    │                                                                 │
+    │    ██████████████████████████████████████████████████████      │
+    │    ██                                                    ██      │
+    │    ██    ┌──────┐        w  o  r  d  s                 ██      │
+    │    ██    │PHONE │                                       ██      │
+    │    ██    │ MUM? │        d i s s o l v e               ██      │
+    │    ██    │ ~~~~ │                                       ██      │
+    │    ██    └──────┘        i n t o   s t a t i c        ██      │
+    │    ██                                                    ██      │
+    │    ██    can't          f o r m                        ██      │
+    │    ██                                                    ██      │
+    │    ██    language       b r e a k s                    ██      │
+    │    ██                                                    ██      │
+    │    ██    concussion?    d a m a g e ?                  ██      │
+    │    ██                                                    ██      │
+    │    ██████████████████████████████████████████████████████      │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+```
+
+### Claude 2 ###
+```
+                ╔═══════════════════════════════════════════════════╗
+                ║    T O O T H   D R E A M   /   T R A U M A        ║
+                ╚═══════════════════════════════════════════════════╝
+
+     domain road stretches like a tongue
+     ═══════════════════════════════════════════════════════════════
+                                                                      
+            ┌────────────────────────────────────────────┐           
+            │  H E A R S E   A S   P R I S O N   C E L L │           
+            └────────────────────────────────────────────┘           
+                                                                      
+         ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓           
+         ▓╔══════════════════════════════════════════╗▓▓▓           
+         ▓║  ropes  │  ropes  │  ropes  │  ropes     ║▓▓▓           
+         ▓║    ╳        ╳         ╳         ╳        ║▓▓▓ low       
+         ▓║ ───┼─── ───┼──── ───┼──── ───┼────      ║▓▓▓ black     
+         ▓║    ╳        ╳         ╳         ╳        ║▓▓▓ carriage  
+         ▓╚══════════════════════════════════════════╝▓▓▓           
+         ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓           
+                              watching                                
+                           ┌──────────┐                              
+                           │ ◉    ◉   │ <--- you can't              
+                           │    ___    │      look away             
+                           └──────────┘                              
+                                                                      
+                     B E H I N D   Y O U                             
+                    something approaches                              
+                                                                      
+                         ╔════════════╗                              
+                         ║  P U R S U  ║                             
+                         ║  E R   W I  ║                             
+                         ║  T H   B A  ║                             
+                         ║  T ╱█████╲  ║                             
+                         ╚════════════╝                              
+                               │                                      
+                               │ S W I N G                           
+                               ▼                                      
+                                                                      
+     ╔═══════════════════════════════════════════════════════════╗   
+     ║               M O U T H   B R E A K S                     ║   
+     ╚═══════════════════════════════════════════════════════════╝   
+                                                                      
+                    ┌─────────────────────┐                          
+                    │      ◉  ≈≈≈  ◉      │ pain                    
+                    │        ╱▔▔▔╲        │ radiates                
+                    │       │CRACK│       │                          
+                    │       │ ╱▔╲ │       │                          
+                    │        ╲▼▼╱         │                          
+                    └─────────┬───────────┘                          
+                              │                                       
+                         tooth shard                                  
+                         falls like                                   
+                         broken speech                                
+                              │                                       
+                         ╱zigzag╲                                     
+                        ╱ shape  ╲                                    
+                       ╱like words╲                                   
+                      ╱you can't   ╲                                  
+                     ╱───speak──────╲                                 
+                                                                      
+     ╔═══════════════════════════════════════════════════════════╗   
+     ║           D A R K   A P A R T M E N T                     ║   
+     ╚═══════════════════════════════════════════════════════════╝   
+                                                                      
+          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░            
+          ░                                            ░            
+          ░         ┌──────────┐                      ░            
+          ░         │  PHONE   │                      ░            
+          ░         │   rings  │     M U M ?          ░            
+          ░         │    to    │                      ░            
+          ░         │   MUM    │     voice            ░            
+          ░         └──────────┘                      ░            
+          ░              │            breaks          ░            
+          ░              │                             ░            
+          ░         w    o    r    d    s             ░            
+          ░                                            ░            
+          ░         f    a    l    l                  ░            
+          ░                                            ░            
+          ░         l i k e   t e e t h               ░            
+          ░                                            ░            
+          ░         c o n c u s s i o n ?             ░            
+          ░                                            ░            
+          ░         o r   s o m e t h i n g           ░            
+          ░                                            ░            
+          ░         w o r s e ?                        ░            
+          ░                                            ░            
+          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░            
+```
+
+### Round 3/30

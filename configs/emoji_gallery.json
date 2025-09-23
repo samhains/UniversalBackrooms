@@ -1,6 +1,6 @@
 {
-  "type": "single",
-  "template": "emoji",
+  "type": "batch",
+  "template": "emoji_brother2",
   "max_turns": 30,
   "models": ["opus4", "opus4"],
   "pairs": [],
@@ -10,6 +10,15 @@
     "discord": ["transcripts"],
     "transcript_channel": "emoji"
   },
+  "data_source": {
+    "kind": "supabase",
+    "limit": 50,
+    "source": "mine"
+  },
+  "template_vars_from_item": {
+    "dream_1": "content"
+  },
   "max_items": 10,
-  "context_window": 128000
+  "context_window": 128000,
+  "shuffle": true
 }

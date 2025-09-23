@@ -5,7 +5,7 @@ import os
 import sys
 import json
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict, Any, Iterable
+from typing import List, Optional, Tuple, Dict, Any, Iterable, Union
 
 import requests
 
@@ -44,31 +44,68 @@ def headers(key: str) -> Dict[str, str]:
     }
 
 
-def fetch_recent(url: str, key: str, limit: int = 50, source: str | None = None):
-    endpoint = f"{url}/rest/v1/dreams"
-    params = {
-        "select": "id,content,date,source",
-        "order": "date.desc",
+def _normalize_select(select: Optional[Union[str, Iterable[str]]], default: str) -> str:
+    if select is None:
+        return default
+    if isinstance(select, str):
+        return select
+    parts = [str(col).strip() for col in select if str(col).strip()]
+    return ",".join(parts) if parts else default
+
+
+def fetch_recent(
+    url: str,
+    key: str,
+    *,
+    table: str = "dreams",
+    limit: int = 50,
+    source: str | None = None,
+    select: Optional[Union[str, Iterable[str]]] = None,
+    order_column: str = "date",
+    order_desc: bool = True,
+    source_column: Optional[str] = "source",
+):
+    endpoint = f"{url}/rest/v1/{table}"
+    params: Dict[str, str] = {
+        "select": _normalize_select(select, "id,content,date,source"),
         "limit": str(limit),
     }
-    if source and source != "all":
-        params["source"] = f"eq.{source}"
+    if order_column:
+        direction = "desc" if order_desc else "asc"
+        params["order"] = f"{order_column}.{direction}"
+    if source and source != "all" and source_column:
+        params[source_column] = f"eq.{source}"
     r = requests.get(endpoint, headers=headers(key), params=params, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def search_dreams(url: str, key: str, q: str, limit: int = 50, source: str | None = None):
-    endpoint = f"{url}/rest/v1/dreams"
+def search_dreams(
+    url: str,
+    key: str,
+    q: str,
+    *,
+    table: str = "dreams",
+    limit: int = 50,
+    source: str | None = None,
+    select: Optional[Union[str, Iterable[str]]] = None,
+    search_column: str = "content",
+    order_column: str = "date",
+    order_desc: bool = True,
+    source_column: Optional[str] = "source",
+):
+    endpoint = f"{url}/rest/v1/{table}"
     q_pat = f"*{q}*"
-    params = {
-        "select": "id,content,date,source",
-        "content": f"ilike.{q_pat}",
-        "order": "date.desc",
+    params: Dict[str, str] = {
+        "select": _normalize_select(select, "id,content,date,source"),
+        search_column: f"ilike.{q_pat}",
         "limit": str(limit),
     }
-    if source and source != "all":
-        params["source"] = f"eq.{source}"
+    if order_column:
+        direction = "desc" if order_desc else "asc"
+        params["order"] = f"{order_column}.{direction}"
+    if source and source != "all" and source_column:
+        params[source_column] = f"eq.{source}"
     r = requests.get(endpoint, headers=headers(key), params=params, timeout=30)
     r.raise_for_status()
     return r.json()
@@ -80,12 +117,17 @@ def fetch_by_ids(
     ids: Iterable[object],
     source: str | None = None,
     chunk_size: int = 50,
+    *,
+    table: str = "dreams",
+    select: Optional[Union[str, Iterable[str]]] = None,
+    id_column: str = "id",
+    source_column: Optional[str] = "source",
 ):
     ids_list = [str(i).strip() for i in ids if str(i).strip()]
     if not ids_list:
         return []
 
-    endpoint = f"{url}/rest/v1/dreams"
+    endpoint = f"{url}/rest/v1/{table}"
     out_rows: List[dict] = []
     for start in range(0, len(ids_list), chunk_size):
         chunk = ids_list[start : start + chunk_size]
@@ -96,13 +138,13 @@ def fetch_by_ids(
             else:
                 escaped = val.replace("\"", "\\\"")
                 values.append(f'"{escaped}"')
-        params = {
-            "select": "id,content,date,source",
-            "id": f"in.({','.join(values)})",
+        params: Dict[str, str] = {
+            "select": _normalize_select(select, "id,content,date,source"),
+            id_column: f"in.({','.join(values)})",
             "limit": str(len(chunk)),
         }
-        if source and source != "all":
-            params["source"] = f"eq.{source}"
+        if source and source != "all" and source_column:
+            params[source_column] = f"eq.{source}"
         r = requests.get(endpoint, headers=headers(key), params=params, timeout=30)
         r.raise_for_status()
         out_rows.extend(r.json())
@@ -112,12 +154,32 @@ def fetch_by_ids(
     out_rows.sort(key=lambda row: order_map.get(str(row.get("id")), len(order_map)))
     return out_rows
 
-
 def read_dreams_from_supabase(
     query: Optional[str],
     limit: int,
     source: str = "mine",
     ids: Optional[Iterable[object]] = None,
+) -> List[dict]:
+    return read_items_from_supabase(query, limit, source, ids)
+
+
+def read_items_from_supabase(
+    query: Optional[str],
+    limit: int,
+    source: str = "mine",
+    ids: Optional[Iterable[object]] = None,
+    *,
+    table: str = "dreams",
+    select: Optional[Union[str, Iterable[str]]] = None,
+    search_column: str = "content",
+    order_column: str = "date",
+    order_desc: bool = True,
+    source_column: Optional[str] = "source",
+    id_column: str = "id",
+    content_field: Optional[str] = "content",
+    content_fallback_fields: Optional[List[str]] = None,
+    date_fields: Optional[List[str]] = None,
+    require_content: bool = True,
 ) -> List[dict]:
     url, key = env_keys()
     try:
@@ -135,11 +197,42 @@ def read_dreams_from_supabase(
             else:
                 if limit and limit > 0:
                     unique_ids = unique_ids[:limit]
-                rows = fetch_by_ids(url, key, unique_ids, source)
+                rows = fetch_by_ids(
+                    url,
+                    key,
+                    unique_ids,
+                    source,
+                    table=table,
+                    select=select,
+                    id_column=id_column,
+                    source_column=source_column,
+                )
         elif query:
-            rows = search_dreams(url, key, query, limit, source)
+            rows = search_dreams(
+                url,
+                key,
+                query,
+                table=table,
+                limit=limit,
+                source=source,
+                select=select,
+                search_column=search_column,
+                order_column=order_column,
+                order_desc=order_desc,
+                source_column=source_column,
+            )
         else:
-            rows = fetch_recent(url, key, limit, source)
+            rows = fetch_recent(
+                url,
+                key,
+                table=table,
+                limit=limit,
+                source=source,
+                select=select,
+                order_column=order_column,
+                order_desc=order_desc,
+                source_column=source_column,
+            )
     except requests.HTTPError as e:
         try:
             detail = e.response.json()
@@ -147,19 +240,52 @@ def read_dreams_from_supabase(
             detail = e.response.text if e.response is not None else str(e)
         raise SystemExit(f"Supabase request failed: {detail}")
 
+    content_candidates: List[str] = []
+    if content_field:
+        content_candidates.append(content_field)
+    if content_fallback_fields:
+        for field in content_fallback_fields:
+            if field and field not in content_candidates:
+                content_candidates.append(field)
+    for fallback in ("content", "dream_text", "text"):
+        if fallback not in content_candidates:
+            content_candidates.append(fallback)
+
+    date_candidates: List[str] = []
+    if date_fields:
+        date_candidates.extend([f for f in date_fields if f])
+    for fallback in ("date", "created_at", "dream_date"):
+        if fallback not in date_candidates:
+            date_candidates.append(fallback)
+
     out: List[dict] = []
     for r in rows:
-        content = (r.get("content") or "").strip()
-        if not content:
+        raw_content = ""
+        for cand in content_candidates:
+            value = r.get(cand)
+            if value:
+                raw_content = str(value)
+                break
+        content = raw_content.strip()
+        if require_content and not content:
             continue
-        out.append(
-            {
-                **r,
-                "id": r.get("id") or r.get("dream_id") or r.get("uuid"),
-                "date": r.get("date") or r.get("created_at") or r.get("dream_date"),
-                "content": content,
-            }
-        )
+
+        row_out = {**r}
+        if content_field and content_field != "content" and content_field not in row_out:
+            row_out[content_field] = raw_content
+        if content:
+            row_out["content"] = content
+        elif require_content:
+            row_out["content"] = content
+
+        row_out.setdefault("id", r.get("id") or r.get("dream_id") or r.get("uuid"))
+        for cand in date_candidates:
+            date_val = r.get(cand)
+            if date_val:
+                row_out["date"] = date_val
+                break
+
+        out.append(row_out)
     return out
 
 

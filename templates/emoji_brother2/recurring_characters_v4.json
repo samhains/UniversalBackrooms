@@ -1,0 +1,33 @@
+{
+  "recurring_characters": [
+    {
+      "id": "speaker",
+      "name": "Speaker/Narrator",
+      "role": "Younger Brother",
+      "profile": "Former software engineer turned artist. Childhood: conformist, quiet, 'sensible' in opposition to Harry. Adulthood: embraced creativity, recognized shared traits with Harry.",
+      "key_trait": "Defined self against Harry's chaos, later accepted their similarities",
+      "context": "Delivering Harry's eulogy"
+    },
+    {
+      "id": "harry",
+      "name": "Harry",
+      "role": "Older Brother",
+      "profile": "Brilliant creative who died young. Created 'Harry Land' (elaborate fantasy world in wardrobe). Expelled from Melbourne Grammar. Boundary-pushing, volatile, inspiring.",
+      "key_trait": "Fearless genius who made people uncomfortable but left profound impact",
+      "struggles": "Sobriety issues"
+    },
+    {
+      "id": "father",
+      "name": "Father",
+      "role": "Parent",
+      "profile": "Traditional, worried parent who chose conservative schooling to manage Harry's behavior",
+      "key_trait": "Overwhelmed by unconventional son"
+    }
+  ],
+  "family_dynamic": "Harry's wild creativity vs. family conformity. Brothers grew from opposition to connection before Harry's death.",
+  "themes": [
+    "Creativity vs. conformity",
+    "Identity through opposition",
+    "Grief and acceptance"
+  ]
+}
