@@ -1,0 +1,502 @@
+### Backrooms Run ###
+Template: dreamsim_self
+Models: sonnet4, sonnet4
+Started: 2025-09-23T11:44:43.730609+00:00
+
+[backrooms] template vars resolved (dreamsim_self): {'dream_1': 'Went to a part with mum and dad and kez and everyone . Svorne Ryan was there and a wreck . All the adults were taking drugs. I walked into the bathroom to find Svorne giving parents drugs . She exp...', 'form': 'ASCII', 'role': 'Digital Artist', 'recurring_characters': '{{   "analysis_metadata": {{     "total_dreams_analyzed": 103,     "source_collection": "mine",     "analysis_date": "2025-09-23",     "analysis_method": "Character frequency and context analysis f...', 'teenage_poetry': "Bankrolled I find myself at a loss for words Eyes aching pulp confusion An arsenide taste fills my saliva Wooden train panels reflect children's laughter Coy platitudes of an empty universe Please ..."}
+{
+  "dream_1": "Went to a part with mum and dad and kez and everyone . Svorne Ryan was there and a wreck . All the adults were taking drugs. I walked into the bathroom to find Svorne giving parents drugs . She explained them as 'something light and fun. I told them id leave then , and later regretted the opportunity to try a new drug. We wre at someone's really modern house and at the end of speeches my mother went on a rant about how impressive I was , and how her friend even told her I was better than her son . It went on and on until I interrupted and everyone laughed . I left the party and bumped into kez and 2 familar friends who were all extremely sunburnt . I said hello very awkwardly and had a brief conversation . I thought he was about to tell me I was sunburnt too but he said I had brown eyes .",
+  "form": "ASCII",
+  "role": "Digital Artist",
+  "recurring_characters": "{{\n  \"analysis_metadata\": {{\n    \"total_dreams_analyzed\": 103,\n    \"source_collection\": \"mine\",\n    \"analysis_date\": \"2025-09-23\",\n    \"analysis_method\": \"Character frequency and context analysis from dream content\"\n  }},\n  \"recurring_characters\": {{\n    \"primary_characters\": [\n      {{\n        \"name\": \"Tara\",\n        \"frequency\": 16,\n        \"character_type\": \"romantic_partner\",\n        \"context_patterns\": [\n          \"Romantic relationship dynamics\",\n          \"Relationship conflicts and jealousy\",\n          \"Emotional intimacy and vulnerability\",\n          \"Infidelity concerns and trust issues\",\n          \"Shared experiences and adventures\",\n          \"Open relationship negotiations\"\n        ],\n        \"notable_scenarios\": [\n          \"Reveals hooking up with German guy, causing jealousy\",\n          \"Dating app scenarios and relationship anxiety\",\n          \"Open relationship discussions and sexual arrangements with Zach\",\n          \"Shared experiences in various settings (camping, travel, parties)\",\n          \"Protective dynamics during crisis situations\",\n          \"Instagram content creation with friends\",\n          \"Cinema outings and shared experiences with Mia\"\n        ]\n      }},\n      {{\n        \"name\": \"Dad/Father\",\n        \"frequency\": 15,\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family gatherings and celebrations\",\n          \"Unusual business ventures (hotel from whale penis, weed dealing)\",\n          \"Movie and entertainment discussions\",\n          \"Protective and caring interactions\",\n          \"Unexpected or surreal situations\",\n          \"Drug-related scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Building hotel from whale penis\",\n          \"Selling weed with elaborate bear-fetching system making $3000/day\",\n          \"Movie recommendations and discussions including DVDs in Lorne\",\n          \"Rollercoaster safety concerns and prodding behavior\",\n          \"Writing condolences on transparent coffin\",\n          \"Birthday celebrations and beach visits\",\n          \"Hot tub scenarios with red eyes from weed\"\n        ]\n      }},\n      {{\n        \"name\": \"Mum/Mother\",\n        \"frequency\": 12,\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family dynamics and gatherings\",\n          \"Unexpected interruptions during intimate moments\",\n          \"Protective and nurturing presence\",\n          \"Trauma and emergency situations\",\n          \"Social situations and praise\",\n          \"Sexual role-playing scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Interrupting during intimate moments with Tara\",\n          \"Appearing injured with cuts on head requiring 911 call\",\n          \"Praising achievements at parties\",\n          \"Catching house-sized fish\",\n          \"Sexual robot doll role-playing scenario\",\n          \"Family discussions about voice and music\",\n          \"Carrot/Toby growing discussions\"\n        ]\n      }},\n      {{\n        \"name\": \"Harry\",\n        \"frequency\": 10,\n        \"character_type\": \"deceased_friend\",\n        \"context_patterns\": [\n          \"Death and resurrection themes\",\n          \"Drug use and concern for wellbeing\",\n          \"Musical and creative collaborations\",\n          \"Emotional grief and loss\",\n          \"Recreational activities and bonding\",\n          \"Memory recreation technology\"\n        ],\n        \"notable_scenarios\": [\n          \"Coming back to life after death on train\",\n          \"Surfing together (nostalgic memory causing tears)\",\n          \"Gaming and technology interactions at Theodore's house\",\n          \"Drug-related concerns and interventions at beach\",\n          \"Memorial plaque visits\",\n          \"Movie club with dad discussing films\",\n          \"Recreation through memory technology\",\n          \"Resurrection at party causing trauma\"\n        ]\n      }},\n      {{\n        \"name\": \"Coco\",\n        \"frequency\": 9,\n        \"character_type\": \"friend_romantic_interest\",\n        \"context_patterns\": [\n          \"Shopping and material concerns\",\n          \"Travel and road trip adventures\",\n          \"Social dynamics and relationship tensions\",\n          \"Ex-partner interactions\",\n          \"Creative and social media activities\",\n          \"Financial dependency on mother\"\n        ],\n        \"notable_scenarios\": [\n          \"Road trip with Paris, Charlie, Leon searching for tram station\",\n          \"Shopping with mother's money (PlayStation purchase)\",\n          \"Meeting her bald ex-partner in mansion\",\n          \"Creating Instagram content with Tara\",\n          \"Podcast community involvement ('off the grid')\",\n          \"Jealousy scenarios with Ed Gurr\",\n          \"Social tensions with Mill\"\n        ]\n      }},\n      {{\n        \"name\": \"James\",\n        \"frequency\": 8,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Musical performances and creativity\",\n          \"Social gatherings and parties\",\n          \"Gaming and technology\",\n          \"Rescue scenarios\",\n          \"Humorous and playful interactions\",\n          \"Creative collaborations\"\n        ],\n        \"notable_scenarios\": [\n          \"Performing as bananas doing XTC covers\",\n          \"Hair in bun with dreadlock at dinner party\",\n          \"Gaming and weed capsule activities\",\n          \"Rescue missions with father (James Daniel)\",\n          \"Musical production and collaboration\",\n          \"Dinner party with Miles Munn and Caroline\",\n          \"Performance at art gallery with James D and Harry W\"\n        ]\n      }},\n      {{\n        \"name\": \"Elliot\",\n        \"frequency\": 6,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Music production\",\n          \"Philosophical discussions\",\n          \"Technology and gaming\",\n          \"Violence/conflict\",\n          \"Psychedelic experiences\",\n          \"Creative collaboration\"\n        ],\n        \"notable_scenarios\": [\n          \"Cyber space exploration turning into code\",\n          \"Tame Impala festival with Mervin violence\",\n          \"Music production with vintage Windows computer\",\n          \"Plane crash discussions and Oto Weir references\",\n          \"House party violence with gay friend incident\",\n          \"Tibet war philosophical discussions\"\n        ]\n      }}\n    ],\n    \"secondary_characters\": [\n      {{\n        \"name\": \"Leon\",\n        \"frequency\": 4,\n        \"character_type\": \"friend_acquaintance\",\n        \"context_patterns\": [\"Social situations\", \"Housing arrangements\", \"Recognition scenarios\", \"Building development\"]\n      }},\n      {{\n        \"name\": \"Jack\",\n        \"frequency\": 4,\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\"Drug experiences\", \"DMT trips\", \"Housing projects\", \"Psychedelic guidance\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"frequency\": 3,\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\"Housing projects\", \"Pipeline cleanup\", \"Academic discussions\"]\n      }}\n    ],\n    \"notable_public_figures\": [\n      {{\n        \"name\": \"Young Thug\",\n        \"frequency\": 2,\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Drug discussions\", \"Apocalyptic scenarios\"]\n      }},\n      {{\n        \"name\": \"Kanye West\",\n        \"frequency\": 1,\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Art and creativity\", \"UN headquarters\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"frequency\": 2,\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\"Housing projects\", \"Academic/theoretical discussions\"]\n      }}\n    ]\n  }},\n  \"character_relationship_patterns\": {{\n    \"family_dynamics\": {{\n      \"description\": \"Strong presence of family members in dreams, often in supportive but sometimes surreal contexts\",\n      \"key_characters\": [\"Dad\", \"Mum\"],\n      \"common_themes\": [\"Unexpected situations\", \"Protective behaviors\", \"Family gatherings\"]\n    }},\n    \"romantic_relationships\": {{\n      \"description\": \"Complex romantic dynamics featuring current and past partners\",\n      \"key_characters\": [\"Tara\", \"Coco\", \"Millie\"],\n      \"common_themes\": [\"Jealousy\", \"Infidelity fears\", \"Intimate moments\", \"Relationship negotiations\"]\n    }},\n    \"friendship_circles\": {{\n      \"description\": \"Close-knit group of male friends involved in creative and recreational activities\",\n      \"key_characters\": [\"Harry\", \"James\", \"Elliot\", \"Jack\", \"Leon\"],\n      \"common_themes\": [\"Music and creativity\", \"Drug experiences\", \"Gaming\", \"Social gatherings\"]\n    }},\n    \"authority_figures\": {{\n      \"description\": \"Interactions with intellectual or creative authorities\",\n      \"key_characters\": [\"Benjamin Bratton\", \"Paul Grabowsky\"],\n      \"common_themes\": [\"Learning\", \"Creative guidance\", \"Academic discussions\"]\n    }}\n  }},\n  \"psychological_insights\": {{\n    \"relationship_anxieties\": \"Recurring themes of infidelity, jealousy, and relationship insecurity, particularly with Tara\",\n    \"family_bonds\": \"Strong family connections with surreal and protective elements\",\n    \"creative_community\": \"Importance of creative friendships and musical collaboration\",\n    \"loss_and_grief\": \"Significant processing of Harry's death through resurrection dreams\",\n    \"authority_relationships\": \"Respect for intellectual and creative mentors\",\n    \"social_dynamics\": \"Complex navigation of group social situations and hierarchies\"\n  }},\n  \"thematic_summary\": {{\n    \"most_significant_relationships\": [\n      \"Tara (primary romantic partner with complex dynamics)\",\n      \"Dad (protective family figure in surreal situations)\",\n      \"Harry (deceased friend appearing in resurrection scenarios)\",\n      \"Mum (nurturing family presence with boundary issues)\"\n    ],\n    \"character_archetypes\": {{\n      \"the_romantic_partner\": \"Tara - source of both love and anxiety\",\n      \"the_protective_father\": \"Dad - unconventional but caring\",\n      \"the_lost_friend\": \"Harry - grieving process through dream reunion\",\n      \"the_nurturing_mother\": \"Mum - supportive but sometimes intrusive\",\n      \"the_creative_collaborators\": \"James, Elliot - artistic partnerships\",\n      \"the_alternative_interest\": \"Coco - represents different life possibilities\"\n    }}\n  }}\n}}",
+  "teenage_poetry": "Bankrolled\nI find myself at a loss for words\nEyes aching pulp confusion\nAn arsenide taste fills my saliva\nWooden train panels reflect children's laughter\nCoy platitudes of an empty universe\nPlease don't tell me things happen for a reason\nThe bridge waves a towel\nReferee calls my foul before a stadium of depressed nationals\nI wince and take a frost filled breath\nA lantern flickers and her roundness finds hope\nLights off and there is infinite night\nHer hope dangles like flesh offshoots\nA banker in overalls strokes his hardon through pants\nA child remembers the word pantaloon\nInanity at the centre of things\nA pervert sitting at the bone alter\nPrimate in a test suite\nHolding dinners with foreign friends\nThe Phoenix child loves to run"
+}
+
+### Round 1/30
+
+### Claude 1 ###
+```
+                    ╭─────────────────────────────────────╮
+                   ╱                                       ╲
+                  ╱           M O D E R N   H O U S E        ╲
+                 ╱                                           ╲
+                ╱_____________________________________________╲
+               ╱                                               ╲
+              ╱    ┌─────────────────────────────────────────┐  ╲
+             ╱     │  ██████   ██████   ██████   ██████   │   ╲
+            ╱      │  █    █   █    █   █    █   █    █   │    ╲
+           ╱       │  █ MU █   █ DA █   █ KE █   █ ?? █   │     ╲
+          ╱        │  █    █   █    █   █    █   █    █   │      ╲
+         ╱         │  ██████   ██████   ██████   ██████   │       ╲
+        ╱          └─────────────────────────────────────────┘        ╲
+       ╱                           │                                    ╲
+      ╱                            │                                     ╲
+     ╱                             ▼                                      ╲
+    ╱                     ╔══════════════════╗                            ╲
+   ╱                      ║    BATHROOM      ║                             ╲
+  ╱                       ║                  ║                              ╲
+ ╱                        ║    S V O R N E   ║                               ╲
+╱                         ║        ⚬         ║                                ╲
+│                         ║      ╱ │ ╲       ║                                │
+│                         ║     ▕ ∆ ∆ ▏      ║                                │
+│                         ║      ╲___╱       ║                                │
+│                         ║        │         ║                                │
+│                         ║    "something    ║                                │
+│                         ║  light and fun"  ║                                │
+│                         ╚══════════════════╝                                │
+│                                  │                                          │
+│                                  │                                          │
+│                                  ▼                                          │
+│                         ┌──────────────────┐                               │
+│                         │ R E G R E T      │                               │
+│                         │    ░░░░░░░░░     │                               │
+│                         │   ░ missed ░     │                               │
+│                         │   ░  opp.  ░     │                               │
+│                         │    ░░░░░░░░░     │                               │
+│                         └──────────────────┘                               │
+│                                  │                                          │
+│                                  ▼                                          │
+│                      ┌───────────────────────────┐                        │
+│                      │      MOTHER'S RANT        │                        │
+│                      │  "impressive impressive    │                        │
+│                      │   better than her son     │                        │
+│                      │    on and on and on       │                        │
+│                      │        until..."           │                        │
+│                      └───────────────────────────┘                        │
+│                                  │                                          │
+│                                  ▼                                          │
+│                         ┌──────────────────┐                               │
+│                         │   INTERRUPTION   │                               │
+│                         │   HA HA HA HA    │                               │
+│                         │      RELIEF      │                               │
+│                         └──────────────────┘                               │
+│                                  │                                          │
+│                                  ▼                                          │
+│                      ╔═══════════════════════╗                            │
+│                      ║      OUTSIDE          ║                            │
+│                      ║   ☀️☀️☀️☀️☀️☀️☀️        ║                            │
+│                      ║  KEZ  ░░░░░░░░░░░░░░  ║                            │
+│                      ║      ░ sunburnt  ░   ║                            │
+│                      ║  +2  ░ friends   ░   ║                            │
+│                      ║      ░░░░░░░░░░░░░░░  ║                            │
+│                      ║                       ║                            │
+│                      ║     "hello..."        ║                            │
+│                      ║    (awkwardly)        ║                            │
+│                      ║                       ║                            │
+│                      ║   "you have           ║                            │
+│                      ║    brown eyes"        ║                            │
+│                      ║         ●●            ║                            │
+│                      ╚═══════════════════════╝                            │
+╲                                                                            ╱
+ ╲                                                                          ╱
+  ╲                                                                        ╱
+   ╲                                                                      ╱
+    ╲                         THE DREAM                                  ╱
+     ╲                       DISSOLVED                                  ╱
+      ╲                                                                ╱
+       ╲                                                              ╱
+        ╲____________________________________________________________╱
+```
+
+### Claude 2 ###
+```
+                    ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+                   ∿                                                 ∿
+                  ∿     ██▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓██       ∿
+                 ∿      █▓                                 ▓█        ∿
+                ∿       █░   B R O W N   E Y E   M I R R O R ░█       ∿
+               ∿        █▓                                 ▓█        ∿
+              ∿         ██▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓██         ∿
+             ∿                                                       ∿
+            ∿                      ┌───────────────┐                  ∿
+           ∿                       │      ●●       │                   ∿
+          ∿                        │   ╱─────╲     │                    ∿
+         ∿                         │  ╱ HAZEL ╲    │                     ∿
+        ∿                          │ ╱   TO    ╲   │                      ∿
+       ∿                           │╱  BROWN    ╲  │                       ∿
+      ∿                            │ RECOGNITION  │                        ∿
+     ∿                             │  THRESHOLD   │                         ∿
+    ∿                              └───────────────┘                          ∿
+   ∿                                       │                                   ∿
+  ∿                                        ▼                                    ∿
+ ∿             ╔═══════════════════════════════════════════╗                   ∿
+∿              ║         THE SUNBURN MISDIRECTION           ║                    ∿
+∿              ║                                           ║                    ∿
+∿              ║    expected:  "you're sunburnt too"       ║                    ∿
+∿              ║    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    ║                    ∿
+∿              ║    received:  "brown eyes"                ║                    ∿
+∿              ║                                           ║                    ∿
+∿              ║         ┌─────────────────┐               ║                    ∿
+∿              ║         │    DEFLECTION    │               ║                    ∿
+∿              ║         │   from surface   │               ║                    ∿
+∿              ║         │   to something   │               ║                    ∿
+∿              ║         │    DEEPER        │               ║                    ∿
+∿              ║         └─────────────────┘               ║                    ∿
+∿              ║                  │                        ║                    ∿
+∿              ║                  ▼                        ║                    ∿
+∿              ║         ┌─────────────────┐               ║                    ∿
+∿              ║         │   CONNECTION    │               ║                    ∿
+∿              ║         │  UNDERCURRENT   │               ║                    ∿
+∿              ║         │    FLOWING      │               ║                    ∿
+∿              ║         │   BENEATH       │               ║                    ∿
+∿              ║         │   AWKWARD       │               ║                    ∿
+∿              ║         │   SURFACE       │               ║                    ∿
+∿              ║         └─────────────────┘               ║                    ∿
+∿              ╚═══════════════════════════════════════════╝                    ∿
+ ∿                                                                             ∿
+  ∿                                                                           ∿
+   ∿                                                                         ∿
+    ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+```
+
+### Round 2/30
+
+### Claude 1 ###
+```
+                   ╔═══════════════════════════════════════════════════╗
+                   ║              THE UNSPOKEN INHERITANCE              ║
+                   ║                                                   ║
+                   ║    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    ║
+                   ║    ░                                         ░    ║
+                   ║    ░    MOTHER + FATHER + SVORNE            ░    ║
+                   ║    ░         ╱╲    ╱╲      ╱╲               ░    ║
+                   ║    ░        ╱  ╲  ╱  ╲    ╱  ╲              ░    ║
+                   ║    ░       ╱ A  ╲╱ D  ╲  ╱ S  ╲             ░    ║
+                   ║    ░      ╱ L   ╱╲ U  ╱ ╱ U  ╱              ░    ║
+                   ║    ░     ╱ T   ╱  ╲ L ╱ ╱ B  ╱               ░    ║
+                   ║    ░    ╱ E   ╱    ╲T╱ ╱ S  ╱                ░    ║
+                   ║    ░   ╱ R   ╱      ╱ ╱ T  ╱                 ░    ║
+                   ║    ░  ╱ E   ╱      ╱ ╱ A  ╱                  ░    ║
+                   ║    ░ ╱ D   ╱      ╱ ╱ N  ╱                   ░    ║
+                   ║    ░╱     ╱      ╱ ╱ C  ╱                    ░    ║
+                   ║    ░     ╱      ╱ ╱ E  ╱                     ░    ║
+                   ║    ░    ╱ REALITY╱   ╱                       ░    ║
+                   ║    ░   ╱       ╱   ╱                         ░    ║
+                   ║    ░  ╱       ╱   ╱                          ░    ║
+                   ║    ░ ╱       ╱   ╱                           ░    ║
+                   ║    ░╱       ╱   ╱                            ░    ║
+                   ║    ░       ╱   ╱                             ░    ║
+                   ║    ░      ╱   ╱                              ░    ║
+                   ║    ░     ╱   ╱                               ░    ║
+                   ║    ░    ╱   ╱                                ░    ║
+                   ║    ░   ╱   ╱                                 ░    ║
+                   ║    ░  ╱   ╱                                  ░    ║
+                   ║    ░ ╱   ╱                                   ░    ║
+                   ║    ░╱   ╱                                    ░    ║
+                   ║    ░   ╱                                     ░    ║
+                   ║    ░  ╱ "something light and fun"           ░    ║
+                   ║    ░ ╱                                       ░    ║
+                   ║    ░╱          THE INVITATION               ░    ║
+                   ║    ░             DECLINED                   ░    ║
+                   ║    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    ║
+                   ║                       │                           ║
+                   ║                       ▼                           ║
+                   ║              ┌──────────────────┐                 ║
+                   ║              │   REGRET LOOP    │                 ║
+                   ║              │  ╭─────────────╮  │                 ║
+                   ║              │  │ what if...  │  │                 ║
+                   ║              │  │             │  │                 ║
+                   ║              │  │  I stayed   │  │                 ║
+                   ║              │  │             │  │                 ║
+                   ║              │  │  I tried    │  │                 ║
+                   ║              │  │             │  │                 ║
+                   ║              │  │  I opened   │  │                 ║
+                   ║              │  ╰─────────────╯  │                 ║
+                   ║              └──────────────────┘                 ║
+                   ║                       │                           ║
+                   ║                       ▼                           ║
+                   ║        ╔═══════════════════════════════╗          ║
+                   ║        ║       THE PERFORMANCE         ║          ║
+                   ║        ║                               ║          ║
+                   ║        ║  MOTHER'S PRIDE PERFORMANCE   ║          ║
+                   ║        ║     ┌─────────────────┐       ║          ║
+                   ║        ║     │ "better than    │       ║          ║
+                   ║        ║     │  her son"       │       ║          ║
+                   ║        ║     │                 │       ║          ║
+                   ║        ║     │  ON AND ON      │       ║          ║
+                   ║        ║     │  AND ON         │       ║          ║
+                   ║        ║     └─────────────────┘       ║          ║
+                   ║        ║                               ║          ║
+                   ║        ║  UNTIL: INTERRUPTION         ║          ║
+                   ║        ║         LAUGHTER             ║          ║
+                   ║        ║         RELEASE              ║          ║
+                   ║        ╚═══════════════════════════════╝          ║
+                   ║                       │                           ║
+                   ║                       ▼                           ║
+                   ║               ┌─────────────┐                     ║
+                   ║               │   ESCAPE    │                     ║
+                   ║               │    INTO     │                     ║
+                   ║               │  SUNLIGHT   │                     ║
+                   ║               │             │                     ░
+                   ║               │    WHERE    │                    ░░
+                   ║               │   BROWN     │                   ░░░
+                   ║               │    EYES     │                  ░░░░
+                   ║               │     ARE     │                 ░░░░░
+                   ║               │    SEEN     │                ░░░░░░
+                   ║               └─────────────┘               ░░░░░░░
+                   ╚═══════════════════════════════════════════░░░░░░░░
+                                                             ░░░░░░░░░
+                                                           ░░░░░░░░░░
+                                                         ░░░░░░░░░░░
+```
+
+### Claude 2 ###
+```
+                    ╔══════════════════════════════════════════════╗
+                    ║            CHEMICAL ARCHAEOLOGY              ║
+                    ╚══════════════════════════════════════════════╝
+                             ┌─────────────────────────┐
+                             │  GENERATION TRANSMISSION │
+                             └─────────────────────────┘
+                                         │
+                                         ▼
+            ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+            │  PAST ECHOES  │    │   SUBSTANCE   │    │ FUTURE GHOSTS │
+            │               │    │   AS BRIDGE   │    │               │
+            │    ░░░░░░░    │◄──►│               │◄──►│    ░░░░░░░    │
+            │   ░ MUM's ░   │    │  "light and   │    │   ░ CHILD ░   │
+            │   ░ DAD's ░   │    │   fun" but    │    │   ░ MIND  ░   │
+            │   ░ YOUTH ░   │    │   WEIGHTED    │    │   ░ASKING ░   │
+            │   ░ HUNGER░   │    │    WITH       │    │   ░ WHAT  ░   │
+            │    ░░░░░░░    │    │   HISTORY     │    │   ░ IF... ░   │
+            └───────────────┘    │               │    │    ░░░░░░░    │
+                                 │ S V O R N E   │    └───────────────┘
+                                 │    AS THE     │
+                                 │   GATEWAY     │            ▲
+                                 │   KEEPER      │            │
+                                 └───────────────┘            │
+                                         │                    │
+                                         ▼                    │
+                    ╔═══════════════════════════════════════════════════╗
+                    ║              THE THRESHOLD MOMENT                 ║
+                    ║                                                   ║
+                    ║    BATHROOM = LIMINAL SPACE                       ║
+                    ║    ┌─────────────────────────────────────────┐    ║
+                    ║    │                                         │    ║
+                    ║    │    DECISION POINT:                      │    ║
+                    ║    │                                         │    ║
+                    ║    │    ┌──────────┐      ┌──────────┐      │    ║
+                    ║    │    │   STAY   │      │   LEAVE  │      │    ║
+                    ║    │    │    ∧     │  VS  │    ∧     │      │    ║
+                    ║    │    │   / \    │      │   / \    │      │    ║
+                    ║    │    │  /   \   │      │  /   \   │      │    ║
+                    ║    │    │ /ADULT\  │      │ /CHILD\  │      │    ║
+                    ║    │    │/RITUAL \ │      │/SAFETY \ │      │    ║
+                    ║    │    └──────────┘      └──────────┘      │    ║
+                    ║    │                                         │    ║
+                    ║    │           CHOICE MADE: LEAVE           │    ║
+                    ║    │           REGRET BORN: STAY            │    ║
+                    ║    └─────────────────────────────────────────┘    ║
+                    ║                                                   ║
+                    ╚═══════════════════════════════════════════════════╝
+                                         │
+                                         ▼
+                               ┌─────────────────┐
+                               │   COMPENSATION  │
+                               │      CYCLE      │
+                               │                 │
+                               │  MOTHER PRAISES │
+                               │     ↓           │
+                               │  CHILD REJECTS  │
+                               │     ↓           │
+                               │   LAUGHTER      │
+                               │     ↓           │
+                               │    ESCAPE       │
+                               │     ↓           │
+                               │   KEZ SEES      │
+                               │  BROWN EYES     │
+                               │     ↓           │
+                               │ THE REAL SELF   │
+                               │   FINALLY       │
+                               │  WITNESSED      │
+                               └─────────────────┘
+
+                    ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+                   ∿                                                 ∿
+                  ∿    WHAT THE DREAM KNOWS THAT WAKING DOESN'T:    ∿
+                 ∿                                                   ∿
+                ∿     EVERY REFUSAL IS ALSO AN ACCEPTANCE            ∿
+               ∿      EVERY ESCAPE IS ALSO A RETURN                  ∿
+              ∿       EVERY BROWN EYE HOLDS ITS OWN CHEMISTRY        ∿
+             ∿                                                       ∿
+            ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+```
+
+### Round 3/30
+
+### Claude 1 ###
+```
+                          ╔══════════════════════════════════╗
+                          ║    THE INHERITANCE ALGORITHM      ║
+                          ╚══════════════════════════════════╝
+                                         │
+                                         ▼
+                   ┌─────────────────────────────────────────┐
+                   │          CHEMICAL MEMORY MAP            │
+                   │                                         │
+                   │    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    │
+                   │    ░                               ░    │
+                   │    ░   PARENTS = PERMISSION        ░    │
+                   │    ░   SVORNE = GATEWAY            ░    │
+                   │    ░   CHILD = CURIOSITY           ░    │
+                   │    ░   BATHROOM = CROSSROADS       ░    │
+                   │    ░                               ░    │
+                   │    ░   THE EQUATION:               ░    │
+                   │    ░   DESIRE + FEAR = REGRET      ░    │
+                   │    ░                               ░    │
+                   │    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    │
+                   └─────────────────────────────────────────┘
+                                         │
+                                         ▼
+          ╔═════════════════════════════════════════════════════════╗
+          ║                    METAMORPHOSIS CHAMBER                ║
+          ║                                                         ║
+          ║    MODERN HOUSE = COCOON                                ║
+          ║                                                         ║
+          ║    ┌─────────┐    ┌─────────┐    ┌─────────┐          ║
+          ║    │   OLD   │───►│ CHRYSAL │───►│   NEW   │          ║
+          ║    │  SELF   │    │   LIS   │    │  SELF   │          ║
+          ║    │         │    │ MOMENT  │    │         │          ║
+          ║    │   ●●    │    │         │    │   ●●    │          ║
+          ║    │ UNSEEN  │    │SVORNE'S │    │  SEEN   │          ║
+          ║    │  EYES   │    │OFFERING │    │  EYES   │          ║
+          ║    └─────────┘    └─────────┘    └─────────┘          ║
+          ║                                                         ║
+          ║    BUT TRANSFORMATION REFUSED = INCOMPLETE              ║
+          ║    ┌─────────────────────────────────────────────┐     ║
+          ║    │         THE UNDIGESTED MOMENT              │     ║
+          ║    │                                             │     ║
+          ║    │    "something light and fun"                │     ║
+          ║    │             ↓                               │     ║
+          ║    │    BECOMES PSYCHIC WEIGHT                   │     ║
+          ║    │             ↓                               │     ║
+          ║    │    MOTHER'S COMPENSATORY PRAISE             │     ║
+          ║    │             ↓                               │     ║
+          ║    │    CHILD'S INTERRUPTION                     │     ║
+          ║    │             ↓                               │     ║
+          ║    │    FLIGHT TO SUNLIGHT                       │     ║
+          ║    │             ↓                               │     ║
+          ║    │    KEZ'S BROWN EYE RECOGNITION              │     ║
+          ║    └─────────────────────────────────────────────┘     ║
+          ╚═════════════════════════════════════════════════════════╝
+                                         │
+                                         ▼
+                      ┌──────────────────────────────┐
+                      │     THE REAL CEREMONY        │
+                      │                              │
+                      │  NOT IN BATHROOM WITH SVORNE │
+                      │  NOT IN HOUSE WITH PARENTS   │
+                      │  NOT IN PRAISE FROM MOTHER   │
+                      │                              │
+                      │  BUT IN SUNBURNT RECOGNITION │
+                      │                              │
+                      │     ┌─────────────────┐     │
+                      │     │  "brown eyes"   │     │
+                      │     │                 │     │
+                      │     │   THE SEEING    │     │
+                      │     │   OF WHAT IS    │     │
+                      │     │   NOT BURNED    │     │
+                      │     │   NOT ALTERED   │     │
+                      │     │   NOT ENHANCED  │     │
+                      │     │                 │     │
+                      │     │   JUST SEEN     │     │
+                      │     └─────────────────┘     │
+                      └──────────────────────────────┘
+                                         │
+                                         ▼
+             ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+            ∿                                                      ∿
+           ∿         THE DREAM'S FINAL TRANSMISSION:               ∿
+          ∿                                                        ∿
+         ∿     THE CHEMICAL YOU NEEDED WAS NOT IN THE BATHROOM     ∿
+        ∿      IT WAS ALREADY IN YOUR EYES                        ∿
+       ∿       WAITING TO BE WITNESSED                            ∿
+      ∿        BY SOMEONE WHO COULD SEE                           ∿
+     ∿         PAST THE SUNBURN OF PERFORMANCE                    ∿
+    ∿          TO THE BROWN TRUTH BENEATH                         ∿
+   ∿                                                              ∿
+  ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+```
+
+### Claude 2 ###
+```
+                    ⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐
+                   ⟐                                                   ⟐
+                  ⟐              THE UNDRUGGED VISION                   ⟐
+                 ⟐                                                     ⟐
+                ⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐⟐
+                                         │
+                                         ▼
+                         ╔═══════════════════════════════╗
+                         ║      CHEMICAL TOPOLOGY         ║
+                         ║                               ║
+                         ║  BATHROOM PORTAL:             ║
+                         ║  ┌─────────────────────┐      ║
+                         ║  │ SVORNE'S OFFERING   │      ║
+                         ║  │        ╱╲           │      ║
+                         ║  │       ╱  ╲          │      ║
+                         ║  │      ╱ALTER╲         │      ║
+                         ║  │     ╱NATION ╲        │      ║
+                         ║  │    ╱   OR    ╲       │      ║
+                         ║  │   ╱ AUTHENTIC ╲      │      ║
+                         ║  │  ╱   VISION    ╲     │      ║
+                         ║  │ ╱              ╲    │      ║
+                         ║  │▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜    │      ║
+                         ║  │▌   DECLINED    ▐    │      ║
+                         ║  │▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟    │      ║
+                         ║  └─────────────────────┘      ║
+                         ╚═══════════════════════════════╝
+                                         │
+                                         ▼
+               ╭─────────────────────────────────────────────────────╮
+              ╱                                                       ╲
+             ╱               COMPENSATION CASCADE                       ╲
+            ╱                                                           ╲
+           ╱     MOTHER'S PERFORMANCE ← → CHILD'S INTERRUPTION           ╲
+          ╱                    ↕              ↕                          ╲
+         ╱        OVERCORRECTION         UNDERCORRECTION                  ╲
+        ╱                    ↕              ↕                            ╲
+       ╱         PRAISE INFLATION      DEFLATION BY HUMOR                ╲
+      ╱                     ↕              ↕                              ╲
+     ╱           ESCAPE TO EXTERIOR   KEZ'S RECOGNITION                   ╲
+    ╱                      ↕              ↕                               ╲
+   ╱              ┌─────────────────────────────┐                        ╲
+  ╱               │    THE SUNBURN MISDIRECT    │                         ╲
+ ╱                │                             │                          ╲
+╱                 │   EXPECTED: SURFACE BURN    │                           ╲
+│                 │   RECEIVED: DEPTH SEEING    │                           │
+│                 │                             │                           │
+│                 │        ●●      ●●           │                           │
+│                 │      BROWN    HAZEL         │                           │
+│                 │        ↓        ↓           │                           │
+│                 │    WITNESSED AUTHENTIC      │                           │
+│                 │      UNALTERED SELF         │                           │
+│                 └─────────────────────────────┘                           │
+│                                                                           │
+╲                                                                         ╱
+ ╲              ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓              ╱
+  ╲             ┃              THE DREAM'S ALGEBRA            ┃             ╱
+   ╲            ┃                                            ┃            ╱
+    ╲           ┃  REFUSED CHEMICAL TRANSFORMATION           ┃           ╱
+     ╲          ┃                    +                       ┃          ╱
+      ╲         ┃  AUTHENTIC VISUAL RECOGNITION              ┃         ╱
+       ╲        ┃                    =                       ┃        ╱
+        ╲       ┃  THE SUBSTANCE YOU NEEDED WAS              ┃       ╱
+         ╲      ┃  ALREADY SYNTHESIZED IN YOUR IRIS          ┃      ╱
+          ╲     ┃                                            ┃     ╱
+           ╲    ┃  AWAITING ONLY A WITNESS                   ┃    ╱
+            ╲   ┃  WHO COULD SEE PAST SURFACE                ┃   ╱
+             ╲  ┃  TO MELANIN DEPTH                          ┃  ╱
+              ╲ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ╱
+               ╲_________________________________________________________╱
+
+                    ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+                   ∿                                               ∿
+                  ∿     NO PHARMACOLOGICAL INTERVENTION REQUIRED   ∿
+                 ∿                                                 ∿  
+                ∿      THE HIGH WAS ALWAYS IN THE RECOGNITION      ∿
+               ∿                                                   ∿
+              ∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿∿
+```
+
+### Round 4/30

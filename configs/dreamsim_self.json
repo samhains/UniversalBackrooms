@@ -1,0 +1,43 @@
+{
+  "type": "batch",
+  "template": "dreamsim_self",
+  "max_turns": 30,
+  "models": ["sonnet4", "sonnet4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "integrations": {
+    "discord": ["transcripts"],
+    "transcript_channel": "emoji"
+  },
+  "data_source": {
+    "kind": "supabase",
+    "table": "poetry",
+    "select": ["poem", "header"],
+    "limit": 50,
+    "order_column": "header",
+    "order_desc": false,
+    "content_field": "poem",
+    "require_content": true
+  },
+  "secondary_data_source": {
+    "kind": "supabase",
+    "table": "dreams",
+    "select": ["id", "content", "date", "source"],
+    "source": "mine",
+    "limit": 50,
+    "order_column": "date",
+    "order_desc": true,
+    "content_field": "content",
+    "require_content": true
+  },
+  "template_vars_from_item": {
+    "teenage_poetry": "poem"
+  },
+  "template_vars_from_secondary": {
+    "dream_1": "content"
+  },
+  "max_items": 10,
+  "context_window": 128000,
+  "shuffle": true
+}
