@@ -1,0 +1,163 @@
+{
+  "recurring_characters": [
+    {
+      "id": "speaker",
+      "name": "Speaker/Narrator",
+      "role": "Younger Brother",
+      "relationship_to_others": {
+        "harry": "younger brother",
+        "father": "son"
+      },
+      "age_context": {
+        "childhood": "Started at Melbourne Grammar around age 7-8",
+        "early_narrative": "Around 10 years old when receiving comments about differences from Harry",
+        "career": "Former software engineer turned artist"
+      },
+      "personality_traits": [
+        "Initially conformist and rule-following",
+        "Self-identified as 'stable, sensible, ordinary'",
+        "Quiet and non-problematic as a child",
+        "Evolved to embrace creativity and unconventionality as adult",
+        "Reflective and introspective",
+        "Initially suppressed creative side",
+        "Capable of deep emotional expression"
+      ],
+      "key_characteristics": {
+        "childhood_identity": "Defined himself in opposition to Harry's weirdness",
+        "coping_mechanism": "Remained quiet to avoid causing worry for parents",
+        "career_evolution": "Transitioned from software engineering to arts",
+        "creative_interests": "Virtual worlds, avatars, simulations, science fiction",
+        "relationship_with_harry": "Complex - frustration and love, distance then growing closeness",
+        "self_discovery": "Eventually recognized Harry's qualities within himself"
+      },
+      "notable_experiences": [
+        "Frequent visitor to 'Harry Land' despite frustration",
+        "Endured social embarrassment from Harry's behavior",
+        "Received constant comparisons to Harry throughout childhood",
+        "Witnessed Harry's expulsion from Melbourne Grammar",
+        "Held off on collaboration hoping for Harry's sobriety",
+        "Unconscious creative collaboration with Harry as adults"
+      ],
+      "emotional_journey": {
+        "childhood": "Frustrated, embarrassed, defined by opposition",
+        "adolescence": "Protective through conformity and quiet behavior",
+        "adulthood": "Growing connection and recognition of shared traits",
+        "after_loss": "Clear vision of Harry's brilliance, acceptance of shared qualities"
+      },
+      "speech_context": "Delivering eulogy at Harry's funeral"
+    },
+    {
+      "id": "harry",
+      "name": "Harry",
+      "role": "Older Brother",
+      "relationship_to_others": {
+        "speaker": "older brother",
+        "father": "son"
+      },
+      "age_context": {
+        "harry_land_creation": "Around 7-8 years old",
+        "melbourne_grammar": "Lasted only 3 years at the school",
+        "death": "Passed away as a young adult"
+      },
+      "personality_traits": [
+        "Extremely creative and imaginative",
+        "Boundary-pushing and rebellious",
+        "Volatile and unpredictable",
+        "Fearless and shameless",
+        "Precociously weird",
+        "Brilliant and genius-level creativity",
+        "Challenging and difficult",
+        "Inspiring and impactful",
+        "Playful and theatrical"
+      ],
+      "key_characteristics": {
+        "world_builder": "Created elaborate fantasy world 'Harry Land'",
+        "performer": "Created sound effects, played characters",
+        "rule_breaker": "Consistently pushed boundaries from early age",
+        "artist": "Pursued career in arts",
+        "substance_issues": "Struggled with sobriety",
+        "creative_genius": "Left significant artistic work and legacy",
+        "social_impact": "Made people uncomfortable but also inspired them"
+      },
+      "notable_creations": {
+        "harry_land": {
+          "description": "Magical realm accessed through wardrobe",
+          "features": [
+            "DIY sound effects entrance",
+            "Own maps, language, customs, currency",
+            "Merchant characters for trading",
+            "Creature inhabitants who meowed and crawled",
+            "Elaborate riddles and challenges"
+          ]
+        },
+        "artistic_work": "Virtual worlds, avatars, simulations, science fiction themes"
+      },
+      "notable_incidents": [
+        "Sent to principal's office for 'licking' notice board pole with Lucy Lewis",
+        "Expelled or removed from Melbourne Grammar after 3 years",
+        "Various boundary-pushing behaviors that frightened parents"
+      ],
+      "legacy": {
+        "impact": "Left greater impact than most in full adult lifetime",
+        "qualities_remembered": "Boldness, creativity, fearlessness, lack of shame, genius",
+        "work": "Artistic works in 'tye-died, Technicolor glory'",
+        "influence_on_speaker": "Inspired brother to embrace creativity and weirdness"
+      }
+    },
+    {
+      "id": "father",
+      "name": "Father",
+      "role": "Parent",
+      "relationship_to_others": {
+        "harry": "father",
+        "speaker": "father"
+      },
+      "personality_traits": [
+        "Concerned and worried",
+        "Traditional values (implied by school choice)",
+        "Overwhelmed by Harry's behavior"
+      ],
+      "key_characteristics": {
+        "parenting_challenges": "Frightened by Harry's boundary-pushing behavior",
+        "education_decisions": "Chose strict, conservative Melbourne Grammar for sons",
+        "emotional_state": "Frequently worried about Harry",
+        "family_dynamic": "Part of 'my parents' unit dealing with Harry's challenges"
+      },
+      "notable_context": {
+        "socioeconomic_status": "Could afford private school education",
+        "parenting_style": "Sought structure through conservative schooling",
+        "family_stress": "Dealt with ongoing concerns about Harry's behavior"
+      },
+      "limited_direct_presence": {
+        "note": "Father primarily mentioned as part of 'parents' unit",
+        "inference": "Mother likely also present but not separately distinguished",
+        "role_in_narrative": "Background figure representing parental concern and conventional expectations"
+      }
+    }
+  ],
+  "family_dynamics": {
+    "central_tension": "Harry's unconventionality vs. family/social expectations",
+    "sibling_relationship_evolution": {
+      "childhood": "Oppositional identities, frustration, embarrassment",
+      "adulthood": "Growing closeness, shared interests, recognition of similarities",
+      "post_loss": "Full acceptance and integration of Harry's influence"
+    },
+    "parental_relationship": "Parents as worried observers, trying to manage Harry through structure",
+    "social_context": "Conservative private school environment, social judgment from peers"
+  },
+  "themes": {
+    "primary": [
+      "Creativity vs. conformity",
+      "Sibling identity formation through opposition",
+      "The price and value of nonconformity",
+      "Grief and acceptance",
+      "Recognition of shared humanity"
+    ],
+    "secondary": [
+      "Addiction and its impact on relationships",
+      "Artistic collaboration and influence",
+      "Social judgment and family shame",
+      "The evolution of understanding with maturity"
+    ]
+  }
+}

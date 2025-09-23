@@ -12,8 +12,17 @@
   },
   "data_source": {
     "kind": "supabase",
+    "table": "poetry",
+    "select": ["id", "content", "title", "author", "created_at"],
     "limit": 50,
-    "source": "mine"
+    "source": "all",
+    "source_column": null,
+    "content_field": "content",
+    "search_column": "content",
+    "order_column": "created_at",
+    "order_desc": true,
+    "date_fields": ["created_at"],
+    "require_content": true
   },
   "template_vars_from_item": {
     "dream_1": "content"

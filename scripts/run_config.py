@@ -48,6 +48,7 @@ except Exception:
 try:
     from scripts.batch_utils import (
         read_dreams_from_supabase,
+        read_items_from_supabase,
         parse_pairs,
         validate_models,
         latest_log_for,
@@ -61,6 +62,15 @@ except Exception:
         limit: int,
         source: str = "mine",
         ids: Optional[Iterable[object]] = None,
+    ) -> List[dict]:
+        raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
+
+    def read_items_from_supabase(
+        query: Optional[str],
+        limit: int,
+        source: str = "mine",
+        ids: Optional[Iterable[object]] = None,
+        **_: Any,
     ) -> List[dict]:
         raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
 
@@ -374,7 +384,65 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     source = None  # used only for Supabase metadata
     if kind in ("supabase",):
         query = ds.get("query") or ""
-        source = ds.get("source", "mine")
+        table = str(ds.get("table") or "dreams").strip() or "dreams"
+
+        if "source" in ds:
+            source = ds.get("source")
+        else:
+            source = "mine" if table == "dreams" else "all"
+
+        select = ds.get("select")
+        search_column = str(ds.get("search_column") or ds.get("search_field") or "content")
+        order_column_raw = ds.get("order_column")
+        if order_column_raw is None:
+            order_column = "date"
+        else:
+            order_column = str(order_column_raw).strip()
+        order_desc_raw = ds.get("order_desc")
+        if order_desc_raw is None:
+            order_desc = True
+        elif isinstance(order_desc_raw, str):
+            order_desc = order_desc_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            order_desc = bool(order_desc_raw)
+
+        if "source_column" in ds:
+            source_column_val = ds.get("source_column")
+            source_column = str(source_column_val).strip() if source_column_val else None
+        else:
+            source_column = "source" if table == "dreams" else None
+
+        id_column = str(ds.get("id_column") or "id")
+
+        if "content_field" in ds:
+            content_field_val = ds.get("content_field")
+            content_field = str(content_field_val).strip() if content_field_val else None
+        else:
+            content_field = "content"
+
+        fallback_raw = ds.get("content_fallback_fields")
+        if fallback_raw is None:
+            content_fallback_fields = None
+        elif isinstance(fallback_raw, (list, tuple, set)):
+            content_fallback_fields = [str(item).strip() for item in fallback_raw if str(item).strip()]
+        else:
+            content_fallback_fields = [str(fallback_raw).strip()] if str(fallback_raw).strip() else None
+
+        date_fields_raw = ds.get("date_fields")
+        if date_fields_raw is None:
+            date_fields = None
+        elif isinstance(date_fields_raw, (list, tuple, set)):
+            date_fields = [str(item).strip() for item in date_fields_raw if str(item).strip()]
+        else:
+            date_fields = [str(date_fields_raw).strip()] if str(date_fields_raw).strip() else None
+
+        require_content_raw = ds.get("require_content")
+        if require_content_raw is None:
+            require_content = True
+        elif isinstance(require_content_raw, str):
+            require_content = require_content_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            require_content = bool(require_content_raw)
 
         raw_ids = ds.get("ids", None)
         ids: Optional[List[Any]]
@@ -389,11 +457,22 @@ def run_batch(cfg: Dict[str, Any]) -> None:
             limit = len(ids)
         else:
             limit = int(ds.get("limit", 200))
-        rows = read_dreams_from_supabase(
+        rows = read_items_from_supabase(
             query=query or None,
             limit=limit,
             source=source,
             ids=ids,
+            table=table,
+            select=select,
+            search_column=search_column,
+            order_column=order_column,
+            order_desc=order_desc,
+            source_column=source_column,
+            id_column=id_column,
+            content_field=content_field,
+            content_fallback_fields=content_fallback_fields,
+            date_fields=date_fields,
+            require_content=require_content,
         )
 
         # Shuffle/limit — default to shuffle when using a search query
@@ -415,6 +494,104 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         pass
     else:
         raise SystemExit(f"Unsupported data_source.kind '{kind}' (supported: 'supabase', 'none')")
+
+    # Optional secondary data source (e.g., pair poems with dreams)
+    secondary_rows: List[dict] = []
+    secondary_table: Optional[str] = None
+    tvars_secondary: Dict[str, str] = {}
+    sds = cfg.get("secondary_data_source")
+    if isinstance(sds, dict) and sds.get("kind") == "supabase":
+        secondary_table = str(sds.get("table") or "dreams")
+        s_query = sds.get("query")
+        s_select = sds.get("select")
+        s_search_column = str(sds.get("search_column") or "content")
+        s_order_column = str(sds.get("order_column") or ("date" if secondary_table == "dreams" else "created_at"))
+        s_order_desc_raw = sds.get("order_desc")
+        if s_order_desc_raw is None:
+            s_order_desc = True
+        elif isinstance(s_order_desc_raw, str):
+            s_order_desc = s_order_desc_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            s_order_desc = bool(s_order_desc_raw)
+
+        if "source_column" in sds:
+            s_source_column_val = sds.get("source_column")
+            s_source_column = str(s_source_column_val).strip() if s_source_column_val else None
+        else:
+            s_source_column = "source" if secondary_table == "dreams" else None
+
+        s_id_column = str(sds.get("id_column") or "id")
+        if "content_field" in sds:
+            s_content_field_val = sds.get("content_field")
+            s_content_field = str(s_content_field_val).strip() if s_content_field_val else None
+        else:
+            s_content_field = "content"
+        s_fallback_raw = sds.get("content_fallback_fields")
+        if s_fallback_raw is None:
+            s_content_fallback_fields = None
+        elif isinstance(s_fallback_raw, (list, tuple, set)):
+            s_content_fallback_fields = [str(item).strip() for item in s_fallback_raw if str(item).strip()]
+        else:
+            s_content_fallback_fields = [str(s_fallback_raw).strip()] if str(s_fallback_raw).strip() else None
+
+        s_date_fields_raw = sds.get("date_fields")
+        if s_date_fields_raw is None:
+            s_date_fields = None
+        elif isinstance(s_date_fields_raw, (list, tuple, set)):
+            s_date_fields = [str(item).strip() for item in s_date_fields_raw if str(item).strip()]
+        else:
+            s_date_fields = [str(s_date_fields_raw).strip()] if str(s_date_fields_raw).strip() else None
+
+        s_require_content_raw = sds.get("require_content")
+        if s_require_content_raw is None:
+            s_require_content = True
+        elif isinstance(s_require_content_raw, str):
+            s_require_content = s_require_content_raw.strip().lower() not in {"false", "0", "no"}
+        else:
+            s_require_content = bool(s_require_content_raw)
+
+        s_raw_ids = sds.get("ids", None)
+        if s_raw_ids is None:
+            s_ids = None
+        else:
+            if not isinstance(s_raw_ids, (list, tuple, set)):
+                raise SystemExit("secondary_data_source.ids must be an array of IDs (list/tuple/set)")
+            s_ids = [item for item in s_raw_ids]
+
+        if s_ids is not None:
+            s_limit = len(s_ids)
+        else:
+            s_limit = int(sds.get("limit", 50))
+
+        secondary_rows = read_items_from_supabase(
+            query=s_query or None,
+            limit=s_limit,
+            source=str(sds.get("source") or "all"),
+            ids=s_ids,
+            table=secondary_table,
+            select=s_select,
+            search_column=s_search_column,
+            order_column=s_order_column,
+            order_desc=s_order_desc,
+            source_column=s_source_column,
+            id_column=s_id_column,
+            content_field=s_content_field,
+            content_fallback_fields=s_content_fallback_fields,
+            date_fields=s_date_fields,
+            require_content=s_require_content,
+        )
+
+        # Optional shuffle for secondary rows
+        # Shuffling for secondary rows — defaults to overall cfg.shuffle or to query presence
+        s_shuffle_flag = sds.get("shuffle")
+        if s_shuffle_flag is None:
+            s_shuffle_flag = cfg.get("shuffle") or bool(s_query)
+        if s_shuffle_flag:
+            s_seed = sds.get("seed", cfg.get("seed"))
+            rng = random.Random(s_seed) if s_seed is not None else random
+            rng.shuffle(secondary_rows)
+
+        tvars_secondary = {str(k): str(v) for k, v in (cfg.get("template_vars_from_secondary") or {}).items()}
 
     # Pair/run plan
     pairs_cfg = cfg.get("pairs") or []
@@ -555,6 +732,13 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         vars_map: Dict[str, Any] = {}
         for var_name, field_name in tvars_map.items():
             vars_map[var_name] = row.get(field_name)
+        # Overlay template vars from secondary source (e.g., dream content)
+        if secondary_rows and tvars_secondary:
+            srow = secondary_rows[(idx - 1) % len(secondary_rows)]
+            for var_name, field_name in tvars_secondary.items():
+                val = srow.get(field_name)
+                if val is not None:
+                    vars_map[var_name] = val
         _write_template_vars(template, vars_map)
 
         # Determine pairs for this item
@@ -581,6 +765,13 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         print("\n" + header)
         print("Text:")
         print((row.get("content") or "").strip())
+        if secondary_rows:
+            try:
+                label = "Dream" if (secondary_table or "").lower() == "dreams" else "Secondary"
+                print(f"{label}:")
+                print((secondary_rows[(idx - 1) % len(secondary_rows)].get("content") or "").strip())
+            except Exception:
+                pass
         print(f"Will run {len(pairs_for_item)} pair(s): {pairs_label}")
 
         for (m1, m2) in pairs_for_item:

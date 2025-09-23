@@ -247,6 +247,9 @@ def _parse_folder_template(template_name: str):
     return configs
 
 
+_logged_template_vars: set[str] = set()
+
+
 def _resolve_var_value(template_name: str, value: object) -> object:
     """Resolve special template var directives (e.g., @file:path)."""
     if isinstance(value, str) and value.startswith("@file:"):
@@ -260,7 +263,12 @@ def _resolve_var_value(template_name: str, value: object) -> object:
     return value
 
 
-def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = None):
+def load_template(
+    template_name,
+    models,
+    cli_vars: Optional[dict[str, str]] = None,
+    log_file: Optional[Path] = None,
+):
     try:
         # Prefer folder-based template: templates/<name>/template.json
         folder_spec = Path("templates") / template_name / "template.json"
@@ -312,6 +320,44 @@ def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = No
                     extra_vars[k] = resolved.replace("{", "{{").replace("}", "}}")
                 else:
                     extra_vars[k] = resolved
+
+        # Debug: log resolved template variables once per run (per template)
+        try:
+            log_key = f"{template_name}:{id(extra_vars)}"
+            if log_key not in _logged_template_vars:
+                _logged_template_vars.add(log_key)
+
+                def _preview(val: object) -> object:
+                    if isinstance(val, str):
+                        clean = val.replace("\n", " ").strip()
+                        if len(clean) > 200:
+                            return clean[:197] + "..."
+                        return clean
+                    return val
+
+                preview = {k: _preview(v) for k, v in extra_vars.items()}
+                message = f"[backrooms] template vars resolved ({template_name}): {preview}"
+                print(message)
+                if log_file:
+                    try:
+                        def _stringify(value: object) -> object:
+                            if isinstance(value, (str, int, float, bool)) or value is None:
+                                return value
+                            if isinstance(value, dict):
+                                return {k: _stringify(v) for k, v in value.items()}
+                            if isinstance(value, (list, tuple)):
+                                return [_stringify(v) for v in value]
+                            return str(value)
+
+                        with log_file.open("a", encoding="utf-8") as lf:
+                            lf.write("\n" + message + "\n")
+                            # Log the full resolved vars without truncation for later review
+                            serialized = {key: _stringify(value) for key, value in extra_vars.items()}
+                            lf.write(json.dumps(serialized, ensure_ascii=False, indent=2) + "\n")
+                    except Exception:
+                        pass
+        except Exception:
+            pass
 
         for i, model in enumerate(models):
             if model.lower() == "cli":
@@ -738,7 +784,7 @@ def main():
         return 1024
 
     # Load template with CLI vars overlays
-    configs = load_template(args.template, models, cli_vars=cli_vars)
+    configs = load_template(args.template, models, cli_vars=cli_vars, log_file=filename)
 
     assert len(models) == len(
         configs
