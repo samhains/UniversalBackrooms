@@ -32,8 +32,7 @@
     "require_content": true
   },
   "template_vars_from_item": {
-    "teenage_poetry": "poem",
-    "poem_title": "header"
+    "teenage_poetry": "poem"
   },
   "template_vars_from_secondary": {
     "dream_1": "content"
