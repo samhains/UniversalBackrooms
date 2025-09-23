@@ -582,10 +582,13 @@ def run_batch(cfg: Dict[str, Any]) -> None:
         )
 
         # Optional shuffle for secondary rows
+        # Shuffling for secondary rows — defaults to overall cfg.shuffle or to query presence
         s_shuffle_flag = sds.get("shuffle")
+        if s_shuffle_flag is None:
+            s_shuffle_flag = cfg.get("shuffle") or bool(s_query)
         if s_shuffle_flag:
-            seed = sds.get("seed")
-            rng = random.Random(seed) if seed is not None else random
+            s_seed = sds.get("seed", cfg.get("seed"))
+            rng = random.Random(s_seed) if s_seed is not None else random
             rng.shuffle(secondary_rows)
 
         tvars_secondary = {str(k): str(v) for k, v in (cfg.get("template_vars_from_secondary") or {}).items()}
