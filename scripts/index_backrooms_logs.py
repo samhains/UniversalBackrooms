@@ -36,6 +36,34 @@ if str(ROOT) not in sys.path:
 from paths import BACKROOMS_LOGS_DIR
 
 
+def _relativize_to_root(path: Path) -> Optional[Path]:
+    """Return the path relative to the repo root when possible."""
+    try:
+        return path.relative_to(ROOT)
+    except Exception:
+        pass
+    try:
+        parts = path.parts
+        root_name = ROOT.name
+        if root_name in parts:
+            idx = parts.index(root_name)
+            return Path(*parts[idx + 1 :])
+    except Exception:
+        return None
+    return None
+
+
+def _normalize_log_str(path_str: str) -> str:
+    try:
+        p = Path(path_str)
+    except Exception:
+        return path_str
+    if not p.is_absolute():
+        return str(p)
+    rel = _relativize_to_root(p)
+    return str(rel) if rel is not None else str(p)
+
+
 def read_jsonl(path: Path) -> List[Dict]:
     rows: List[Dict] = []
     if not path.exists():
@@ -56,18 +84,6 @@ def write_jsonl(path: Path, rows: List[Dict]) -> None:
     with path.open("w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-
-
-FILENAME_RE = re.compile(
-    r"^(?P<m1>[^_]+)_(?P<m2>[^_]+)_(?P<tmpl>[^_]+)_(?P<ts>\d{8}_\d{6})\.txt$"
-)
-
-
-def parse_filename(p: Path) -> Optional[Tuple[str, str, str, str]]:
-    m = FILENAME_RE.match(p.name)
-    if not m:
-        return None
-    return m.group("m1"), m.group("m2"), m.group("tmpl"), m.group("ts")
 
 
 def ts_to_iso(ts: str) -> str:
@@ -107,26 +123,58 @@ def parse_max_turns_from_tail(p: Path) -> Optional[int]:
     return None
 
 
-def build_meta_for_file(p: Path, *, default_prompt: Optional[str] = "AI GENERATED") -> Optional[Dict]:
-    parsed = parse_filename(p)
+def _extract_models_and_ts(p: Path, template: str) -> Optional[Tuple[List[str], str]]:
+    stem = p.stem
+    # Expect pattern: <models_joined>_<template>_<timestamp>
+    pattern = re.compile(rf"^(?P<models>.+)_{re.escape(template)}_(?P<ts>\d{{8}}_\d{{6}})$")
+    m = pattern.match(stem)
+    if m:
+        models_part = m.group("models")
+        ts = m.group("ts")
+    else:
+        parts = stem.split("_")
+        if len(parts) < 3:
+            return None
+        yyyymmdd, hhmmss = parts[-2:]
+        if not re.fullmatch(r"\d{8}", yyyymmdd) or not re.fullmatch(r"\d{6}", hhmmss):
+            return None
+        ts = f"{yyyymmdd}_{hhmmss}"
+        prefix_parts = parts[:-2]
+        template_parts = template.split("_")
+        if len(prefix_parts) <= len(template_parts):
+            return None
+        if prefix_parts[-len(template_parts):] != template_parts:
+            return None
+        models_part = "_".join(prefix_parts[:-len(template_parts)])
+    if not models_part:
+        return None
+    models = [seg for seg in models_part.split("_") if seg]
+    if not models:
+        return None
+    return models, ts
+
+
+def build_meta_for_file(p: Path, template: str, *, default_prompt: Optional[str] = "AI GENERATED") -> Optional[Dict]:
+    parsed = _extract_models_and_ts(p, template)
     if not parsed:
         return None
-    m1, m2, tmpl, ts = parsed
+    models, ts = parsed
     start_iso = ts_to_iso(ts)
     exit_reason = determine_exit_reason_from_file(p)
     max_turns = parse_max_turns_from_tail(p)
+    log_path = _normalize_log_str(str(p))
     return {
         "dream_index": None,
         "dream_id": None,
         "date": None,
         "prompt": default_prompt,
-        "models": [m1, m2],
-        "template": tmpl,
+        "models": models,
+        "template": template,
         "max_turns": max_turns,
         "start": start_iso,
         "end": None,
         "duration_sec": None,
-        "log_file": str(p),
+        "log_file": log_path,
         "exit_reason": exit_reason,
         "returncode": None,
         "stderr_tail": None,
@@ -136,13 +184,14 @@ def build_meta_for_file(p: Path, *, default_prompt: Optional[str] = "AI GENERATE
 def index_logs(logs_dir: Path, template: str, existing: Set[str], *, default_prompt: Optional[str]) -> List[Dict]:
     out: List[Dict] = []
     for p in sorted(logs_dir.glob("*.txt")):
-        if str(p) in existing:
+        log_key = _normalize_log_str(str(p))
+        if log_key in existing:
             continue
-        meta = build_meta_for_file(p, default_prompt=default_prompt)
+        meta = build_meta_for_file(p, template, default_prompt=default_prompt)
         if not meta:
             continue
-        if meta.get("template") != template:
-            continue
+        meta["log_file"] = log_key
+        existing.add(log_key)
         out.append(meta)
     return out
 
@@ -167,7 +216,15 @@ def main():
     existing_set: Set[str] = set()
     if not args.reindex and out_path.exists():
         existing_rows = read_jsonl(out_path)
-        existing_set = {str(r.get("log_file")) for r in existing_rows if r.get("log_file")}
+        normalized_rows: List[Dict] = []
+        for row in existing_rows:
+            lf = row.get("log_file")
+            if lf:
+                norm = _normalize_log_str(str(lf))
+                row["log_file"] = norm
+                existing_set.add(norm)
+            normalized_rows.append(row)
+        existing_rows = normalized_rows
 
     new_rows = index_logs(logs_dir, template, existing_set, default_prompt=args.prompt)
 

@@ -40,6 +40,57 @@ if str(ROOT) not in sys.path:
 from paths import BACKROOMS_LOGS_DIR
 
 
+def _relativize_to_root(path: Path) -> Optional[Path]:
+    """Return the path made relative to the repo root when possible."""
+    try:
+        return path.relative_to(ROOT)
+    except Exception:
+        pass
+    try:
+        parts = path.parts
+        root_name = ROOT.name
+        if root_name in parts:
+            idx = parts.index(root_name)
+            return Path(*parts[idx + 1 :])
+    except Exception:
+        return None
+    return None
+
+
+def _resolve_log_path(path_str: str) -> Optional[Path]:
+    """Best-effort resolution of a log path originating from any machine."""
+    if not path_str:
+        return None
+    try:
+        raw = Path(path_str)
+    except Exception:
+        return None
+
+    candidates: List[Path] = []
+    if raw.is_absolute():
+        candidates.append(raw)
+        rel = _relativize_to_root(raw)
+        if rel is not None:
+            candidates.append(ROOT / rel)
+    else:
+        candidates.append(ROOT / raw)
+
+    seen: set[str] = set()
+    for cand in candidates:
+        if not cand:
+            continue
+        key = str(cand)
+        if key in seen:
+            continue
+        seen.add(key)
+        try:
+            if cand.exists():
+                return cand
+        except Exception:
+            continue
+    return None
+
+
 def _load_env_from_file(path: Path) -> None:
     """Lightweight .env loader that doesn't require python-dotenv.
 
@@ -151,23 +202,39 @@ def clean_meta_inplace(meta_path: Path, *, min_bytes: int = 128, delete_logs: bo
     seen: set[str] = set()
     removed_any = False
     for it in items:
-        lf = it.get("log_file")
-        if not lf:
+        raw_lf = it.get("log_file")
+        if not raw_lf:
             removed_any = True
             continue
-        p = Path(lf)
-        if not p.exists() or _is_tiny_log(p, min_bytes):
+        raw_lf_str = str(raw_lf)
+        resolved = _resolve_log_path(raw_lf_str)
+        if not resolved:
             removed_any = True
-            if delete_logs and p.exists():
+            continue
+
+        rel = _relativize_to_root(resolved)
+        if rel is not None:
+            lf = str(rel)
+            p = ROOT / rel
+        else:
+            lf = str(resolved)
+            p = resolved
+
+        if lf in seen:
+            removed_any = True
+            continue
+        seen.add(lf)
+        if _is_tiny_log(p, min_bytes):
+            removed_any = True
+            if delete_logs:
                 try:
                     p.unlink(missing_ok=True)
                 except Exception:
                     pass
             continue
-        if lf in seen:
+        if lf != raw_lf_str:
             removed_any = True
-            continue
-        seen.add(lf)
+        it["log_file"] = lf
         keep.append(it)
     if removed_any:
         backup = meta_path.with_suffix(meta_path.suffix + ".bak")
@@ -256,12 +323,10 @@ def to_backrooms_rows(items: List[Dict], *, min_replies: int = 0) -> List[Dict]:
         transcript = None
         replies_count = 0
         try:
-            p = Path(lf)
-            if p.exists():
-                # Replace undecodable bytes and then strip NUL/control chars
-                raw = p.read_text(encoding="utf-8", errors="replace")
+            resolved = _resolve_log_path(str(lf))
+            if resolved and resolved.exists():
+                raw = resolved.read_text(encoding="utf-8", errors="replace")
                 replies_count = _count_replies_from_text(raw)
-                # Skip rows with too-few replies
                 if min_replies and replies_count < int(min_replies):
                     continue
                 transcript = _clean_string(raw)
@@ -407,7 +472,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="Print actions without writing to Supabase")
     ap.add_argument("--no-clean", action="store_true", help="Skip tiny/missing log cleanup before syncing")
     ap.add_argument("--min-bytes", type=int, default=0, help="Minimum size threshold for logs when cleaning; 0 disables size filter (default: 0)")
-    ap.add_argument("--min-replies", type=int, default=3, help="Skip logs with fewer than this many replies (default: 3)")
+    ap.add_argument("--min-replies", type=int, default=1, help="Skip logs with fewer than this many replies (default: 1)")
     args = ap.parse_args()
 
     url, key = env_keys()
