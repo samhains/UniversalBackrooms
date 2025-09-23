@@ -1,0 +1,20 @@
+{
+  "type": "batch",
+  "template": "dreamsim3",
+  "max_turns": 30,
+  "models": ["opus4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "max_items": 10,
+  "context_window": 128000,
+  "integrations": {
+    "discord": ["transcripts"]
+  },
+  "data_source": {
+    "kind": "supabase",
+    "source": "mine",
+    "ids": [32, 52, 65, 70, 71, 79, 81, 109]
+  },
+  "shuffle": true
+}

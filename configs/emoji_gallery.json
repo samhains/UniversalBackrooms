@@ -1,0 +1,15 @@
+{
+  "type": "single",
+  "template": "emoji",
+  "max_turns": 30,
+  "models": ["opus4", "opus4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "integrations": {
+    "discord": ["transcripts"],
+    "transcript_channel": "emoji"
+  },
+  "max_items": 10,
+  "context_window": 128000
+}

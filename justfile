@@ -98,22 +98,35 @@ prune-backrooms template="dreamsim3" meta="{{backrooms_logs}}/dreamsim3/dreamsim
 # Export Supabase backrooms to Obsidian folder
 # Usage:
 #   just obsidian-export                             # full export to ./obsidian
-#   just obsidian-export since=2025-09-01            # incremental by date
-#   just obsidian-export vault="/path/to/Vault"      # custom vault path
-#   just obsidian-export dream_id="<uuid>"           # filter by prompt id
-#   just obsidian-export contains="substring"        # filter by prompt text
-obsidian-export vault="/Users/samhains/Documents/Backrooms" since="" dream_id="" contains="" limit="1000" index="true" overwrite="true":
-    cmd="python scripts/export_obsidian.py --vault \"{{vault}}\" --limit {{limit}}"; \
-    if [ -n "{{since}}" ]; then cmd="$cmd --since \"{{since}}\""; fi; \
-    if [ -n "{{dream_id}}" ]; then cmd="$cmd --dream-id \"{{dream_id}}\""; fi; \
-    if [ -n "{{contains}}" ]; then cmd="$cmd --prompt-contains \"{{contains}}\""; fi; \
-    if [ "{{index}}" = "true" ]; then cmd="$cmd --write-index"; fi; \
-    if [ "{{overwrite}}" = "true" ]; then cmd="$cmd --overwrite"; fi; \
+#   just obsidian-export since=2025-09-01                 # incremental by date
+#   just obsidian-export vault=/path/to/Vault             # custom vault path
+#   just obsidian-export dream_id=<uuid>                  # filter by prompt id
+#   just obsidian-export contains=substring               # filter by prompt text
+#   just obsidian-export harry                         # export dreams containing 'harry'
+#   just obsidian-export harry harry-dreams            # custom filename slug
+#   just obsidian-export harry harry-dreams "Dreams about Harry"
+#   just obsidian-export harry name=harry-dreams transcript_limit=300
+#   just obsidian-export "" ids="32 52" include_transcripts=false
+obsidian-export contains name="" title="" vault="/Users/samhains/Documents/Backrooms" subdir="Dreams" source="mine" limit="200" overwrite="true" transcript_limit="500" include_transcripts="true" ids="":
+    set -euo pipefail; \
+    if [ -z "{{contains}}" ] && [ -z "{{ids}}" ]; then \
+      echo "Usage: just obsidian-export <substring> [name] [title]" >&2; \
+      echo "       or provide ids=\"id1 id2\"" >&2; \
+      exit 1; \
+    fi; \
+    cmd="python scripts/export_dream_collection.py --vault \"{{vault}}\" --source \"{{source}}\" --limit {{limit}} --subdir \"{{subdir}}\""; \
+    if [ -n "{{contains}}" ]; then cmd="$cmd --contains \"{{contains}}\""; fi; \
+    if [ -n "{{ids}}" ]; then cmd="$cmd --ids {{ids}}"; fi; \
+    if [ -n "{{name}}" ]; then cmd="$cmd --name \"{{name}}\""; fi; \
+    if [ -n "{{title}}" ]; then cmd="$cmd --title \"{{title}}\""; fi; \
+    if [ "{{include_transcripts}}" != "true" ]; then cmd="$cmd --no-transcripts"; fi; \
+    if [ -n "{{transcript_limit}}" ]; then cmd="$cmd --transcript-limit {{transcript_limit}}"; fi; \
+    if [ "{{overwrite}}" != "true" ]; then cmd="$cmd --no-overwrite"; fi; \
     eval "$cmd"
 
 # Run from a JSON config (see ./configs for examples)
 run config="single_roleplay_hermes":
-    python scripts/run_config.py --config "configs/{{config}}.json"
+	python scripts/run_config.py --config "configs/{{config}}.json"
 
 # Sync DreamSim3 and DreamSim4 to Supabase
 # Usage:

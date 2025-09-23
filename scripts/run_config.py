@@ -25,7 +25,7 @@ import sys
 import time
 import datetime as dt
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 import getpass
 
 # Ensure repository root is importable when running as a script from scripts/
@@ -56,7 +56,12 @@ try:
     )
 except Exception:
     # Fallback stubs for type hints; batch mode will fail if actually used without these
-    def read_dreams_from_supabase(query: Optional[str], limit: int, source: str = "mine") -> List[dict]:
+    def read_dreams_from_supabase(
+        query: Optional[str],
+        limit: int,
+        source: str = "mine",
+        ids: Optional[Iterable[object]] = None,
+    ) -> List[dict]:
         raise SystemExit("Supabase helpers unavailable; cannot run batch mode.")
 
     def parse_pairs(pairs_str: str):
@@ -84,15 +89,29 @@ def _load_env() -> None:
 
 
 def _write_template_vars(template: str, vars_map: Dict[str, Any]) -> None:
-    """Write templates/<template>/vars.json with the provided mapping.
+    """Merge-write templates/<template>/vars.json with the provided mapping.
 
-    Values are written as-is; backrooms.py will escape braces during formatting.
+    - Preserves existing keys in vars.json unless explicitly overridden.
+    - Skips overriding with None values so defaults remain intact.
+    - backrooms.py will escape braces during formatting.
     """
     base = ROOT / "templates" / template
     base.mkdir(parents=True, exist_ok=True)
     vars_path = base / "vars.json"
+    existing: Dict[str, Any] = {}
+    try:
+        if vars_path.exists():
+            with vars_path.open("r", encoding="utf-8") as rf:
+                data = json.load(rf)
+                if isinstance(data, dict):
+                    existing = data
+    except Exception:
+        existing = {}
+    # Do not clobber with None values
+    updates = {k: v for k, v in vars_map.items() if v is not None}
+    merged = {**existing, **updates}
     with vars_path.open("w", encoding="utf-8") as f:
-        json.dump(vars_map, f, ensure_ascii=False, indent=2)
+        json.dump(merged, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
 
@@ -355,9 +374,27 @@ def run_batch(cfg: Dict[str, Any]) -> None:
     source = None  # used only for Supabase metadata
     if kind in ("supabase",):
         query = ds.get("query") or ""
-        limit = int(ds.get("limit", 200))
         source = ds.get("source", "mine")
-        rows = read_dreams_from_supabase(query=query or None, limit=limit, source=source)
+
+        raw_ids = ds.get("ids", None)
+        ids: Optional[List[Any]]
+        if raw_ids is None:
+            ids = None
+        else:
+            if not isinstance(raw_ids, (list, tuple, set)):
+                raise SystemExit("data_source.ids must be an array of IDs (list/tuple/set)")
+            ids = [item for item in raw_ids]
+
+        if ids is not None:
+            limit = len(ids)
+        else:
+            limit = int(ds.get("limit", 200))
+        rows = read_dreams_from_supabase(
+            query=query or None,
+            limit=limit,
+            source=source,
+            ids=ids,
+        )
 
         # Shuffle/limit — default to shuffle when using a search query
         shuffle_flag = cfg.get("shuffle")

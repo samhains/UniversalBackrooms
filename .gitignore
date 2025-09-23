@@ -8,6 +8,7 @@ __pycache__/
 
 # Python environments
 .env
+.secrets/
 
 # Jupyter Notebook checkpoints (if applicable)
 .ipynb_checkpoints/

@@ -247,6 +247,19 @@ def _parse_folder_template(template_name: str):
     return configs
 
 
+def _resolve_var_value(template_name: str, value: object) -> object:
+    """Resolve special template var directives (e.g., @file:path)."""
+    if isinstance(value, str) and value.startswith("@file:"):
+        rel_path = value[len("@file:") :].strip()
+        base = Path("templates") / template_name
+        file_path = base / rel_path
+        try:
+            return file_path.read_text(encoding="utf-8")
+        except Exception:
+            return value
+    return value
+
+
 def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = None):
     try:
         # Prefer folder-based template: templates/<name>/template.json
@@ -283,21 +296,22 @@ def load_template(template_name, models, cli_vars: Optional[dict[str, str]] = No
                 with vars_path.open("r", encoding="utf-8") as vf:
                     raw_vars = json.load(vf)
                     if isinstance(raw_vars, dict):
-                        # Escape braces to avoid .format placeholder issues in user-provided strings
-                        extra_vars = {
-                            k: (v.replace("{", "{{").replace("}", "}}") if isinstance(v, str) else v)
-                            for k, v in raw_vars.items()
-                        }
+                        for k, v in raw_vars.items():
+                            resolved = _resolve_var_value(template_name, v)
+                            if isinstance(resolved, str):
+                                resolved = resolved.replace("{", "{{").replace("}", "}}")
+                            extra_vars[k] = resolved
         except Exception:
             extra_vars = {}
 
         # Merge CLI-provided vars, with CLI taking precedence
         if cli_vars:
             for k, v in cli_vars.items():
-                if isinstance(v, str):
-                    extra_vars[k] = v.replace("{", "{{").replace("}", "}}")
+                resolved = _resolve_var_value(template_name, v)
+                if isinstance(resolved, str):
+                    extra_vars[k] = resolved.replace("{", "{{").replace("}", "}}")
                 else:
-                    extra_vars[k] = v
+                    extra_vars[k] = resolved
 
         for i, model in enumerate(models):
             if model.lower() == "cli":

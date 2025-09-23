@@ -1,0 +1,11 @@
+{
+  "type": "single",
+  "template": "gallery",
+  "max_turns": 30,
+  "models": ["opus4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "max_items": 10,
+  "context_window": 128000
+}

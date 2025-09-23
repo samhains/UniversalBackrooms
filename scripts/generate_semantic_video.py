@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-Generate a short video from three Eagle images selected via semantic search.
+Generate a short video from three Eagle images selected via semantic search or
+similarity against an existing image.
 
 Example:
   python scripts/generate_semantic_video.py "neon arcade in the rain" --min-similarity 0.55 --width 1280 --height 720
   python scripts/generate_semantic_video.py "icy crystalline cathedral" --discord-channel lucid-video
+  python scripts/generate_semantic_video.py --image-url https://example.com/reference.jpg --min-similarity 0.6
 
 Requirements:
   - Environment variables for Supabase + OpenAI (see search_eagle_images.py)
@@ -16,9 +18,12 @@ import argparse
 import json
 import os
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
+
+import requests
 
 from dotenv import load_dotenv
 
@@ -26,7 +31,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from search_eagle_images import search_images_semantic, get_supabase_client  # noqa: E402
+from search_eagle_images import (  # noqa: E402
+    search_images_semantic,
+    get_supabase_client,
+    search_images_by_image_url,
+)
 from mcp_cli import load_server_config  # noqa: E402
 from mcp_client import MCPServerConfig, call_tool  # noqa: E402
 
@@ -62,6 +71,38 @@ def _row_to_image_url(row: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def _rows_to_selected_images(
+    rows: Sequence[Dict[str, Any]],
+    *,
+    desired: int,
+    source: str,
+) -> List[SelectedImage]:
+    if not rows:
+        return []
+    selected: List[SelectedImage] = []
+    seen_urls: set[str] = set()
+    for row in rows:
+        url = _row_to_image_url(row)
+        if not url or url in seen_urls:
+            continue
+        seen_urls.add(url)
+        eagle_id = str(row.get("id") or row.get("eagle_id") or "").strip() or None
+        similarity_val = row.get("similarity_score")
+        similarity = float(similarity_val) if isinstance(similarity_val, (int, float)) else None
+        selected.append(
+            SelectedImage(
+                url=url,
+                similarity=similarity,
+                source=source,
+                title=row.get("title"),
+                eagle_id=eagle_id,
+            )
+        )
+        if len(selected) >= desired:
+            break
+    return selected
+
+
 def _collect_semantic_images(
     *,
     query: str,
@@ -77,33 +118,7 @@ def _collect_semantic_images(
         folders=list(folders) if folders else None,
     )
 
-    selected: List[SelectedImage] = []
-    seen_urls: set[str] = set()
-    seen_ids: set[str] = set()
-    for row in rows:
-        url = _row_to_image_url(row)
-        if not url or url in seen_urls:
-            continue
-        eagle_id = str(row.get("id") or row.get("eagle_id") or "").strip() or None
-        if eagle_id:
-            seen_ids.add(eagle_id)
-        seen_urls.add(url)
-        selected.append(
-            SelectedImage(
-                url=url,
-                similarity=(
-                    float(row["similarity_score"])
-                    if isinstance(row.get("similarity_score"), (int, float))
-                    else None
-                ),
-                source="semantic",
-                title=row.get("title"),
-                eagle_id=eagle_id,
-            )
-        )
-        if len(selected) >= desired:
-            break
-    return selected
+    return _rows_to_selected_images(rows, desired=desired, source="semantic")
 
 
 def _top_off_recent(
@@ -213,14 +228,15 @@ def _post_video_to_discord(
     video_url: str,
     server_name: str,
     config_path: Optional[str],
+    attach_media: bool = True,
 ) -> Dict[str, Any]:
     server_cfg = _load_server(server_name, config_path)
     payload = {
         "channel": channel,
         "message": message,
-        "mediaUrl": video_url,
-        "videoUrl": video_url,
     }
+    if attach_media:
+        payload["mediaUrl"] = video_url
     return call_tool(server_cfg, "send-message", payload)
 
 
@@ -270,9 +286,46 @@ def _extract_video_url(result: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def _wait_for_media_downloadable(
+    url: str,
+    *,
+    attempts: int = 6,
+    initial_delay: float = 2.0,
+    timeout: float = 10.0,
+) -> bool:
+    """Poll the provided URL until it responds with HTTP 2xx or attempts are exhausted."""
+    if not isinstance(url, str) or not url.startswith(("http://", "https://")):
+        return True
+
+    delay = max(0.5, float(initial_delay))
+    last_error: Optional[str] = None
+    for attempt in range(1, max(1, attempts) + 1):
+        resp = None
+        try:
+            resp = requests.get(url, stream=True, timeout=timeout)
+            if 200 <= resp.status_code < 300:
+                return True
+            last_error = f"status {resp.status_code}"
+        except requests.RequestException as exc:
+            last_error = str(exc)
+        finally:
+            if resp is not None:
+                resp.close()
+
+        if attempt == attempts:
+            break
+        time.sleep(delay)
+        delay = min(delay * 1.5, 12.0)
+
+    if last_error:
+        print(f"Video URL check failed: {last_error}")
+    return False
+
+
 def run(
     *,
-    query: str,
+    query: Optional[str],
+    image_url: Optional[str],
     min_similarity: float,
     folders: Optional[Sequence[str]],
     width: Optional[int],
@@ -289,13 +342,39 @@ def run(
     discord_config_path: Optional[str],
 ) -> int:
     desired = 3
-    print(f"Searching for {desired} images matching '{query}' (min similarity {min_similarity:.2f})...")
-    selected = _collect_semantic_images(
-        query=query,
-        desired=desired,
-        min_similarity=min_similarity,
-        folders=folders,
-    )
+    query_text = query.strip() if isinstance(query, str) else None
+    image_url_text = image_url.strip() if isinstance(image_url, str) else None
+
+    if bool(query_text) == bool(image_url_text):
+        raise ValueError("Provide either a text query or --image-url (but not both)")
+
+    if image_url_text:
+        print(
+            f"Searching for {desired} images similar to the provided image (min similarity {min_similarity:.2f})..."
+        )
+        search_limit = max(desired * 3, 12)
+        rows, metadata = search_images_by_image_url(
+            image_url_text,
+            limit=search_limit,
+            min_similarity=min_similarity,
+            folders=list(folders) if folders else None,
+        )
+        embedding_source = (metadata or {}).get("embedding_source")
+        if embedding_source == "cache":
+            print("Reused cached image embedding from Supabase.")
+        elif embedding_source == "vertex":
+            print("Generated new image embedding via Vertex AI.")
+        selected = _rows_to_selected_images(rows, desired=desired, source="image-url")
+    else:
+        print(
+            f"Searching for {desired} images matching '{query_text}' (min similarity {min_similarity:.2f})..."
+        )
+        selected = _collect_semantic_images(
+            query=query_text,
+            desired=desired,
+            min_similarity=min_similarity,
+            folders=folders,
+        )
     raw_seen_ids = [img.eagle_id or "" for img in selected]
     raw_seen_urls = [img.url for img in selected]
     if len(selected) < desired:
@@ -345,15 +424,24 @@ def run(
     video_url = _extract_video_url(result)
     if video_url:
         print(f"\n✅ Video URL: {video_url}")
+        discord_post_ok = True
         if post_to_discord:
+            discord_post_ok = False
+            message_body = discord_message or ""
+
             print(f"Posting video to Discord channel #{discord_channel}...")
+            ready = _wait_for_media_downloadable(video_url)
+            if not ready:
+                print("⚠️ Video URL not yet reachable; Discord may need a moment before downloading.")
+
             try:
                 discord_result = _post_video_to_discord(
                     channel=discord_channel,
-                    message=discord_message,
+                    message=message_body,
                     video_url=video_url,
                     server_name=discord_server_name,
                     config_path=discord_config_path,
+                    attach_media=True,
                 )
             except Exception as exc:
                 print(f"⚠️ Failed to post to Discord: {exc}")
@@ -363,7 +451,8 @@ def run(
                 except TypeError:
                     print(discord_result)
                 print("✅ Posted to Discord.")
-        return 0
+                discord_post_ok = True
+        return 0 if discord_post_ok else 1
 
     print("⚠️ Unable to locate a video URL in the MCP response.")
     return 1
@@ -373,7 +462,15 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Select three Eagle images via semantic search and generate a ComfyUI video."
     )
-    parser.add_argument("query", help="Semantic search query for Eagle images")
+    parser.add_argument(
+        "query",
+        nargs="?",
+        help="Semantic search query for Eagle images",
+    )
+    parser.add_argument(
+        "--image-url",
+        help="Find visually similar Eagle images using the provided image URL",
+    )
     parser.add_argument(
         "--min-similarity",
         type=float,
@@ -441,8 +538,29 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     try:
+        query_text = args.query.strip() if isinstance(args.query, str) and args.query.strip() else None
+        image_url_text = (
+            args.image_url.strip()
+            if isinstance(args.image_url, str) and args.image_url.strip()
+            else None
+        )
+
+        if query_text and image_url_text:
+            print("Provide either a semantic query or --image-url, but not both.")
+            return 2
+        if not query_text and not image_url_text:
+            print("Provide a semantic query or supply --image-url to select images.")
+            return 2
+
+        default_caption = (
+            args.discord_message.strip()
+            if isinstance(args.discord_message, str) and args.discord_message.strip()
+            else ""
+        )
+
         return run(
-            query=args.query,
+            query=query_text,
+            image_url=image_url_text,
             min_similarity=float(args.min_similarity),
             folders=args.folders,
             width=args.width,
@@ -454,11 +572,7 @@ def main() -> int:
             verbose=bool(args.verbose),
             post_to_discord=not bool(args.no_post),
             discord_channel=str(args.discord_channel or "lucid"),
-            discord_message=(
-                args.discord_message
-                if isinstance(args.discord_message, str) and args.discord_message.strip()
-                else f"{args.query}"
-            ),
+            discord_message=default_caption,
             discord_server_name=str(args.discord_server or "discord"),
             discord_config_path=args.discord_config,
         )

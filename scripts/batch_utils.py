@@ -5,7 +5,7 @@ import os
 import sys
 import json
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any, Iterable
 
 import requests
 
@@ -74,10 +74,72 @@ def search_dreams(url: str, key: str, q: str, limit: int = 50, source: str | Non
     return r.json()
 
 
-def read_dreams_from_supabase(query: Optional[str], limit: int, source: str = "mine") -> List[dict]:
+def fetch_by_ids(
+    url: str,
+    key: str,
+    ids: Iterable[object],
+    source: str | None = None,
+    chunk_size: int = 50,
+):
+    ids_list = [str(i).strip() for i in ids if str(i).strip()]
+    if not ids_list:
+        return []
+
+    endpoint = f"{url}/rest/v1/dreams"
+    out_rows: List[dict] = []
+    for start in range(0, len(ids_list), chunk_size):
+        chunk = ids_list[start : start + chunk_size]
+        values: List[str] = []
+        for val in chunk:
+            if val.isdigit():
+                values.append(val)
+            else:
+                escaped = val.replace("\"", "\\\"")
+                values.append(f'"{escaped}"')
+        params = {
+            "select": "id,content,date,source",
+            "id": f"in.({','.join(values)})",
+            "limit": str(len(chunk)),
+        }
+        if source and source != "all":
+            params["source"] = f"eq.{source}"
+        r = requests.get(endpoint, headers=headers(key), params=params, timeout=30)
+        r.raise_for_status()
+        out_rows.extend(r.json())
+
+    # Preserve the original ordering of IDs
+    order_map = {str(idx): pos for pos, idx in enumerate(ids_list)}
+    out_rows.sort(key=lambda row: order_map.get(str(row.get("id")), len(order_map)))
+    return out_rows
+
+
+def read_dreams_from_supabase(
+    query: Optional[str],
+    limit: int,
+    source: str = "mine",
+    ids: Optional[Iterable[object]] = None,
+) -> List[dict]:
     url, key = env_keys()
     try:
-        rows = search_dreams(url, key, query, limit, source) if query else fetch_recent(url, key, limit, source)
+        if ids is not None:
+            unique_ids = []
+            seen = set()
+            for raw in ids:
+                s = str(raw).strip()
+                if not s or s in seen:
+                    continue
+                seen.add(s)
+                unique_ids.append(s)
+            if not unique_ids:
+                rows = []
+            else:
+                if limit and limit > 0:
+                    unique_ids = unique_ids[:limit]
+                rows = fetch_by_ids(url, key, unique_ids, source)
+        elif query:
+            rows = search_dreams(url, key, query, limit, source)
+        else:
+            rows = fetch_recent(url, key, limit, source)
     except requests.HTTPError as e:
         try:
             detail = e.response.json()
