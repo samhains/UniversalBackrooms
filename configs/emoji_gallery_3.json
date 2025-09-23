@@ -20,10 +20,22 @@
     "content_field": "poem",
     "require_content": true
   },
+  "secondary_data_source": {
+    "kind": "supabase",
+    "table": "dreams",
+    "select": ["id", "content", "date", "source"],
+    "limit": 50,
+    "order_column": "date",
+    "order_desc": true,
+    "content_field": "content",
+    "require_content": true
+  },
   "template_vars_from_item": {
-    "dream_1": "poem",
     "teenage_poetry": "poem",
     "poem_title": "header"
+  },
+  "template_vars_from_secondary": {
+    "dream_1": "content"
   },
   "max_items": 10,
   "context_window": 128000,
