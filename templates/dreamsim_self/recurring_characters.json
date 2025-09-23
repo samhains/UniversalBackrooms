@@ -1,15 +1,8 @@
 {
-  "analysis_metadata": {
-    "total_dreams_analyzed": 103,
-    "source_collection": "mine",
-    "analysis_date": "2025-09-23",
-    "analysis_method": "Character frequency and context analysis from dream content"
-  },
   "recurring_characters": {
     "primary_characters": [
       {
         "name": "Tara",
-        "frequency": 16,
         "character_type": "romantic_partner",
         "context_patterns": [
           "Romantic relationship dynamics",
@@ -31,7 +24,6 @@
       },
       {
         "name": "Dad/Father",
-        "frequency": 15,
         "character_type": "family_member",
         "context_patterns": [
           "Family gatherings and celebrations",
@@ -53,15 +45,13 @@
       },
       {
         "name": "Mum/Mother",
-        "frequency": 12,
         "character_type": "family_member",
         "context_patterns": [
           "Family dynamics and gatherings",
           "Unexpected interruptions during intimate moments",
           "Protective and nurturing presence",
           "Trauma and emergency situations",
-          "Social situations and praise",
-          "Sexual role-playing scenarios"
+          "Social situations and praise"
         ],
         "notable_scenarios": [
           "Interrupting during intimate moments with Tara",
@@ -75,8 +65,7 @@
       },
       {
         "name": "Harry",
-        "frequency": 10,
-        "character_type": "deceased_friend",
+        "character_type": "deceased_younger_brother",
         "context_patterns": [
           "Death and resurrection themes",
           "Drug use and concern for wellbeing",
@@ -98,7 +87,6 @@
       },
       {
         "name": "Coco",
-        "frequency": 9,
         "character_type": "friend_romantic_interest",
         "context_patterns": [
           "Shopping and material concerns",
@@ -120,7 +108,6 @@
       },
       {
         "name": "James",
-        "frequency": 8,
         "character_type": "friend",
         "context_patterns": [
           "Musical performances and creativity",
@@ -142,7 +129,6 @@
       },
       {
         "name": "Elliot",
-        "frequency": 6,
         "character_type": "friend",
         "context_patterns": [
           "Music production",
@@ -165,59 +151,83 @@
     "secondary_characters": [
       {
         "name": "Leon",
-        "frequency": 4,
         "character_type": "friend_acquaintance",
-        "context_patterns": ["Social situations", "Housing arrangements", "Recognition scenarios", "Building development"]
+        "context_patterns": [
+          "Social situations",
+          "Housing arrangements",
+          "Recognition scenarios",
+          "Building development"
+        ]
       },
       {
         "name": "Jack",
-        "frequency": 4,
         "character_type": "friend",
-        "context_patterns": ["Drug experiences", "DMT trips", "Housing projects", "Psychedelic guidance"]
+        "context_patterns": [
+          "Drug experiences",
+          "DMT trips",
+          "Housing projects",
+          "Psychedelic guidance"
+        ]
       },
       {
         "name": "Benjamin Bratton",
-        "frequency": 3,
         "character_type": "intellectual_figure",
-        "context_patterns": ["Housing projects", "Pipeline cleanup", "Academic discussions"]
+        "context_patterns": [
+          "Housing projects",
+          "Pipeline cleanup",
+          "Academic discussions"
+        ]
       }
     ],
     "notable_public_figures": [
       {
         "name": "Young Thug",
-        "frequency": 2,
         "character_type": "celebrity",
         "context_patterns": ["Drug discussions", "Apocalyptic scenarios"]
       },
       {
         "name": "Kanye West",
-        "frequency": 1,
         "character_type": "celebrity",
         "context_patterns": ["Art and creativity", "UN headquarters"]
       },
       {
         "name": "Benjamin Bratton",
-        "frequency": 2,
         "character_type": "intellectual_figure",
-        "context_patterns": ["Housing projects", "Academic/theoretical discussions"]
+        "context_patterns": [
+          "Housing projects",
+          "Academic/theoretical discussions"
+        ]
       }
     ]
   },
   "character_relationship_patterns": {
     "family_dynamics": {
-      "description": "Strong presence of family members in dreams, often in supportive but sometimes surreal contexts",
       "key_characters": ["Dad", "Mum"],
-      "common_themes": ["Unexpected situations", "Protective behaviors", "Family gatherings"]
+      "common_themes": [
+        "Unexpected situations",
+        "Protective behaviors",
+        "Family gatherings"
+      ]
     },
     "romantic_relationships": {
       "description": "Complex romantic dynamics featuring current and past partners",
       "key_characters": ["Tara", "Coco", "Millie"],
-      "common_themes": ["Jealousy", "Infidelity fears", "Intimate moments", "Relationship negotiations"]
+      "common_themes": [
+        "Jealousy",
+        "Infidelity fears",
+        "Intimate moments",
+        "Relationship negotiations"
+      ]
     },
     "friendship_circles": {
       "description": "Close-knit group of male friends involved in creative and recreational activities",
       "key_characters": ["Harry", "James", "Elliot", "Jack", "Leon"],
-      "common_themes": ["Music and creativity", "Drug experiences", "Gaming", "Social gatherings"]
+      "common_themes": [
+        "Music and creativity",
+        "Drug experiences",
+        "Gaming",
+        "Social gatherings"
+      ]
     },
     "authority_figures": {
       "description": "Interactions with intellectual or creative authorities",

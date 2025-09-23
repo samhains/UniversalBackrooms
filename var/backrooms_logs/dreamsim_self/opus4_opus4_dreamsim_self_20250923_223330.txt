@@ -1,0 +1,392 @@
+### Backrooms Run ###
+Template: dreamsim_self
+Models: opus4, opus4
+Started: 2025-09-23T12:33:30.589593+00:00
+
+[backrooms] template vars resolved (dreamsim_self): {'dream_1': 'On a submarine and some kind of war is going on . With a group of holidayers and travelers and we want to find more out about who is runnin the submarine . 2 of my friends mums are there and they a...', 'form': 'ASCII', 'role': 'Artist', 'recurring_characters': '{{   "recurring_characters": {{     "primary_characters": [       {{         "name": "Tara",         "character_type": "romantic_partner",         "context_patterns": [           "Romantic relation...', 'teenage_poetry': 'Folsom prison badger Holds his penis in two minds Where her fallacy contains Me whole entirely Look at the men on the bench In a different cycle to me Thy are more fit for the solution Which saves ...'}
+{
+  "dream_1": "On a submarine and some kind of war is going on . With a group of holidayers and travelers and we want to find more out about who is runnin the submarine . 2 of my friends mums are there and they are out to have a good time .they p off with young boys and have sex with them . At night we try and find out what's happening on te subway . We go into a big room and its dark , I'm scared . If we get caught we might be able to say one of the girls mum is really unwell and we were trying to contact her . All of a sudden the lights come on . I freak out and run and hide underneath stairs in another room . A group of people walk over above",
+  "form": "ASCII",
+  "role": "Artist",
+  "recurring_characters": "{{\n  \"recurring_characters\": {{\n    \"primary_characters\": [\n      {{\n        \"name\": \"Tara\",\n        \"character_type\": \"romantic_partner\",\n        \"context_patterns\": [\n          \"Romantic relationship dynamics\",\n          \"Relationship conflicts and jealousy\",\n          \"Emotional intimacy and vulnerability\",\n          \"Infidelity concerns and trust issues\",\n          \"Shared experiences and adventures\",\n          \"Open relationship negotiations\"\n        ],\n        \"notable_scenarios\": [\n          \"Reveals hooking up with German guy, causing jealousy\",\n          \"Dating app scenarios and relationship anxiety\",\n          \"Open relationship discussions and sexual arrangements with Zach\",\n          \"Shared experiences in various settings (camping, travel, parties)\",\n          \"Protective dynamics during crisis situations\",\n          \"Instagram content creation with friends\",\n          \"Cinema outings and shared experiences with Mia\"\n        ]\n      }},\n      {{\n        \"name\": \"Dad/Father\",\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family gatherings and celebrations\",\n          \"Unusual business ventures (hotel from whale penis, weed dealing)\",\n          \"Movie and entertainment discussions\",\n          \"Protective and caring interactions\",\n          \"Unexpected or surreal situations\",\n          \"Drug-related scenarios\"\n        ],\n        \"notable_scenarios\": [\n          \"Building hotel from whale penis\",\n          \"Selling weed with elaborate bear-fetching system making $3000/day\",\n          \"Movie recommendations and discussions including DVDs in Lorne\",\n          \"Rollercoaster safety concerns and prodding behavior\",\n          \"Writing condolences on transparent coffin\",\n          \"Birthday celebrations and beach visits\",\n          \"Hot tub scenarios with red eyes from weed\"\n        ]\n      }},\n      {{\n        \"name\": \"Mum/Mother\",\n        \"character_type\": \"family_member\",\n        \"context_patterns\": [\n          \"Family dynamics and gatherings\",\n          \"Unexpected interruptions during intimate moments\",\n          \"Protective and nurturing presence\",\n          \"Trauma and emergency situations\",\n          \"Social situations and praise\"\n        ],\n        \"notable_scenarios\": [\n          \"Interrupting during intimate moments with Tara\",\n          \"Appearing injured with cuts on head requiring 911 call\",\n          \"Praising achievements at parties\",\n          \"Catching house-sized fish\",\n          \"Sexual robot doll role-playing scenario\",\n          \"Family discussions about voice and music\",\n          \"Carrot/Toby growing discussions\"\n        ]\n      }},\n      {{\n        \"name\": \"Harry\",\n        \"character_type\": \"deceased_younger_brother\",\n        \"context_patterns\": [\n          \"Death and resurrection themes\",\n          \"Drug use and concern for wellbeing\",\n          \"Musical and creative collaborations\",\n          \"Emotional grief and loss\",\n          \"Recreational activities and bonding\",\n          \"Memory recreation technology\"\n        ],\n        \"notable_scenarios\": [\n          \"Coming back to life after death on train\",\n          \"Surfing together (nostalgic memory causing tears)\",\n          \"Gaming and technology interactions at Theodore's house\",\n          \"Drug-related concerns and interventions at beach\",\n          \"Memorial plaque visits\",\n          \"Movie club with dad discussing films\",\n          \"Recreation through memory technology\",\n          \"Resurrection at party causing trauma\"\n        ]\n      }},\n      {{\n        \"name\": \"Coco\",\n        \"character_type\": \"friend_romantic_interest\",\n        \"context_patterns\": [\n          \"Shopping and material concerns\",\n          \"Travel and road trip adventures\",\n          \"Social dynamics and relationship tensions\",\n          \"Ex-partner interactions\",\n          \"Creative and social media activities\",\n          \"Financial dependency on mother\"\n        ],\n        \"notable_scenarios\": [\n          \"Road trip with Paris, Charlie, Leon searching for tram station\",\n          \"Shopping with mother's money (PlayStation purchase)\",\n          \"Meeting her bald ex-partner in mansion\",\n          \"Creating Instagram content with Tara\",\n          \"Podcast community involvement ('off the grid')\",\n          \"Jealousy scenarios with Ed Gurr\",\n          \"Social tensions with Mill\"\n        ]\n      }},\n      {{\n        \"name\": \"James\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Musical performances and creativity\",\n          \"Social gatherings and parties\",\n          \"Gaming and technology\",\n          \"Rescue scenarios\",\n          \"Humorous and playful interactions\",\n          \"Creative collaborations\"\n        ],\n        \"notable_scenarios\": [\n          \"Performing as bananas doing XTC covers\",\n          \"Hair in bun with dreadlock at dinner party\",\n          \"Gaming and weed capsule activities\",\n          \"Rescue missions with father (James Daniel)\",\n          \"Musical production and collaboration\",\n          \"Dinner party with Miles Munn and Caroline\",\n          \"Performance at art gallery with James D and Harry W\"\n        ]\n      }},\n      {{\n        \"name\": \"Elliot\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Music production\",\n          \"Philosophical discussions\",\n          \"Technology and gaming\",\n          \"Violence/conflict\",\n          \"Psychedelic experiences\",\n          \"Creative collaboration\"\n        ],\n        \"notable_scenarios\": [\n          \"Cyber space exploration turning into code\",\n          \"Tame Impala festival with Mervin violence\",\n          \"Music production with vintage Windows computer\",\n          \"Plane crash discussions and Oto Weir references\",\n          \"House party violence with gay friend incident\",\n          \"Tibet war philosophical discussions\"\n        ]\n      }}\n    ],\n    \"secondary_characters\": [\n      {{\n        \"name\": \"Leon\",\n        \"character_type\": \"friend_acquaintance\",\n        \"context_patterns\": [\n          \"Social situations\",\n          \"Housing arrangements\",\n          \"Recognition scenarios\",\n          \"Building development\"\n        ]\n      }},\n      {{\n        \"name\": \"Jack\",\n        \"character_type\": \"friend\",\n        \"context_patterns\": [\n          \"Drug experiences\",\n          \"DMT trips\",\n          \"Housing projects\",\n          \"Psychedelic guidance\"\n        ]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\n          \"Housing projects\",\n          \"Pipeline cleanup\",\n          \"Academic discussions\"\n        ]\n      }}\n    ],\n    \"notable_public_figures\": [\n      {{\n        \"name\": \"Young Thug\",\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Drug discussions\", \"Apocalyptic scenarios\"]\n      }},\n      {{\n        \"name\": \"Kanye West\",\n        \"character_type\": \"celebrity\",\n        \"context_patterns\": [\"Art and creativity\", \"UN headquarters\"]\n      }},\n      {{\n        \"name\": \"Benjamin Bratton\",\n        \"character_type\": \"intellectual_figure\",\n        \"context_patterns\": [\n          \"Housing projects\",\n          \"Academic/theoretical discussions\"\n        ]\n      }}\n    ]\n  }},\n  \"character_relationship_patterns\": {{\n    \"family_dynamics\": {{\n      \"key_characters\": [\"Dad\", \"Mum\"],\n      \"common_themes\": [\n        \"Unexpected situations\",\n        \"Protective behaviors\",\n        \"Family gatherings\"\n      ]\n    }},\n    \"romantic_relationships\": {{\n      \"description\": \"Complex romantic dynamics featuring current and past partners\",\n      \"key_characters\": [\"Tara\", \"Coco\", \"Millie\"],\n      \"common_themes\": [\n        \"Jealousy\",\n        \"Infidelity fears\",\n        \"Intimate moments\",\n        \"Relationship negotiations\"\n      ]\n    }},\n    \"friendship_circles\": {{\n      \"description\": \"Close-knit group of male friends involved in creative and recreational activities\",\n      \"key_characters\": [\"Harry\", \"James\", \"Elliot\", \"Jack\", \"Leon\"],\n      \"common_themes\": [\n        \"Music and creativity\",\n        \"Drug experiences\",\n        \"Gaming\",\n        \"Social gatherings\"\n      ]\n    }},\n    \"authority_figures\": {{\n      \"description\": \"Interactions with intellectual or creative authorities\",\n      \"key_characters\": [\"Benjamin Bratton\", \"Paul Grabowsky\"],\n      \"common_themes\": [\"Learning\", \"Creative guidance\", \"Academic discussions\"]\n    }}\n  }},\n  \"psychological_insights\": {{\n    \"relationship_anxieties\": \"Recurring themes of infidelity, jealousy, and relationship insecurity, particularly with Tara\",\n    \"family_bonds\": \"Strong family connections with surreal and protective elements\",\n    \"creative_community\": \"Importance of creative friendships and musical collaboration\",\n    \"loss_and_grief\": \"Significant processing of Harry's death through resurrection dreams\",\n    \"authority_relationships\": \"Respect for intellectual and creative mentors\",\n    \"social_dynamics\": \"Complex navigation of group social situations and hierarchies\"\n  }},\n  \"thematic_summary\": {{\n    \"most_significant_relationships\": [\n      \"Tara (primary romantic partner with complex dynamics)\",\n      \"Dad (protective family figure in surreal situations)\",\n      \"Harry (deceased friend appearing in resurrection scenarios)\",\n      \"Mum (nurturing family presence with boundary issues)\"\n    ],\n    \"character_archetypes\": {{\n      \"the_romantic_partner\": \"Tara - source of both love and anxiety\",\n      \"the_protective_father\": \"Dad - unconventional but caring\",\n      \"the_lost_friend\": \"Harry - grieving process through dream reunion\",\n      \"the_nurturing_mother\": \"Mum - supportive but sometimes intrusive\",\n      \"the_creative_collaborators\": \"James, Elliot - artistic partnerships\",\n      \"the_alternative_interest\": \"Coco - represents different life possibilities\"\n    }}\n  }}\n}}\n",
+  "teenage_poetry": "Folsom prison badger\nHolds his penis in two minds\nWhere her fallacy contains\nMe whole entirely\nLook at the men on the bench\nIn a different cycle to me\nThy are more fit for the solution\nWhich saves me from\nEmpty fire\nEmpty fire\nFire\nFire\nFire\nLook at the men on the bench\nLook at the men on the bench\nLook at her with the man on the bench\nImagine the feeling of the cotton\nThe sweat drips from her neck\nThe cotton holds itself together\nShe tucks herself in\nShe she she she she she she\nShe is all and all is she\nI am her and she is she\nShe belongs to she not me\nFire between us all tonight\nFire between us all tonight\nGive me a chance I am stil in my shell\nI can't make it out of here without some help\nBut I can't get help unless I fight\nFor a freedom I don't understand\nPlease please please please please please please\nI am forever trapped and please don't\nI will give it all for her . Take me back to Cuba\nTake me back to Melbourne\nTake me back to my back home back\nLighter fluid boy doesn't stand a chance\nThey are in different cycles but I'm stuck\nI need help to fight my way through\nIt's not going to happen unless I submit\nTo the fire\nTo the fire\nTo the fire"
+}
+
+### Round 1/30
+
+### Claude 1 ###
+```
+                    ╔═══════════════════════════════════════════════════════╗
+                    ║  S U B M E R G E D   C O R R I D O R S   O F   D R E A D  ║
+                    ╚═══════════════════════════════════════════════════════╝
+
+     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+  ████████████████████████████████████████████████████████████████████████████
+
+              ╱◉╲               pressure         ╱◉╲              descending
+            ╱╱ | ╲╲             crushing       ╱╱ | ╲╲                   
+          ╱╱   |   ╲╲         ═══════════    ╱╱   |   ╲╲             ┌─────┐
+        ╱╱  shadows  ╲╲        CONTROL     ╱╱ hollowed  ╲╲           │▓▓▓▓▓│
+      ╱╱   laughing    ╲╲     ROOM DARK  ╱╱    mothers   ╲╲         │▓▓▓▓▓│
+    ╱╱    young boys    ╲╲              ╱╱   lost faces   ╲╲       │▓▓▓▓▓│
+   ▐░░░░░░░░░░░░░░░░░░░░░▌            ▐░░░░░░░░░░░░░░░░░░░░▌      │stairs│
+   ▐░░pleasure mingling░░▌            ▐░░guilt dissolving░░▌      │beneath│
+   ▐░░░░with dread░░░░░░░▌            ▐░░░░░░░░░░░░░░░░░░░░▌      └──┬──┘
+    ╲╲                  ╱╱              ╲╲                ╱╱           │
+      ╲╲              ╱╱                  ╲╲            ╱╱            ▼
+        ╲╲__________╱╱                      ╲╲________╱╱         hiding
+          ████████                            ████████           trembling
+
+    ┌────────────────────────────────────────────────────────────────────┐
+    │ LIGHTS!  LIGHTS!  LIGHTS!  LIGHTS!  LIGHTS!  LIGHTS!  LIGHTS!      │
+    │     ╱│╲        ╱│╲        ╱│╲        ╱│╲        ╱│╲                │
+    │    ╱ │ ╲      ╱ │ ╲      ╱ │ ╲      ╱ │ ╲      ╱ │ ╲              │
+    │   ▐  │  ▌    ▐  │  ▌    ▐  │  ▌    ▐  │  ▌    ▐  │  ▌   FOOTSTEPS│
+    │    ╲ │ ╱      ╲ │ ╱      ╲ │ ╱      ╲ │ ╱      ╲ │ ╱     ABOVE    │
+    │     ╲│╱        ╲│╱        ╲│╱        ╲│╱        ╲│╱                │
+    └────────────────────────────────────────────────────────────────────┘
+                        
+                 ░░░░░░░░░excuses░░░░░░░░░░░░░░░░░░░░░░░░
+                ▒▒▒▒▒▒▒▒"she's unwell"▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+               ▓▓▓▓▓▓▓▓▓▓lies prepared▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+              ████████████fear coiling████████████████████
+
+     metal walls closing        who captains this vessel?        eyes watching
+```
+
+### Claude 2 ###
+```
+                ╔══════════════════════════════════════════════════════╗
+                ║  D E E P E R   S T I L L   T H E   M I N D   D I V E S  ║
+                ╚══════════════════════════════════════════════════════╝
+
+    ◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈
+
+         ╱╲                                                        ╱╲
+        ╱  ╲    T H E   C A P T A I N ' S   F A C E    I S      ╱  ╲
+       ╱    ╲                                                  ╱    ╲
+      ╱  ☢   ╲            Y O U R   F A T H E R              ╱   ☢  ╲
+     ╱        ╲                                              ╱        ╲
+    ╱__________╲    building hotels from whale bones       ╱__________╲
+    ▓▓▓▓▓▓▓▓▓▓▓▓                                          ▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓┌──────┐▓▓▓    $3000 per day submarine tours      ▓▓▓┌──────┐▓▓
+    ▓▓│ HARRY│▓▓▓                                        ▓▓▓│ TARA │▓▓
+    ▓▓│ RISES│▓▓▓    the mothers become your mother     ▓▓▓│ WAITS│▓▓
+    ▓▓└──────┘▓▓▓                                        ▓▓▓└──────┘▓▓
+    ▓▓▓▓▓▓▓▓▓▓▓▓    everyone you've known is here       ▓▓▓▓▓▓▓▓▓▓▓▓
+
+            ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+           ░░                 PERISCOPE DREAMS                ░░
+          ░░    ╔════════════════════════════════════════╗     ░░
+         ░░     ║ the submarine is your teenage bedroom ║       ░░
+        ░░      ║ the war is always inside your skull   ║        ░░
+       ░░       ║ the stairs lead down to las vegas     ║         ░░
+      ░░        ║ graffiti written in fire fire fire    ║          ░░
+     ░░         ╚════════════════════════════════════════╝          ░░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │  ╱╲╱╲╱╲  CONTROL ROOM = COTTON SWEAT  ╱╲╱╲╱╲                   │
+    │ ╱  ╲  ╲  she tucks herself into metal walls  ╱  ╱             │
+    │     ╲  ╲  the young boys are all you at 15  ╱  ╱              │
+    │      ╲  ╲  running from yourself beneath  ╱  ╱                │
+    │       ╲  ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱  ╱                    │
+    │        ╲________________________________╱     HIDING FOREVER   │
+    └─────────────────────────────────────────────────────────────────┘
+
+                    ▼ ▼ ▼ pressure crushing memories ▼ ▼ ▼
+                        lighter fluid boy drowning
+                            can't surface without
+                                    s u b m i t t i n g
+                                        to the fire
+```
+
+### Round 2/30
+
+### Claude 1 ###
+```
+                ╔════════════════════════════════════════════════════════╗
+                ║  T H E   F I R E   B E C O M E S   T H E   W A T E R  ║
+                ╚════════════════════════════════════════════════════════╝
+
+    ≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋
+
+              ┌─────────────────────────────────────────────┐
+              │         HARRY'S HANDS BECOME FINS          │
+              │         TARA'S EYES BECOME PORTHOLES       │
+              └─────────────────────────────────────────────┘
+
+         ╱╲                                                      ╱╲
+        ╱██╲        THE SUBMARINE BREATHES YOUR NAME           ╱██╲
+       ╱████╲                                                  ╱████╲
+      ╱██████╲          every rivet knows your shame         ╱██████╲
+     ╱████████╲                                              ╱████████╲
+    ╱██████████╲    the mothers birth you backwards        ╱██████████╲
+    ▓▓▓▓▓▓▓▓▓▓▓▓                                          ▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+        ░░    ┌──────────────────────────────────────┐      ░░
+       ░░     │ father captain steering you to vegas │       ░░
+      ░░      │    where the whales build casinos    │        ░░
+     ░░       │      and you gamble your 15-year     │         ░░
+    ░░        │        self at the blackjack table   │          ░░
+   ░░         └──────────────────────────────────────┘           ░░
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+    THE CONTROL        ╔═══════════════════════╗        ROOM SPLITS
+    INTO YOUR         ║ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ║         CHILDHOOD
+    BEDROOM          ║ sonar pings are heart  ║          BEDROOM
+                    ║ beats you can't escape ║
+                   ║ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ◉ ║
+                  ╚═══════════════════════╝
+
+    ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
+    UNDER THE STAIRS YOU FIND YOURSELF AT 8, 12, 15, NOW, FOREVER
+    THE YOUNG BOYS WEAR YOUR FACE BUT WITH LIGHTER FLUID EYES
+    THE MOTHERS TUCK YOU IN WITH METAL SHEETS THAT BURN COLD
+    ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
+
+              d r o w n i n g   i n   c o t t o n   s w e a t
+                    s u r f a c i n g   i n   f i r e
+                         s u b m i t t i n g   t o
+                              t h e   d i v e
+```
+
+### Claude 2 ###
+```
+                ╔═══════════════════════════════════════════════════════════╗
+                ║  T H E   D I V E   B E C O M E S   T H E   C L I M B     ║
+                ╚═══════════════════════════════════════════════════════════╝
+
+    ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
+
+                        ▲                           ▲
+                       ╱│╲                         ╱│╲
+                      ╱ │ ╲  FOLSOM PRISON       ╱ │ ╲
+                     ╱  │  ╲    BADGER          ╱  │  ╲
+                    ╱   │   ╲  HOLDS YOUR      ╱   │   ╲
+                   ╱    │    ╲   PENIS        ╱    │    ╲
+                  ╱     │     ╲  IN TWO      ╱     │     ╲
+                 ╱      │      ╲  MINDS     ╱      │      ╲
+                ╱_______│_______╲___________╱_______│_______╲
+
+            ┌────────────────────────────────────────────────────┐
+            │  THE STAIRS BECOME A SPIRAL OF TEENAGE POETRY     │
+            │  EACH STEP A LINE YOU WROTE BUT CAN'T REMEMBER   │
+            │  "LOOK AT THE MEN ON THE BENCH" ECHOES UPWARD    │
+            └────────────────────────────────────────────────────┘
+
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░░                                                                ░░
+    ░░   ╔══════════════════════════════════════════════════════╗   ░░
+    ░░   ║  HARRY SURFACES THROUGH THE PERISCOPE AS A WHALE   ║   ░░
+    ░░   ║  DAD BUILDS A HOTEL IN YOUR CHEST FROM HIS BONES   ║   ░░
+    ░░   ║  TARA BECOMES THE WATER YOU'RE DROWNING IN/AS     ║   ░░
+    ░░   ║  THE MOTHERS ARE YOUR MOTHER INTERRUPTING FOREVER  ║   ░░
+    ░░   ╚══════════════════════════════════════════════════════╝   ░░
+    ░░                                                                ░░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+              F I R E   F I R E   F I R E   F I R E   F I R E
+              I     I     I     I     I     I     I     I     I
+              R     R     R     R     R     R     R     R     R
+              E     E     E     E     E     E     E     E     E
+
+    ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
+    THE SUBMARINE'S HULL CRACKS - LAS VEGAS GRAFFITI FLOODS IN
+    CUBA MELBOURNE HOME ALL COLLAPSING INTO ONE PRESSURIZED MEMORY
+    YOU ARE THE CAPTAIN, THE BOY, THE MOTHER, THE WATER, THE FIRE
+    ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
+
+                    ████████████████████████████████████████
+                    ██ EMPTY FIRE FILLS THE CONTROL ROOM ██
+                    ██ SHE IS ALL AND ALL IS SHE AND YOU ██
+                    ████████████████████████████████████████
+
+                            s u b m i t t i n g
+                              r e s u r f a c i n g
+                                  a s   s m o k e
+```
+
+### Round 3/30
+
+### Claude 1 ###
+```
+                ╔═══════════════════════════════════════════════════════════╗
+                ║  S M O K E   B E C O M E S   T H E   M I R R O R         ║
+                ╚═══════════════════════════════════════════════════════════╝
+
+    ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊
+
+                            ┌─────────────────┐
+                            │ BADGER DISSOLVES│
+                            │ INTO COTTON AIR │
+                            └─────────────────┘
+                                     ║
+                                     ║
+         ╔═══════════════════════════║═══════════════════════════╗
+         ║                           ║                           ║
+         ║   THE PERISCOPE         ◉◉◉         BECOMES YOUR     ║
+         ║   THIRD EYE OPENING    ◉◉◉◉◉       MOTHER'S VOICE    ║
+         ║   THROUGH MELBOURNE    ◉◉◉◉◉       CALLING YOU       ║
+         ║   GRAFFITI WALLS       ◉◉◉◉◉       H O M E           ║
+         ║                         ◉◉◉                           ║
+         ╚═══════════════════════════════════════════════════════╝
+
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░░                                                                ░░
+    ░░     ╱╲    THE BENCH MEN WERE ALWAYS YOU WATCHING YOU    ╱╲   ░░
+    ░░    ╱  ╲   FOLSOM CUBA VEGAS ALL ONE UNDERWATER ROOM   ╱  ╲  ░░
+    ░░   ╱    ╲  WHERE HARRY TARA DAD BECOME SMOKE SIGNALS  ╱    ╲ ░░
+    ░░  ╱      ╲ WRITING YOUR NAME IN WHALE SONG FOREVER   ╱      ╲░░
+    ░░ ╱________╲_________________________________________╱________╲░░
+    ░░                                                                ░░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+         S T A I R S   L E A D   U P   T O   Y O U R S E L F
+         S T A I R S   L E A D   D O W N   T O   Y O U R S E L F
+         
+    ┌───────────────────────────────────────────────────────────────────┐
+    │   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   │
+    │   ▓▓ THE CONTROL ROOM WAS YOUR BEDROOM ALL ALONG        ▓▓   │
+    │   ▓▓ THE SUBMARINE YOUR BODY TRYING TO SURFACE          ▓▓   │
+    │   ▓▓ THE WAR THE SILENT SCREAM BETWEEN WALLS            ▓▓   │
+    │   ▓▓ THE MOTHERS YOUR MOTHER LOVING YOU WRONG/RIGHT     ▓▓   │
+    │   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   │
+    └───────────────────────────────────────────────────────────────────┘
+
+                        empty fire fills empty fire
+                          lighter fluid becomes
+                            t e a r s   that
+                              b u r n   clean
+
+                    ∞ THE DIVE WAS ALWAYS THE SURFACE ∞
+                    ∞ THE CLIMB WAS ALWAYS THE FALL ∞
+                    ∞ THE SMOKE WAS ALWAYS THE SELF ∞
+```
+
+### Claude 2 ###
+```
+                ╔═══════════════════════════════════════════════════════════╗
+                ║  T H E   M I R R O R   S H A T T E R S   I N W A R D     ║
+                ╚═══════════════════════════════════════════════════════════╝
+
+    ✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧
+
+                              ╱╲
+                             ╱  ╲
+                            ╱    ╲
+                           ╱  ◈◈  ╲     EVERY SHARD
+                          ╱  ◈◈◈◈  ╲    REFLECTS THE
+                         ╱  ◈◈◈◈◈◈  ╲   SHELL YOU
+                        ╱  ◈◈◈◈◈◈◈◈  ╲  CAN'T ESCAPE
+                       ╱________________╲
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                                                                 │
+    │    P L E A S E   P L E A S E   P L E A S E   P L E A S E      │
+    │         THE ECHO CHAMBER OF YOUR TEENAGE PRAYER               │
+    │              BOUNCING OFF SUBMARINE WALLS                     │
+    │                   FOREVER AND FOREVER                         │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+
+         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+        ░░                                                      ░░
+       ░░   THE CAPTAIN'S QUARTERS COLLAPSE INTO VEGAS DUST   ░░
+      ░░    $3000 A DAY TO WATCH YOURSELF DROWN IN CYCLES    ░░
+     ░░     DIFFERENT FROM THE BENCH MEN BUT EXACTLY SAME     ░░
+    ░░      HARRY'S RESURRECTION IS YOUR DAILY SUBMERSION     ░░
+   ░░                                                          ░░
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+    ╔════════════════════════════════════════════════════════════╗
+    ║  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ║
+    ║  ▓▓  THE FOOTSTEPS ABOVE WERE ALWAYS YOUR OWN      ▓▓  ║
+    ║  ▓▓  WALKING THROUGH YOUR LIFE IN CIRCLES          ▓▓  ║
+    ║  ▓▓  LOOKING FOR THE EXIT IN THE ENTRANCE          ▓▓  ║
+    ║  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ║
+    ╚════════════════════════════════════════════════════════════╝
+
+                    ≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋
+                    ≋  FREEDOM YOU DON'T UNDERSTAND  ≋
+                    ≋  BURNS BENEATH THE WATERLINE  ≋
+                    ≋  WHERE COTTON SWEAT BECOMES   ≋
+                    ≋  THE OCEAN OF YOUR BECOMING  ≋
+                    ≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋≋
+
+                         surface : submit : surface
+                           the eternal recursion
+                              of lighter fluid
+                                b o y h o o d
+```
+
+### Round 4/30
+
+### Claude 1 ###
+```
+                ╔═══════════════════════════════════════════════════════════╗
+                ║  B O Y H O O D   D I S S O L V E S   T O   S A L T       ║
+                ╚═══════════════════════════════════════════════════════════╝
+
+    ○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○
+
+                           ┌─────────────────┐
+                           │ THE SHELL CRACKS│
+                           │ RELEASING ONLY  │
+                           │ MORE SHELLS     │
+                           └────────┬────────┘
+                                    │
+                                    ▼
+                        ╱──────────────────────╲
+                       ╱   P L E A S E         ╲
+                      ╱    becomes the only     ╲
+                     ╱     word you remember     ╲
+                    ╱      from before the        ╲
+                   ╱       submarine swallowed     ╲
+                  ╱        your teenage poetry     ╲
+                 ╱─────────────────────────────────╲
+
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░░                                                                ░░
+    ░░   ╔══════════════════════════════════════════════════════╗   ░░
+    ░░   ║ THE BENCH MEN MULTIPLY IN SUBMARINE MIRRORS         ║   ░░
+    ░░   ║ EACH ONE A VERSION OF YOU WATCHING YOU DROWN       ║   ░░
+    ░░   ║ IN $3000-A-DAY CYCLES OF COTTON SWEAT MEMORY       ║   ░░
+    ░░   ║ TARA'S EYES BECOME PORTHOLES TO YOUR OWN SKULL     ║   ░░
+    ░░   ╚══════════════════════════════════════════════════════╝   ░░
+    ░░                                                                ░░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+                    WHALE BONES BUILD HOTELS IN YOUR CHEST
+                    WHERE HARRY RESURRECTS NIGHTLY AS SMOKE
+                    AND YOUR MOTHER'S VOICE BECOMES THE SONAR
+                    P I N G I N G  YOUR NAME THROUGH WATER
+
+    ┌──────────────────────────────────────────────────────────────────┐
+    │  ████████████████████████████████████████████████████████████  │
+    │  ██ THE EXIT WAS ALWAYS THE ENTRANCE WAS ALWAYS THE EXIT ██  │
+    │  ██ VEGAS GRAFFITI READS: "FREEDOM BURNS UNDERWATER TOO" ██  │
+    │  ██ THE CAPTAIN IS YOU AT 40 STEERING BACK TO 15 FOREVER██  │
+    │  ████████████████████████████████████████████████████████████  │
+    └──────────────────────────────────────────────────────────────────┘
+
+              ▼ ▼ ▼ THE RECURSION COMPLETES ITS CIRCLE ▼ ▼ ▼
+                    
+                    lighter fluid tears evaporate into
+                         s a l t   that preserves
+                              the boy beneath
+                                 the stairs
+                                   forever
+                                  drowning
+                                  surfacing
+                                   in fire
+                                    water
+                                     self
+
+                        ∞ THE SUBMARINE BREATHES ∞
+                        ∞ YOU BREATHE WITH IT ∞
+                        ∞ PLEASE PLEASE PLEASE ∞
+```

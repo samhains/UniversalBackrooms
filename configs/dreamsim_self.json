@@ -2,7 +2,7 @@
   "type": "batch",
   "template": "dreamsim_self",
   "max_turns": 30,
-  "models": ["sonnet4", "sonnet4"],
+  "models": ["opus4", "opus4"],
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,

@@ -18,13 +18,17 @@ gallery@excalibur:~/$
 
 ## user
 
+cat my_teenage_poetry.txt
+
+{teenage_poetry}
+
 cat mysterious_vision.txt
 
 LAS VEGAS GRAFFITI
 
-cat my_teenage_poetry_lol_cringe.txt
+cat recurring_characters.json
 
-{teenage_poetry}
+{recurring_characters}
 
 ## assistant
 
