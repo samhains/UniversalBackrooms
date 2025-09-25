@@ -2,7 +2,7 @@
   "type": "single",
   "template": "dreamsim_self_curated",
   "max_turns": 30,
-  "models": ["opus4", "opus4"],
+  "models": ["haiku3", "opus4"],
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,

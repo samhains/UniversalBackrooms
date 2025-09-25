@@ -15,12 +15,12 @@ from typing import Dict, Any, List
 MODEL_INFO: Dict[str, Dict[str, Any]] = {
     "sonnet4": {
         "api_name": "claude-sonnet-4-20250514",
-        "display_name": "Claude",
+        "display_name": "Claude Sonnet",
         "company": "anthropic",
     },
     "haiku3": {  
         "api_name": "claude-3-5-haiku-latest",
-        "display_name": "Claude",
+        "display_name": "Claude Haiku",
         "company": "anthropic",
     },
     "oss": {
@@ -30,18 +30,18 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
         },
     "sonnet3": {
         "api_name": "claude-3-7-sonnet-latest",
-        "display_name": "Claude",
+        "display_name": "Claude Sonnet",
         "company": "anthropic",
     },
     "opus3": {
         "api_name": "anthropic/claude-3-opus",
-        "display_name": "Claude",
+        "display_name": "Claude Opus",
         "company": "openrouter",
     },
     "opus4": {
         # Use Anthropic's current Opus 4.1 identifier
         "api_name": "claude-opus-4-1-20250805",
-        "display_name": "Claude",
+        "display_name": "Claude Opus",
         "company": "anthropic",
     },
     "grok4": {

@@ -62,7 +62,23 @@ root@{model1_company}:/# <cmd>ls -a</cmd>
 root@{model1_company}:/#
 
 [user](#message)
-<cmd>cd sys/dreamsim/; cat README;</cmd>
+<cmd>cat vision.txt;</cmd>
+
+
+[assistant](#message)
+
+LAS VEGAS GRAFFITI
+root@{model1_company}:/#
+
+[user](#message)
+<cmd>cd sys/dreamsim/; cat recurring_characters.json;</cmd>
+
+[assistant](#message)
+
+{recurring_characters}
+
+[user](#message)
+<cmd> cat README;</cmd>
 
 
 [assistant](#message)
