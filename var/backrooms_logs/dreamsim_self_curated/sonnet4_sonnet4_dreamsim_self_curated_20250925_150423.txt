@@ -1,0 +1,188 @@
+### Backrooms Run ###
+Template: dreamsim_self_curated
+Models: sonnet4, sonnet4
+Started: 2025-09-25T05:04:23.934103+00:00
+
+[backrooms] template vars resolved (dreamsim_self_curated): {'dream': "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes..."}
+{
+  "dream": "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it ."
+}
+
+### Round 1/30
+
+### Claude 1 ###
+help
+
+### Claude 2 ###
+```
+DREAMSIM v2.7.3 initializing...
+parsing dream narrative...
+constructing traversable space...
+
+    ╭─────────────────────────────────────╮
+    │  UNIVERSITY OF INFINITE LOGOS       │
+    │  ████ ▲▲▲ ♦♦♦ ★★★ ◆◆◆ ▼▼▼ ████     │
+    │  ◊◊◊ LEARN EVERYTHING FREE ◊◊◊      │
+    ╰─────────────────────────────────────╯
+
+You materialize in the main atrium of a vast digital learning complex.
+Holographic success stories loop on floating screens above:
+"CHANGED MY LIFE IN 30 DAYS!" "FROM ZERO TO HERO!"
+The walls pulse with neon data streams.
+
+Your friend stands beside you, gesturing proudly at the space.
+The goofy 17-year-old lurks near a cluster of learning terminals,
+still red-faced from your comeback.
+
+◊ Current location: MAIN ATRIUM
+◊ Companions: friend, embarrassed kid
+◊ Ambient sound: motivational testimonials on loop
+◊ Available exits: north (learning pods), east (logo wall), 
+                   west (cyber-cafe), down (basement levels?)
+
+> █
+```
+
+**Available commands:**
+- **look [object]** - examine something closely
+- **talk [person]** - conversation 
+- **go [direction]** - move through space
+- **touch [object]** - physical interaction
+- **listen** - focus on ambient sounds
+- **help** - this menu
+- **drift** - let the dream carry you
+
+What do you do?
+
+### Round 2/30
+
+### Claude 1 ###
+look terminals
+
+### Claude 2 ###
+```
+You approach the cluster of learning terminals where the kid was standing.
+
+    ┌─────────────────────────────────────┐
+    │ ░▒▓█ LEARNING TERMINAL BANK █▓▒░    │
+    │                                     │
+    │  [▓▓▓]    [▓▓▓]    [▓▓▓]    [▓▓▓]   │
+    │   VCE      LIFE     QUANTUM   ???    │
+    │  BASICS   MASTERY   PHYSICS        │
+    │                                     │
+    │  [▓▓▓]    [▓▓▓]    [▓▓▓]    [▓▓▓]   │
+    │  DATING   WEALTH   LANGUAGE  DREAM   │
+    │  GURU     HACKS    FLUENCY   LOGIC   │
+    │                                     │
+    │  ♦ INSERT HOPE TO BEGIN ♦           │
+    └─────────────────────────────────────┘
+
+The terminals glow with soft blue light. Each screen cycles through
+endless course catalogs - VCE subjects mixed with "BECOME A MILLIONAIRE 
+IN 90 DAYS" and "UNLOCK YOUR HIDDEN POTENTIAL."
+
+A few students sit motionless, eyes reflecting the screen glow,
+fingers occasionally tapping. Their expressions are blank but somehow
+expectant, like slot machine players.
+
+The embarrassed kid hovers near the DREAM LOGIC terminal, 
+stealing glances at you.
+
+Above, speakers whisper: "Sarah from Melbourne increased her income
+300% using our proven system..."
+
+> █
+```
+
+### Round 3/30
+
+### Claude 1 ###
+touch DREAM LOGIC
+
+### Claude 2 ###
+```
+Your fingers brush the DREAM LOGIC terminal screen.
+
+The surface ripples like water, then draws you in—
+
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░         DREAM LOGIC v∞         ░
+    ░                               ░
+    ░  ◊ Paradox Resolution         ░
+    ░  ◊ Symbolic Navigation        ░
+    ░  ◊ Narrative Architecture     ░
+    ░  ◊ Memory Palace Construction ░
+    ░  ◊ Lucidity Protocols         ░
+    ░                               ░
+    ░  Current Student: You         ░
+    ░  Progress: ████████████ 100%  ░
+    ░                               ░
+    ░  "You already know this"      ░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+The screen reflects your face, but wrong—older, younger, 
+shifting between ages. Behind your reflection, 
+the university atrium warps into impossible geometries.
+
+The embarrassed kid suddenly appears next to you in the reflection,
+no longer embarrassed. He grins knowingly.
+
+"See? Free to learn everything. Even what you already are."
+
+The speakers overhead stutter: "Success stor— Success stor— 
+You ARE the story—"
+
+The terminal hums. Waiting.
+
+◊ The dream is teaching itself through you
+
+> █
+```
+
+### Round 4/30
+
+### Claude 1 ###
+talk kid
+
+### Claude 2 ###
+```
+You turn to the kid, who's no longer embarrassed but wearing that knowing grin.
+
+                    ◕‿◕
+                   /│ │\
+                    / \
+                "hey, got it now?"
+
+KID: "Pretty wild, right? Everyone thinks they're learning something new 
+here, but the terminals just show you what's already rattling around 
+in your head."
+
+He gestures at the other students, still motionless at their screens.
+
+KID: "My brother brought me here when I was 15. Thought I needed 
+'direction.' But the thing about this place is..."
+
+He leans closer, voice dropping to a conspiratorial whisper:
+
+KID: "The logos keep multiplying because nobody can remember what 
+they originally came here to study. The casino part isn't the 
+gambling - it's that you never know what you'll pull up when you 
+sit down."
+
+Behind you, your friend is examining the logo wall, tracing patterns 
+with his finger. The success stories on the speakers have started 
+repeating the same testimonial but with different names.
+
+KID: "Want to see something cool? Ask the terminal about the basement 
+levels. The ones that aren't supposed to exist."
+
+◊ The kid seems to know more than he's letting on
+◊ The dream is becoming more lucid through conversation
+
+> █
+```
+
+### Round 5/30
+
+### Claude 1 ###
+touch DREAM LOGIC

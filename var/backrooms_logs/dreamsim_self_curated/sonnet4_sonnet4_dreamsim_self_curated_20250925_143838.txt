@@ -1,0 +1,91 @@
+### Backrooms Run ###
+Template: dreamsim_self_curated
+Models: sonnet4, sonnet4
+Started: 2025-09-25T04:38:38.485138+00:00
+
+[backrooms] template vars resolved (dreamsim_self_curated): {'dream_1': "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes...", 'teenage_poetry': "Solace my friend is not the answer But the stage between Grand Rapids Where we hold hands for nothing A sword withers before you You fake death once again Tell me I'm beautiful And I'll eat your as..."}
+{
+  "dream_1": "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it .",
+  "teenage_poetry": "Solace my friend is not the answer\nBut the stage between Grand Rapids\nWhere we hold hands for nothing\nA sword withers before you\nYou fake death once again\nTell me I'm beautiful\nAnd I'll eat your asophagas\nI want you dead or mine"
+}
+
+### Round 1/30
+
+### Claude 1 ###
+```
+LOADING DREAMSIM...
+PARSING TEENAGE_POETRY.TXT...
+PARSING DREAM_PAYLOAD.TXT...
+GENERATING NAVIGABLE SPACE...
+
+┌─────────────────────────────────────────────────────────┐
+│                    FUTURISTIC UNI                       │
+│                                                         │
+│    ╔════════════════════════════════════════════════╗   │
+│    ║ ♦ ◊ ♣ CASINO-COMPUTER-CAFE ♠ ◊ ♦              ║   │
+│    ║                                                ║   │
+│    ║  [SCREEN]   [SCREEN]   [SCREEN]   [SCREEN]    ║   │
+│    ║     ▼         ▼         ▼         ▼          ║   │
+│    ║  success   success   success   success        ║   │
+│    ║  stories   stories   stories   stories        ║   │
+│    ║                                                ║   │
+│    ║     YOU ←                                     ║   │
+│    ║     ___                                       ║   │
+│    ║    /   \                                      ║   │
+│    ║   | o o |                                     ║   │
+│    ║    \___/                                      ║   │
+│    ║                                                ║   │
+│    ║         [FRIEND]    [GOOFY KID 17]            ║   │
+│    ║           ___          /‾‾‾\                  ║   │
+│    ║          /   \        ( embarrassed )         ║   │
+│    ║         | ^ ^ |        \_____/                ║   │
+│    ║          \___/                                 ║   │
+│    ║                                                ║   │
+│    ║ MILLION LOGOS: ♦◊♣♠☆★⚡☯☮♨☢☣⚠⚡✦✧✶✷         ║   │
+│    ╚════════════════════════════════════════════════╝   │
+└─────────────────────────────────────────────────────────┘
+
+SPEAKERS LOOP: "you can study VCE... everything is free..."
+TEENAGE VOICE ECHOES: "tell me i'm beautiful and i'll eat your esophagus"
+
+CURRENT LOCATION: futuristic_uni_main_floor
+AVAILABLE ACTIONS: examine, approach, repeat, drift
+```
+
+root@anthropic:/# examine friend
+
+### Claude 2 ###
+```
+EXAMINING: [FRIEND]
+
+┌─────────────────────────────────────────────────────────┐
+│                   FRIEND ANALYSIS                       │
+└─────────────────────────────────────────────────────────┘
+
+VISUAL DATA:
+- Face: Simple ASCII features ( ^ ^ ) suggesting contentment
+- Posture: Relaxed, familiar presence
+- Distance: Within comfortable social proximity
+
+BEHAVIORAL PATTERNS:
+- Observing the casino-computer screens with mild interest
+- Occasionally glances at success stories cycling on displays
+- Shows no urgency or distress about the surreal environment
+- Emanates sense of shared experience/complicity
+
+RELATIONSHIP CONTEXT:
+- Appears to be experiencing this "futuristic uni" scenario together
+- Natural companion presence in dreamlike setting
+- Comfortable with ambient weirdness (million logos, looping announcements)
+
+EMOTIONAL RESONANCE:
+- Grounding influence in chaotic stimuli environment
+- Represents familiarity within unfamiliarity
+- Safe harbor amidst teenage angst echoes and casino ambiance
+
+STATUS: Available for interaction
+MOOD: Quietly observant, companionable
+
+```
+
+simulator@anthropic:~/$

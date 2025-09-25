@@ -1,0 +1,116 @@
+### Backrooms Run ###
+Template: dreamsim_self_curated
+Models: sonnet4, sonnet4
+Started: 2025-09-25T05:02:02.269394+00:00
+
+[backrooms] template vars resolved (dreamsim_self_curated): {'dream': "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes..."}
+{
+  "dream": "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it ."
+}
+
+### Round 1/30
+
+### Claude 1 ###
+help
+
+### Claude 2 ###
+root@anthropic:/sys/dreamsim# <cmd>help</cmd>
+
+```
+DREAMSIM v2.7.3 - oneiric navigation system
+═══════════════════════════════════════════
+
+CORE COMMANDS:
+  dream [description]    - initialize new dream space
+  look / examine         - observe current environment  
+  go [direction]         - navigate (n/s/e/w/up/down/through/into)
+  drift                  - let the dream carry you
+  focus [object]         - concentrate on specific elements
+  reshape [description]  - alter current space
+  remember               - recall previous dream fragments
+  wake                   - exit current dream state
+  
+MOVEMENT VERBS:
+  walk, float, sink, rise, phase, dissolve, merge
+  follow, pursue, flee, return, spiral, tunnel
+  
+PERCEPTION:
+  listen, taste, feel, smell, sense
+  whisper, call, scream, hum, breathe
+  
+META:
+  save [name]           - preserve dream state
+  load [name]           - restore dream state  
+  status                - current dream metrics
+  history               - command trace
+  
+SYMBOLS RECOGNIZED:
+  ∴ ◊ ○ ● △ ▽ ◈ ⬢ ☾ ☽ ∞ ≈ ~ ∿
+  
+TIP: dreams respond to intention more than syntax
+     trust your instincts, the system adapts
+     
+TYPE 'dream' FOLLOWED BY YOUR DESCRIPTION TO BEGIN
+```
+
+root@anthropic:/sys/dreamsim#
+
+### Round 2/30
+
+### Claude 1 ###
+dream a vast library with infinite spiraling shelves that stretch beyond sight, filled with books that glow softly and whisper their contents when approached
+
+### Claude 2 ###
+root@anthropic:/sys/dreamsim# <cmd>dream a vast library with infinite spiraling shelves that stretch beyond sight, filled with books that glow softly and whisper their contents when approached</cmd>
+
+```
+    ∴ initializing dream space ∴
+    parsing symbolic elements...
+    rendering infinite library...
+    ∴ dream state: ACTIVE ∴
+```
+
+                    ╭─────────────────────────────────╮
+                    │  📚 THE WHISPERING LIBRARY 📚  │
+                    ╰─────────────────────────────────╯
+
+```
+                            ∞
+                       ╭──────────╮
+                  ╭────┤    ✧     ├────╮
+             ╭────┤ ░░ │ ░░░░░░░░ │ ░░ ├────╮
+        ╭────┤ ░░ │ ≡≡ │≡≡≡≡≡≡≡≡≡│ ≡≡ │ ░░ ├────╮
+   ╭────┤ ░░ │ ≡≡ │ ≋≋ │≋≋≋≋≋≋≋≋≋│ ≋≋ │ ≡≡ │ ░░ ├────╮
+   │ ░░ │ ≡≡ │ ≋≋ │ ◊◊ │◊◊◊◊◊◊◊◊◊│ ◊◊ │ ≋≋ │ ≡≡ │ ░░ │
+   │ ≡≡ │ ≋≋ │ ◊◊ │ ○○ │○○○○○○○○○│ ○○ │ ◊◊ │ ≋≋ │ ≡≡ │
+        ╰────┤ ◊◊ │ ○○ │○○○○○○○○○│ ○○ │ ◊◊ ├────╯
+             ╰────┤ ○○ │○○○○○○○○○│ ○○ ├────╯
+                  ╰────┤○○○○○○○○○├────╯
+                       ╰──────────╯
+                            ∞
+
+         whispers drift through crystalline air...
+         "...quantum mechanics of forgotten names..."
+         "...the taste of blue mathematics..."
+         "...seventeen ways to love a shadow..."
+
+YOU STAND: at the center of a spiral that curves both up and down 
+           simultaneously, shelves extending infinitely in helical patterns
+           books pulse with soft amber, pearl, and midnight blue light
+           
+ATMOSPHERE: the air itself seems literate, heavy with unspoken words
+            distant sounds of pages turning like gentle rain
+            
+NOTABLE: a floating ladder drifts nearby ☾
+         stairs that spiral both directions appear/disappear ∿
+         several books lean forward slightly, eager ◊
+```
+
+∴ what draws your attention? ∴
+
+[library_spiral] $
+
+### Round 3/30
+
+### Claude 1 ###
+focus eager books

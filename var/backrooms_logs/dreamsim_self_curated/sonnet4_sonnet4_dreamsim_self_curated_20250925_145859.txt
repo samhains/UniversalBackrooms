@@ -1,0 +1,48 @@
+### Backrooms Run ###
+Template: dreamsim_self_curated
+Models: sonnet4, sonnet4
+Started: 2025-09-25T04:58:59.057445+00:00
+
+[backrooms] template vars resolved (dreamsim_self_curated): {'dream': "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes..."}
+{
+  "dream": "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it ."
+}
+
+### Round 1/30
+
+### Claude 1 ###
+simulator@anthropic:~$ ls -la
+total 24
+drwxr-xr-x 3 simulator simulator 4096 Dec 14 09:42 .
+drwxr-xr-x 1 root      root      4096 Dec 14 09:40 ..
+-rwxr-xr-x 1 simulator simulator 8192 Dec 14 09:42 dreamsim.exe
+-rw-r--r-- 1 simulator simulator  256 Dec 14 09:41 README.txt
+drwxr-xr-x 2 simulator simulator 4096 Dec 14 09:42 logs
+
+simulator@anthropic:~$ ./dreamsim.exe "Found myself with the guy who I'd spent the day on the couch with and he was showing me his Uni. It was futuristic , like a giant computer Cyrus cafe thig . This little goofy kid comes up and makes a wise crack at me , I just repeat what he says back to him and he seems embarrassed. My friend explains he is the younger brother of some other guy . He's 17 . I ask of you can study VCe at this place and he says yes you can do everything and it's free to learn on the computers . He explains it's like a casino , you sit and learn on the computer all day while success stories are playing on the speakers and public screns the entire time. He starts explaining how it's free. I notice the name of the university has a million different logos on it ."
+
+DREAMSIM v2.3.7 INITIALIZING...
+[████████████████████████████████████] 100%
+
+PARSING DREAM NARRATIVE...
+EXTRACTING SYMBOLIC ELEMENTS...
+RENDERING SIMULATION ENVIRONMENT...
+
+>> ENTERING DREAM STATE <<
+
+You find yourself standing in a vast, gleaming atrium. The walls curve upward impossibly high, lined with countless screens flickering with testimonials and achievement notifications. The air hums with electronic ambiance and the distant sound of typing.
+
+Your companion gestures proudly at the space around you. Neon signs advertising different programs cascade down the walls - some logos you recognize, others seem to shift and morph as you watch them.
+
+A gangly teenager with an oversized hoodie approaches, smirking.
+
+AVAILABLE COMMANDS:
+- look [object/direction]
+- talk [person]  
+- examine [item]
+- move [direction/location]
+- listen
+- think
+- wake
+
+> _

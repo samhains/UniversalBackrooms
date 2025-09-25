@@ -1,0 +1,20 @@
+{
+  "type": "single",
+  "template": "worldsim",
+  "max_turns": 30,
+  "models": [
+    "haiku3",
+    "haiku3"
+  ],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "context_window": 128000,
+  "integrations": {
+    "discord": [
+      "status_feed"
+    ],
+    "post_transcript": false,
+    "transcript_channel": "transcripts"
+  }
+}
