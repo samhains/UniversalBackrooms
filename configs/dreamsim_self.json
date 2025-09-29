@@ -1,8 +1,8 @@
 {
   "type": "batch",
-  "template": "dreamsim_self",
+  "template": "dreamsim_self_2",
   "max_turns": 30,
-  "models": ["hermes", "hermes"],
+  "models": ["opus4", "opus4"],
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,
