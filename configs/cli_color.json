@@ -1,0 +1,11 @@
+{
+  "type": "single",
+  "template": "cliColor",
+  "max_turns": 30,
+  "models": ["sonnet4", "sonnet4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "max_items": 10,
+  "context_window": 128000
+}

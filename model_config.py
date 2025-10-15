@@ -14,7 +14,7 @@ from typing import Dict, Any, List
 # Single source of truth for model definitions
 MODEL_INFO: Dict[str, Dict[str, Any]] = {
     "sonnet4": {
-        "api_name": "claude-sonnet-4-20250514",
+        "api_name": "claude-sonnet-4-5",
         "display_name": "Claude Sonnet",
         "company": "anthropic",
     },

@@ -1116,10 +1116,16 @@ def generate_distinct_colors():
 
 color_generator = generate_distinct_colors()
 actor_colors = {}
+ANSI_TAG = re.compile(r"(?<!\x1b)\[(\d+(?:;\d+)*)m")
 
 
 def get_ansi_color(rgb):
     return f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m"
+
+
+def inject_ansi_escapes(text: str) -> str:
+    """Convert bracketed color codes like [0;35m into real ANSI escapes."""
+    return ANSI_TAG.sub(lambda m: f"\033[{m.group(1)}m", text)
 
 
 def process_and_log_response(response, actor, filename, contexts, current_model_index):
@@ -1136,6 +1142,8 @@ def process_and_log_response(response, actor, filename, contexts, current_model_
     # Create a visually distinct header for each actor
     console_header = f"\n{bold}{color}{actor}:{reset}"
     file_header = f"\n### {actor} ###\n"
+
+    response = inject_ansi_escapes(response)
 
     print(console_header)
     print(response)
