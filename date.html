@@ -240,7 +240,10 @@
             const filesList = document.getElementById('files');
             filesList.innerHTML = '';
 
-            transcripts.forEach((t, idx) => {
+            // Filter out transcripts with no content
+            const validTranscripts = transcripts.filter(t => t.transcript && t.transcript.trim().length > 0);
+
+            validTranscripts.forEach((t, idx) => {
                 const li = document.createElement('li');
                 li.className = 'file-item';
 
@@ -273,7 +276,7 @@
                 filesList.appendChild(li);
             });
 
-            document.getElementById('stats').textContent = `${transcripts.length} transcripts`;
+            document.getElementById('stats').textContent = `${validTranscripts.length} transcripts`;
         }
 
         async function init() {
