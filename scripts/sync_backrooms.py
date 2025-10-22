@@ -252,6 +252,45 @@ def chunked(seq, n):
         yield seq[i : i + n]
 
 
+def _quote_for_in(value: str) -> str:
+    escaped = value.replace('"', '\\"')
+    return f'"{escaped}"'
+
+
+def fetch_existing_log_files(url: str, key: str, log_files: Iterable[str]) -> set[str]:
+    existing: set[str] = set()
+    clean = [lf for lf in log_files if isinstance(lf, str) and lf]
+    if not clean:
+        return existing
+    endpoint = f"{url}/rest/v1/backrooms"
+    for batch in chunked(clean, 50):
+        quoted = ",".join(_quote_for_in(v) for v in batch)
+        params = {"select": "log_file", "log_file": f"in.({quoted})"}
+        try:
+            r = requests.get(endpoint, headers=headers(key), params=params, timeout=30)
+            r.raise_for_status()
+            data = r.json()
+        except Exception as exc:
+            # If the lookup fails, fall back to syncing all rows for this batch.
+            print(f"Warning: Could not query existing backrooms rows: {exc}", file=sys.stderr)
+            return set()
+        for row in data or []:
+            val = row.get("log_file")
+            if isinstance(val, str) and val:
+                existing.add(val)
+    return existing
+
+
+def filter_existing_rows(url: str, key: str, rows: List[Dict]) -> tuple[List[Dict], int]:
+    log_files = [row.get("log_file") for row in rows]
+    existing = fetch_existing_log_files(url, key, log_files)
+    if not existing:
+        return rows, 0
+    filtered: List[Dict] = [row for row in rows if row.get("log_file") not in existing]
+    skipped = len(rows) - len(filtered)
+    return filtered, skipped
+
+
 def _count_replies_from_text(txt: str) -> int:
     """Count reply sections in a Backrooms log.
 
@@ -490,6 +529,11 @@ def main():
         if not items:
             continue
         rows = to_backrooms_rows(items, min_replies=int(args.min_replies))
+        if not rows:
+            continue
+        rows, skipped = filter_existing_rows(url, key, rows)
+        if skipped:
+            print(f"Skipping {skipped} existing rows for {meta_path}")
         if not rows:
             continue
         count = upsert_rows(url, key, rows, dry_run=args.dry_run)

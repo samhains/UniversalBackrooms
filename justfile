@@ -177,4 +177,7 @@ viewer:
 
 # Start the backrooms viewer with fresh sync
 # Usage: just view
-view: sync-transcripts viewer
+view: viewer
+
+# Start viewer after a fresh sync
+view-sync: sync-transcripts viewer
