@@ -200,12 +200,12 @@
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
 
-                // Color ### Round headers
-                if (line.match(/^### Round \d+\/\d+ ###$/)) {
+                // Color ### Round headers (with or without trailing space/###)
+                if (line.match(/^### Round \d+\/\d+/)) {
                     colored.push(`<span class="round-header">${escapeHtml(line)}</span>`);
                 }
                 // Color ### Actor Name ### headers
-                else if (line.match(/^### .+ ###$/)) {
+                else if (line.match(/^### .+ ###/) || line.match(/^### [^#]+$/)) {
                     colored.push(`<span class="actor-header">${escapeHtml(line)}</span>`);
                 }
                 // Color lines starting with >
