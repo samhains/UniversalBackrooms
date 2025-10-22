@@ -167,12 +167,37 @@
             });
         }
 
+        function extractTimeFromFilename(filename) {
+            // Extract timestamp from filename like: model_model_template_YYYYMMDD_HHMMSS.txt
+            const match = filename.match(/_(\d{8})_(\d{6})/);
+            if (match) {
+                const date = match[1]; // YYYYMMDD
+                const time = match[2]; // HHMMSS
+                const year = date.substring(0, 4);
+                const month = date.substring(4, 6);
+                const day = date.substring(6, 8);
+                const hour = time.substring(0, 2);
+                const min = time.substring(2, 4);
+                const sec = time.substring(4, 6);
+
+                // Create date in local timezone
+                const dt = new Date(year, month - 1, day, hour, min, sec);
+                return dt.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            return null;
+        }
+
         function getFilename(transcript, idx) {
             // Extract just the filename from the full path
             if (transcript.log_file) {
                 const parts = transcript.log_file.split('/');
                 const filename = parts[parts.length - 1].replace('.txt', '');
-                const time = formatTime(transcript.created_at);
+                // Use filename timestamp if available, fallback to created_at
+                const time = extractTimeFromFilename(filename) || formatTime(transcript.created_at);
                 return `${String(idx + 1).padStart(2, '0')}. ${time} - ${filename}`;
             }
             const time = formatTime(transcript.created_at);
