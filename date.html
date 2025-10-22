@@ -131,7 +131,7 @@
             const nextDayStr = nextDay.toISOString().split('T')[0];
 
             const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/backrooms?select=*&created_at=gte.${date}&created_at=lt.${nextDayStr}&order=created_at.desc`,
+                `${SUPABASE_URL}/rest/v1/backrooms?select=*&created_at=gte.${date}&created_at=lt.${nextDayStr}&order=created_at.asc`,
                 {
                     headers: {
                         'apikey': SUPABASE_KEY,
