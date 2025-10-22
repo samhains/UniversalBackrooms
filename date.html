@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>backrooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: #000;
+            color: #d4d4d4;
+            line-height: 1.6;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .back {
+            color: #888;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .back:hover {
+            color: #d4d4d4;
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-weight: normal;
+            font-size: 1.2em;
+            letter-spacing: 0.05em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error {
+            border: 1px solid #666;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            padding: 10px 15px;
+            margin: 3px 0;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            transition: all 0.1s;
+        }
+
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: #666;
+            padding-left: 20px;
+        }
+
+        .file-link {
+            text-decoration: none;
+            color: #d4d4d4;
+            display: block;
+        }
+
+        .file-name {
+            font-size: 0.95em;
+        }
+
+        .file-meta {
+            font-size: 0.8em;
+            opacity: 0.6;
+            margin-top: 3px;
+        }
+
+        .stats {
+            text-align: center;
+            padding: 30px 0;
+            opacity: 0.5;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back">← back</a>
+        <h1 id="date-title">...</h1>
+    </div>
+
+    <div id="loading" class="loading">loading...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <ul id="files" class="file-list"></ul>
+    <div id="stats" class="stats"></div>
+
+    <script>
+        let SUPABASE_URL = '';
+        let SUPABASE_KEY = '';
+
+        async function loadConfig() {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            SUPABASE_URL = config.supabaseUrl;
+            SUPABASE_KEY = config.supabaseKey;
+        }
+
+        function getDateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('date');
+        }
+
+        async function fetchTranscriptsForDate(date) {
+            const nextDay = new Date(date);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const nextDayStr = nextDay.toISOString().split('T')[0];
+
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/backrooms?select=*&created_at=gte.${date}&created_at=lt.${nextDayStr}&order=created_at.desc`,
+                {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'unknown';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            return new Date(dateString).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function getFilename(transcript, idx) {
+            // Extract just the filename from the full path
+            if (transcript.log_file) {
+                const parts = transcript.log_file.split('/');
+                const filename = parts[parts.length - 1].replace('.txt', '');
+                const time = formatTime(transcript.created_at);
+                return `${String(idx + 1).padStart(2, '0')}. ${time} - ${filename}`;
+            }
+            const time = formatTime(transcript.created_at);
+            const prompt = transcript.prompt ? transcript.prompt.substring(0, 40) : 'untitled';
+            return `${String(idx + 1).padStart(2, '0')}. ${time} - ${prompt}`;
+        }
+
+        function render(transcripts, dateKey) {
+            document.getElementById('date-title').textContent = formatDate(dateKey);
+
+            const filesList = document.getElementById('files');
+            filesList.innerHTML = '';
+
+            transcripts.forEach((t, idx) => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+
+                const a = document.createElement('a');
+                a.className = 'file-link';
+                // Create pretty URL: /t/filename?date=YYYY-MM-DD for back navigation
+                if (t.log_file) {
+                    const filename = t.log_file.split('/').pop().replace('.txt', '');
+                    a.href = `/t/${filename}?date=${dateKey}`;
+                } else {
+                    const fileId = encodeURIComponent(t.log_file || t.dream_id || idx);
+                    a.href = `view.html?file=${fileId}`;
+                }
+
+                const name = document.createElement('div');
+                name.className = 'file-name';
+                name.textContent = getFilename(t, idx);
+
+                const meta = document.createElement('div');
+                meta.className = 'file-meta';
+                const parts = [];
+                if (t.models) parts.push(t.models);
+                if (t.template) parts.push(t.template);
+                if (t.replies) parts.push(`${t.replies} replies`);
+                meta.textContent = parts.join(' | ');
+
+                a.appendChild(name);
+                a.appendChild(meta);
+                li.appendChild(a);
+                filesList.appendChild(li);
+            });
+
+            document.getElementById('stats').textContent = `${transcripts.length} transcripts`;
+        }
+
+        async function init() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const date = getDateFromUrl();
+
+            if (!date) {
+                error.style.display = 'block';
+                error.textContent = 'error: no date specified';
+                loading.style.display = 'none';
+                return;
+            }
+
+            try {
+                await loadConfig();
+                const transcripts = await fetchTranscriptsForDate(date);
+                loading.style.display = 'none';
+                render(transcripts, date);
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `error: ${err.message}`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

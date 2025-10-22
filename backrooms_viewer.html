@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>backrooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: #000;
+            color: #0f0;
+            line-height: 1.5;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: normal;
+            font-size: 1.2em;
+            letter-spacing: 0.1em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error {
+            border: 1px solid #0f0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .date-section {
+            margin-bottom: 60px;
+        }
+
+        .date-header {
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #0f0;
+        }
+
+        .transcript-card {
+            margin-bottom: 30px;
+            border-left: 1px solid #0f0;
+            padding-left: 15px;
+        }
+
+        .card-header {
+            cursor: pointer;
+            padding: 10px 0;
+        }
+
+        .card-header:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .card-title {
+            margin-bottom: 5px;
+        }
+
+        .card-meta {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease;
+        }
+
+        .card-content.expanded {
+            max-height: 100000px;
+        }
+
+        .transcript-text {
+            padding: 15px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .transcript-text::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .transcript-text::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .transcript-text::-webkit-scrollbar-thumb {
+            background: #0f0;
+        }
+
+        .stats {
+            text-align: center;
+            padding: 40px 0;
+            opacity: 0.5;
+            font-size: 0.85em;
+        }
+
+        .expand-icon {
+            float: right;
+        }
+
+        a {
+            color: #0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>BACKROOMS</h1>
+
+    <div id="loading" class="loading">loading...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div id="content"></div>
+    <div id="stats" class="stats"></div>
+
+    <script>
+        let SUPABASE_URL = '';
+        let SUPABASE_KEY = '';
+
+        async function loadConfig() {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            SUPABASE_URL = config.supabaseUrl;
+            SUPABASE_KEY = config.supabaseKey;
+        }
+
+        async function fetchTranscripts() {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/backrooms?select=*&order=created_at.desc`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'unknown';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function getDateKey(dateString) {
+            if (!dateString) return 'unknown';
+            return new Date(dateString).toISOString().split('T')[0];
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            return new Date(dateString).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function groupByDate(transcripts) {
+            const grouped = {};
+            transcripts.forEach(t => {
+                const key = getDateKey(t.created_at);
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(t);
+            });
+            return grouped;
+        }
+
+        function createCard(transcript) {
+            const card = document.createElement('div');
+            card.className = 'transcript-card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            const time = formatTime(transcript.created_at);
+            const prompt = transcript.prompt ? transcript.prompt.substring(0, 60) : 'no prompt';
+            title.innerHTML = `${time} <span class="expand-icon">[+]</span>`;
+
+            const meta = document.createElement('div');
+            meta.className = 'card-meta';
+            const parts = [];
+            if (transcript.models) parts.push(transcript.models);
+            if (transcript.template) parts.push(transcript.template);
+            if (transcript.replies) parts.push(`${transcript.replies} replies`);
+            meta.textContent = `${prompt} | ${parts.join(' | ')}`;
+
+            header.appendChild(title);
+            header.appendChild(meta);
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+
+            const text = document.createElement('div');
+            text.className = 'transcript-text';
+            text.textContent = transcript.transcript || 'no transcript';
+
+            content.appendChild(text);
+
+            header.addEventListener('click', () => {
+                const isExpanded = content.classList.toggle('expanded');
+                title.querySelector('.expand-icon').textContent = isExpanded ? '[-]' : '[+]';
+            });
+
+            card.appendChild(header);
+            card.appendChild(content);
+
+            return card;
+        }
+
+        function render(transcripts) {
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+
+            const grouped = groupByDate(transcripts);
+            const dates = Object.keys(grouped).sort().reverse();
+
+            dates.forEach(dateKey => {
+                const section = document.createElement('div');
+                section.className = 'date-section';
+
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'date-header';
+                dateHeader.textContent = formatDate(grouped[dateKey][0].created_at);
+                section.appendChild(dateHeader);
+
+                grouped[dateKey].forEach(t => {
+                    section.appendChild(createCard(t));
+                });
+
+                content.appendChild(section);
+            });
+
+            document.getElementById('stats').textContent =
+                `${transcripts.length} transcripts / ${dates.length} days`;
+        }
+
+        async function init() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+
+            try {
+                await loadConfig();
+                const transcripts = await fetchTranscripts();
+                loading.style.display = 'none';
+                render(transcripts);
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `error: ${err.message}`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

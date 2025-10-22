@@ -6,10 +6,10 @@
   "pairs": [],
   "mixed": null,
   "max_context_frac": 0.0,
-  "max_items": 40,
+  "max_items": 10,
   "context_window": 128000,
   "integrations": {
-    "discord": ["transcripts"]
+    "discord": ["ascii_header", "transcripts"]
   },
   "data_source": {
     "kind": "supabase",

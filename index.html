@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>backrooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: #000;
+            color: #d4d4d4;
+            line-height: 1.6;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: normal;
+            font-size: 1.2em;
+            letter-spacing: 0.1em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error {
+            border: 1px solid #666;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .date-list {
+            list-style: none;
+        }
+
+        .date-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            transition: all 0.1s;
+        }
+
+        .date-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: #666;
+            padding-left: 20px;
+        }
+
+        .date-link {
+            text-decoration: none;
+            color: #d4d4d4;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .date-name {
+            flex: 1;
+        }
+
+        .count {
+            opacity: 0.5;
+            margin-left: 20px;
+        }
+
+        .stats {
+            text-align: center;
+            padding: 40px 0;
+            opacity: 0.5;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <h1>DREAMSIM.EXE BACKROOMS</h1>
+
+    <div id="loading" class="loading">loading...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <ul id="dates" class="date-list"></ul>
+    <div id="stats" class="stats"></div>
+
+    <script>
+        let SUPABASE_URL = '';
+        let SUPABASE_KEY = '';
+
+        async function loadConfig() {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            SUPABASE_URL = config.supabaseUrl;
+            SUPABASE_KEY = config.supabaseKey;
+        }
+
+        async function fetchTranscripts() {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/backrooms?select=created_at&order=created_at.desc`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'unknown';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function getDateKey(dateString) {
+            if (!dateString) return 'unknown';
+            return new Date(dateString).toISOString().split('T')[0];
+        }
+
+        function groupByDate(transcripts) {
+            const grouped = {};
+            transcripts.forEach(t => {
+                const key = getDateKey(t.created_at);
+                if (!grouped[key]) grouped[key] = 0;
+                grouped[key]++;
+            });
+            return grouped;
+        }
+
+        function render(grouped) {
+            const datesList = document.getElementById('dates');
+            datesList.innerHTML = '';
+
+            const dates = Object.keys(grouped).sort().reverse();
+
+            dates.forEach(dateKey => {
+                const li = document.createElement('li');
+                li.className = 'date-item';
+
+                const a = document.createElement('a');
+                a.className = 'date-link';
+                a.href = `date.html?date=${dateKey}`;
+
+                const name = document.createElement('span');
+                name.className = 'date-name';
+                name.textContent = formatDate(dateKey);
+
+                const count = document.createElement('span');
+                count.className = 'count';
+                count.textContent = `[${grouped[dateKey]}]`;
+
+                a.appendChild(name);
+                a.appendChild(count);
+                li.appendChild(a);
+                datesList.appendChild(li);
+            });
+
+            document.getElementById('stats').textContent =
+                `${Object.values(grouped).reduce((a, b) => a + b, 0)} transcripts / ${dates.length} days`;
+        }
+
+        async function init() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+
+            try {
+                await loadConfig();
+                const transcripts = await fetchTranscripts();
+                loading.style.display = 'none';
+                const grouped = groupByDate(transcripts);
+                render(grouped);
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `error: ${err.message}`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

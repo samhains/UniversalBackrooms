@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">backrooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: #000;
+            color: #d4d4d4;
+            line-height: 1.8;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            z-index: 10;
+        }
+
+        .back {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #d4d4d4;
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 60px 20px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .error {
+            border: 1px solid #666;
+            padding: 20px;
+            margin: 80px 20px 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .transcript {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.95em;
+        }
+
+        /* ANSI color support */
+        .ansi-black { color: #000; }
+        .ansi-red { color: #ff5555; }
+        .ansi-green { color: #0f0; }
+        .ansi-yellow { color: #ffff55; }
+        .ansi-blue { color: #5555ff; }
+        .ansi-magenta { color: #ff55ff; }
+        .ansi-cyan { color: #55ffff; }
+        .ansi-white { color: #fff; }
+        .ansi-bright-black { color: #555; }
+        .ansi-bright-red { color: #ff8888; }
+        .ansi-bright-green { color: #88ff88; }
+        .ansi-bright-yellow { color: #ffff88; }
+        .ansi-bright-blue { color: #8888ff; }
+        .ansi-bright-magenta { color: #ff88ff; }
+        .ansi-bright-cyan { color: #88ffff; }
+        .ansi-bright-white { color: #fff; }
+
+        .ansi-bold { font-weight: bold; }
+        .ansi-dim { opacity: 0.6; }
+        .ansi-italic { font-style: italic; }
+        .ansi-underline { text-decoration: underline; }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="back" id="back-link">← back</a>
+    </div>
+
+    <div id="loading" class="loading">loading...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div class="content">
+        <pre id="transcript" class="transcript"></pre>
+    </div>
+
+    <script>
+        let SUPABASE_URL = '';
+        let SUPABASE_KEY = '';
+
+        async function loadConfig() {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            SUPABASE_URL = config.supabaseUrl;
+            SUPABASE_KEY = config.supabaseKey;
+        }
+
+        function getParamsFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                file: params.get('file'),
+                date: params.get('date')
+            };
+        }
+
+        async function fetchTranscript(file) {
+            // Fetch by log_file path (most reliable)
+            const url = `${SUPABASE_URL}/rest/v1/backrooms?select=transcript,log_file&log_file=eq.${encodeURIComponent(file)}&limit=1`;
+
+            const response = await fetch(url, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data[0];
+        }
+
+        // Basic ANSI escape sequence parser
+        function parseAnsi(text) {
+            if (!text) return '';
+
+            // For now, just strip ANSI codes - we can enhance this later
+            return text.replace(/\x1b\[[0-9;]*m/g, '');
+        }
+
+        function filterTranscript(text) {
+            if (!text) return '';
+
+            const lines = text.split('\n');
+            let filtered = [];
+            let skipUntilRound = true;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                // Skip everything until we hit "### Round"
+                if (skipUntilRound) {
+                    if (line.startsWith('### Round')) {
+                        skipUntilRound = false;
+                        filtered.push(line);
+                    }
+                    continue;
+                }
+
+                filtered.push(line);
+            }
+
+            return filtered.join('\n');
+        }
+
+        function render(transcript) {
+            const el = document.getElementById('transcript');
+            if (transcript && transcript.transcript) {
+                const filtered = filterTranscript(transcript.transcript);
+                el.textContent = parseAnsi(filtered);
+
+                // Update page title with filename
+                if (transcript.log_file) {
+                    const filename = transcript.log_file.split('/').pop().replace('.txt', '');
+                    document.getElementById('page-title').textContent = filename;
+                    document.title = filename;
+                }
+            } else {
+                el.textContent = 'no transcript available';
+            }
+        }
+
+        async function init() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const { file, date } = getParamsFromUrl();
+
+            // Set up back link
+            const backLink = document.getElementById('back-link');
+            if (date) {
+                backLink.href = `date.html?date=${date}`;
+            } else {
+                backLink.href = 'index.html';
+            }
+
+            if (!file) {
+                error.style.display = 'block';
+                error.textContent = 'error: no file specified';
+                loading.style.display = 'none';
+                return;
+            }
+
+            try {
+                await loadConfig();
+                const transcript = await fetchTranscript(decodeURIComponent(file));
+                loading.style.display = 'none';
+                render(transcript);
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `error: ${err.message}`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

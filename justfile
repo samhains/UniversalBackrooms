@@ -155,3 +155,26 @@ dreamsim4-pairs pairs turns="30":
 # Usage: just sync-dreamsim4
 sync-dreamsim4:
     python scripts/sync_backrooms.py --meta "{{backrooms_logs}}/dreamsim4/dreamsim4_meta.jsonl"
+
+# Index all backrooms logs for all templates
+# Usage: just index-backrooms
+index-backrooms:
+    python scripts/index_backrooms_logs.py --template dreamsim_harry
+    python scripts/index_backrooms_logs.py --template dreamsim3
+    python scripts/index_backrooms_logs.py --template dreamsim4
+    python scripts/index_backrooms_logs.py --template emoji
+    python scripts/index_backrooms_logs.py --template emoji_brother
+    python scripts/index_backrooms_logs.py --template emoji_brother2
+
+# Sync all transcripts: index + sync to Supabase
+# Usage: just sync-transcripts
+sync-transcripts: index-backrooms sync-backrooms
+
+# Start the backrooms viewer web interface
+# Usage: just viewer
+viewer:
+    python viewer_server.py
+
+# Start the backrooms viewer with fresh sync
+# Usage: just view
+view: sync-transcripts viewer

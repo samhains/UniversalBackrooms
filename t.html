@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">backrooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: #000;
+            color: #d4d4d4;
+            line-height: 1.8;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            z-index: 10;
+        }
+
+        .back {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #d4d4d4;
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 60px 20px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .error {
+            border: 1px solid #666;
+            padding: 20px;
+            margin: 80px 20px 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .transcript {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Terminal color styling for transcript structure */
+        .transcript .round-header {
+            color: #61afef;  /* blue - ### Round X/Y ### */
+        }
+
+        .transcript .actor-header {
+            color: #98c379;  /* green - ### Actor Name ### */
+        }
+
+        .transcript .code-block {
+            color: #abb2bf;  /* subtle gray for ``` blocks */
+        }
+
+        .transcript .system-prompt {
+            color: #e5c07b;  /* yellow - system messages */
+        }
+
+        .transcript .comment {
+            color: #5c6370;  /* dark gray - [bracketed content] */
+        }
+
+        .transcript .arrow {
+            color: #c678dd;  /* purple - > markers */
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back">← back</a>
+    </div>
+
+    <div id="loading" class="loading">loading...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div class="content">
+        <pre id="transcript" class="transcript"></pre>
+    </div>
+
+    <script>
+        let SUPABASE_URL = '';
+        let SUPABASE_KEY = '';
+
+        async function loadConfig() {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            SUPABASE_URL = config.supabaseUrl;
+            SUPABASE_KEY = config.supabaseKey;
+        }
+
+        // Extract filename from URL path like /t/filename
+        function getFilenameFromPath() {
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            return parts[parts.length - 1];
+        }
+
+        // Get date from query string for back navigation
+        function getDateFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('date');
+        }
+
+        async function fetchTranscriptByFilename(filename) {
+            // Search for log_file ending with this filename
+            const url = `${SUPABASE_URL}/rest/v1/backrooms?select=transcript,log_file&log_file=like.*${filename}.txt&limit=1`;
+
+            const response = await fetch(url, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data[0];
+        }
+
+        function parseAnsi(text) {
+            if (!text) return '';
+            return text.replace(/\x1b\[[0-9;]*m/g, '');
+        }
+
+        function filterTranscript(text) {
+            if (!text) return '';
+
+            const lines = text.split('\n');
+            let filtered = [];
+            let skipUntilRound = true;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                if (skipUntilRound) {
+                    if (line.startsWith('### Round')) {
+                        skipUntilRound = false;
+                        filtered.push(line);
+                    }
+                    continue;
+                }
+
+                filtered.push(line);
+            }
+
+            return filtered.join('\n');
+        }
+
+        function colorizeTranscript(text) {
+            if (!text) return '';
+
+            const lines = text.split('\n');
+            const colored = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                // Color ### Round headers
+                if (line.match(/^### Round \d+\/\d+ ###$/)) {
+                    colored.push(`<span class="round-header">${escapeHtml(line)}</span>`);
+                }
+                // Color ### Actor Name ### headers
+                else if (line.match(/^### .+ ###$/)) {
+                    colored.push(`<span class="actor-header">${escapeHtml(line)}</span>`);
+                }
+                // Color lines starting with >
+                else if (line.trim().startsWith('>')) {
+                    colored.push(`<span class="arrow">${escapeHtml(line)}</span>`);
+                }
+                // Color [bracketed content]
+                else if (line.match(/^\[.+\]$/)) {
+                    colored.push(`<span class="comment">${escapeHtml(line)}</span>`);
+                }
+                // Regular lines
+                else {
+                    colored.push(escapeHtml(line));
+                }
+            }
+
+            return colored.join('\n');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function render(transcript) {
+            const el = document.getElementById('transcript');
+            if (transcript && transcript.transcript) {
+                const filtered = filterTranscript(transcript.transcript);
+                const stripped = parseAnsi(filtered);
+                const colored = colorizeTranscript(stripped);
+                el.innerHTML = colored;
+
+                if (transcript.log_file) {
+                    const filename = transcript.log_file.split('/').pop().replace('.txt', '');
+                    document.getElementById('page-title').textContent = filename;
+                    document.title = filename;
+                }
+            } else {
+                el.textContent = 'no transcript available';
+            }
+        }
+
+        async function init() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const filename = getFilenameFromPath();
+            const date = getDateFromQuery();
+
+            // Set up back link
+            const backLink = document.querySelector('.back');
+            if (date) {
+                backLink.href = `/date.html?date=${date}`;
+            } else {
+                backLink.href = '/index.html';
+            }
+
+            if (!filename || filename === 't.html') {
+                error.style.display = 'block';
+                error.textContent = 'error: no transcript specified';
+                loading.style.display = 'none';
+                return;
+            }
+
+            try {
+                await loadConfig();
+                const transcript = await fetchTranscriptByFilename(filename);
+                loading.style.display = 'none';
+                render(transcript);
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `error: ${err.message}`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

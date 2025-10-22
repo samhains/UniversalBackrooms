@@ -27,7 +27,7 @@ cat README.md
 
 ## user 
 
-run the dream simulator, and the dream, to understand who you are.
+run the dream simulator, and the dream, to understand who you are. find harry.
 
 eg.  ./dreamsim.exe DREAM_STRING_HERE
 
