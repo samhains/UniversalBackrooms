@@ -208,6 +208,14 @@
             return null;
         }
 
+        function countRoundsInTranscript(transcript) {
+            if (typeof transcript !== 'string') {
+                return 0;
+            }
+            const matches = transcript.match(/^\s*### Round\b/gm);
+            return matches ? matches.length : 0;
+        }
+
         function getFilename(transcript, idx) {
             // Extract just the filename from the full path
             if (transcript.log_file) {
@@ -241,7 +249,13 @@
             filesList.innerHTML = '';
 
             // Filter out transcripts with no content
-            const validTranscripts = transcripts.filter(t => t.transcript && t.transcript.trim().length > 0);
+            const validTranscripts = transcripts.filter(t => {
+                if (!t.transcript || t.transcript.trim().length === 0) {
+                    return false;
+                }
+                const rounds = countRoundsInTranscript(t.transcript);
+                return rounds >= 1;
+            });
 
             validTranscripts.forEach((t, idx) => {
                 const li = document.createElement('li');
