@@ -38,6 +38,13 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from paths import BACKROOMS_LOGS_DIR
 
+# Import memory extraction functionality
+try:
+    from scripts.extract_memory import extract_memory_for_log
+except Exception:
+    def extract_memory_for_log(log_path, template, model="sonnet4"):
+        return False
+
 # Optional dotenv
 try:
     from dotenv import load_dotenv
@@ -123,6 +130,30 @@ def _write_template_vars(template: str, vars_map: Dict[str, Any]) -> None:
     with vars_path.open("w", encoding="utf-8") as f:
         json.dump(merged, f, ensure_ascii=False, indent=2)
         f.write("\n")
+
+
+def _template_supports_memory(template: str) -> bool:
+    """Check if a template supports memory extraction."""
+    template_path = ROOT / "templates" / template
+    return (template_path / "memory.json").exists() and (template_path / "memory_extractor.system.md").exists()
+
+
+def _extract_memory_if_supported(log_path: Optional[Path], template: str, model: str = "sonnet4") -> None:
+    """Extract memory if the template supports it and log file exists."""
+    if not log_path or not log_path.exists():
+        return
+
+    if not _template_supports_memory(template):
+        return
+
+    try:
+        success = extract_memory_for_log(log_path, template, model)
+        if success:
+            print(f"  ↳ updated memory for {template}")
+        else:
+            print(f"  ↳ memory extraction failed for {template}")
+    except Exception as e:
+        print(f"  ↳ memory extraction error: {e}")
 
 
 def _run_backrooms(
@@ -313,6 +344,9 @@ def run_single(cfg: Dict[str, Any]) -> None:
         "prompt": (query_value or None),
     }
     _append_meta_jsonl(out_path, meta)
+
+    # Extract memory if template supports it
+    _extract_memory_if_supported(log_path, template, models[0] if models else "sonnet4")
 
     # Optional immediate sync (if enabled like in batch mode)
     auto_sync = bool(cfg.get("auto_sync", False))
@@ -711,6 +745,10 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 "stderr_tail": (proc.stderr[-1000:] if (hasattr(proc, "stderr") and proc.stderr) else None),
             }
             _append_meta_jsonl(out_path, meta)
+
+            # Extract memory if template supports it
+            _extract_memory_if_supported(log_path, template, m1)
+
             completed += 1
             print(f"[{completed}/{len(run_plan)}] pair={m1}-{m2} turns={max_turns} exit={exit_reason} time={duration:.1f}s")
         print(f"Done. Wrote metadata to {out_path}")
@@ -819,6 +857,9 @@ def run_batch(cfg: Dict[str, Any]) -> None:
                 "stderr_tail": (proc.stderr[-1000:] if (hasattr(proc, "stderr") and proc.stderr) else None),
             }
             _append_meta_jsonl(out_path, meta)
+
+            # Extract memory if template supports it
+            _extract_memory_if_supported(log_path, template, models_pair[0] if models_pair else "sonnet4")
 
             completed += 1
             print(f"[{completed}/{total_runs}] pair={m1}-{m2} turns={max_turns} exit={exit_reason} time={duration:.1f}s")

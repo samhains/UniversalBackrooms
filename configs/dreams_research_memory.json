@@ -1,0 +1,16 @@
+{
+  "type": "batch",
+  "template": "dreamsim_harry_memory",
+  "max_turns": 30,
+  "models": ["sonnet4"],
+  "pairs": [],
+  "mixed": null,
+  "max_context_frac": 0.0,
+  "max_items": 10,
+  "context_window": 128000,
+  "data_source": {
+    "kind": "supabase",
+    "source": "all"
+  },
+  "shuffle": true
+}
