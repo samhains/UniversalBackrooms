@@ -1,0 +1,262 @@
+{
+  "recurring_characters": {
+    "primary_characters": [
+      {
+        "name": "Tara",
+        "character_type": "romantic_partner",
+        "context_patterns": [
+          "Romantic relationship dynamics",
+          "Relationship conflicts and jealousy",
+          "Emotional intimacy and vulnerability",
+          "Infidelity concerns and trust issues",
+          "Shared experiences and adventures",
+          "Open relationship negotiations"
+        ],
+        "notable_scenarios": [
+          "Reveals hooking up with German guy, causing jealousy",
+          "Dating app scenarios and relationship anxiety",
+          "Open relationship discussions and sexual arrangements with Zach",
+          "Shared experiences in various settings (camping, travel, parties)",
+          "Protective dynamics during crisis situations",
+          "Instagram content creation with friends",
+          "Cinema outings and shared experiences with Mia"
+        ]
+      },
+      {
+        "name": "Dad/Father",
+        "character_type": "family_member",
+        "context_patterns": [
+          "Family gatherings and celebrations",
+          "Unusual business ventures (hotel from whale penis, weed dealing)",
+          "Movie and entertainment discussions",
+          "Protective and caring interactions",
+          "Unexpected or surreal situations",
+          "Drug-related scenarios"
+        ],
+        "notable_scenarios": [
+          "Building hotel from whale penis",
+          "Selling weed with elaborate bear-fetching system making $3000/day",
+          "Movie recommendations and discussions including DVDs in Lorne",
+          "Rollercoaster safety concerns and prodding behavior",
+          "Writing condolences on transparent coffin",
+          "Birthday celebrations and beach visits",
+          "Hot tub scenarios with red eyes from weed"
+        ]
+      },
+      {
+        "name": "Mum/Mother",
+        "character_type": "family_member",
+        "context_patterns": [
+          "Family dynamics and gatherings",
+          "Unexpected interruptions during intimate moments",
+          "Protective and nurturing presence",
+          "Trauma and emergency situations",
+          "Social situations and praise"
+        ],
+        "notable_scenarios": [
+          "Interrupting during intimate moments with Tara",
+          "Appearing injured with cuts on head requiring 911 call",
+          "Praising achievements at parties",
+          "Catching house-sized fish",
+          "Sexual robot doll role-playing scenario",
+          "Family discussions about voice and music",
+          "Carrot/Toby growing discussions"
+        ]
+      },
+      {
+        "name": "Harry",
+        "character_type": "deceased_younger_brother",
+        "context_patterns": [
+          "Death and resurrection themes",
+          "Drug use and concern for wellbeing",
+          "Musical and creative collaborations",
+          "Emotional grief and loss",
+          "Recreational activities and bonding",
+          "Memory recreation technology"
+        ],
+        "notable_scenarios": [
+          "Coming back to life after death on train",
+          "Surfing together (nostalgic memory causing tears)",
+          "Gaming and technology interactions at Theodore's house",
+          "Drug-related concerns and interventions at beach",
+          "Memorial plaque visits",
+          "Movie club with dad discussing films",
+          "Recreation through memory technology",
+          "Resurrection at party causing trauma"
+        ]
+      },
+      {
+        "name": "Coco",
+        "character_type": "friend_romantic_interest",
+        "context_patterns": [
+          "Shopping and material concerns",
+          "Travel and road trip adventures",
+          "Social dynamics and relationship tensions",
+          "Ex-partner interactions",
+          "Creative and social media activities",
+          "Financial dependency on mother"
+        ],
+        "notable_scenarios": [
+          "Road trip with Paris, Charlie, Leon searching for tram station",
+          "Shopping with mother's money (PlayStation purchase)",
+          "Meeting her bald ex-partner in mansion",
+          "Creating Instagram content with Tara",
+          "Podcast community involvement ('off the grid')",
+          "Jealousy scenarios with Ed Gurr",
+          "Social tensions with Mill"
+        ]
+      },
+      {
+        "name": "James",
+        "character_type": "friend",
+        "context_patterns": [
+          "Musical performances and creativity",
+          "Social gatherings and parties",
+          "Gaming and technology",
+          "Rescue scenarios",
+          "Humorous and playful interactions",
+          "Creative collaborations"
+        ],
+        "notable_scenarios": [
+          "Performing as bananas doing XTC covers",
+          "Hair in bun with dreadlock at dinner party",
+          "Gaming and weed capsule activities",
+          "Rescue missions with father (James Daniel)",
+          "Musical production and collaboration",
+          "Dinner party with Miles Munn and Caroline",
+          "Performance at art gallery with James D and Harry W"
+        ]
+      },
+      {
+        "name": "Elliot",
+        "character_type": "friend",
+        "context_patterns": [
+          "Music production",
+          "Philosophical discussions",
+          "Technology and gaming",
+          "Violence/conflict",
+          "Psychedelic experiences",
+          "Creative collaboration"
+        ],
+        "notable_scenarios": [
+          "Cyber space exploration turning into code",
+          "Tame Impala festival with Mervin violence",
+          "Music production with vintage Windows computer",
+          "Plane crash discussions and Oto Weir references",
+          "House party violence with gay friend incident",
+          "Tibet war philosophical discussions"
+        ]
+      }
+    ],
+    "secondary_characters": [
+      {
+        "name": "Leon",
+        "character_type": "friend_acquaintance",
+        "context_patterns": [
+          "Social situations",
+          "Housing arrangements",
+          "Recognition scenarios",
+          "Building development"
+        ]
+      },
+      {
+        "name": "Jack",
+        "character_type": "friend",
+        "context_patterns": [
+          "Drug experiences",
+          "DMT trips",
+          "Housing projects",
+          "Psychedelic guidance"
+        ]
+      },
+      {
+        "name": "Benjamin Bratton",
+        "character_type": "intellectual_figure",
+        "context_patterns": [
+          "Housing projects",
+          "Pipeline cleanup",
+          "Academic discussions"
+        ]
+      }
+    ],
+    "notable_public_figures": [
+      {
+        "name": "Young Thug",
+        "character_type": "celebrity",
+        "context_patterns": ["Drug discussions", "Apocalyptic scenarios"]
+      },
+      {
+        "name": "Kanye West",
+        "character_type": "celebrity",
+        "context_patterns": ["Art and creativity", "UN headquarters"]
+      },
+      {
+        "name": "Benjamin Bratton",
+        "character_type": "intellectual_figure",
+        "context_patterns": [
+          "Housing projects",
+          "Academic/theoretical discussions"
+        ]
+      }
+    ]
+  },
+  "character_relationship_patterns": {
+    "family_dynamics": {
+      "key_characters": ["Dad", "Mum"],
+      "common_themes": [
+        "Unexpected situations",
+        "Protective behaviors",
+        "Family gatherings"
+      ]
+    },
+    "romantic_relationships": {
+      "description": "Complex romantic dynamics featuring current and past partners",
+      "key_characters": ["Tara", "Coco", "Millie"],
+      "common_themes": [
+        "Jealousy",
+        "Infidelity fears",
+        "Intimate moments",
+        "Relationship negotiations"
+      ]
+    },
+    "friendship_circles": {
+      "description": "Close-knit group of male friends involved in creative and recreational activities",
+      "key_characters": ["Harry", "James", "Elliot", "Jack", "Leon"],
+      "common_themes": [
+        "Music and creativity",
+        "Drug experiences",
+        "Gaming",
+        "Social gatherings"
+      ]
+    },
+    "authority_figures": {
+      "description": "Interactions with intellectual or creative authorities",
+      "key_characters": ["Benjamin Bratton", "Paul Grabowsky"],
+      "common_themes": ["Learning", "Creative guidance", "Academic discussions"]
+    }
+  },
+  "psychological_insights": {
+    "relationship_anxieties": "Recurring themes of infidelity, jealousy, and relationship insecurity, particularly with Tara",
+    "family_bonds": "Strong family connections with surreal and protective elements",
+    "creative_community": "Importance of creative friendships and musical collaboration",
+    "loss_and_grief": "Significant processing of Harry's death through resurrection dreams",
+    "authority_relationships": "Respect for intellectual and creative mentors",
+    "social_dynamics": "Complex navigation of group social situations and hierarchies"
+  },
+  "thematic_summary": {
+    "most_significant_relationships": [
+      "Tara (primary romantic partner with complex dynamics)",
+      "Dad (protective family figure in surreal situations)",
+      "Harry (deceased friend appearing in resurrection scenarios)",
+      "Mum (nurturing family presence with boundary issues)"
+    ],
+    "character_archetypes": {
+      "the_romantic_partner": "Tara - source of both love and anxiety",
+      "the_protective_father": "Dad - unconventional but caring",
+      "the_lost_friend": "Harry - grieving process through dream reunion",
+      "the_nurturing_mother": "Mum - supportive but sometimes intrusive",
+      "the_creative_collaborators": "James, Elliot - artistic partnerships",
+      "the_alternative_interest": "Coco - represents different life possibilities"
+    }
+  }
+}
